@@ -4,7 +4,7 @@
 	    
 #include "b_local.h"
 
-#include "..\Ratl\vector_vs.h"
+#include "../Ratl/vector_vs.h"
 
 #define MAX_PACKS			10
 

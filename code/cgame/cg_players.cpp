@@ -6,11 +6,11 @@
 //#include "cg_local.h"
 #include "cg_media.h"
 #include "FxScheduler.h"
-#include "..\game\ghoul2_shared.h"
-#include "..\game\anims.h"
-#include "..\game\wp_saber.h"
-#include "..\game\g_vehicles.h"
-#include "..\Rufl\hstring.h"
+#include "../game/ghoul2_shared.h"
+#include "../game/anims.h"
+#include "../game/wp_saber.h"
+#include "../game/g_vehicles.h"
+#include "../Rufl/hstring.h"
 
 #define	LOOK_SWING_SCALE	0.5f
 #define	CG_SWINGSPEED		0.3f

@@ -21,7 +21,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 #include "hstring.h"
 #include <string.h>
-#include "..\Ratl\hash_pool_vs.h"
+#include "../Ratl/hash_pool_vs.h"
 
 
 

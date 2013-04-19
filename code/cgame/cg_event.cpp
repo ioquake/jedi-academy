@@ -7,10 +7,10 @@
 #include "cg_media.h"
 #include "FxScheduler.h"
 
-#include "..\game\anims.h"
+#include "../game/anims.h"
 
 #ifdef _XBOX
-#include "..\client\fffx.h"
+#include "../client/fffx.h"
 #endif
 
 #ifdef _IMMERSION

@@ -6,8 +6,8 @@
 /*
 Ghoul2 Insert Start
 */
-#include "..\game\q_shared.h"
-#include "..\ghoul2\g2.h"
+#include "../game/q_shared.h"
+#include "../ghoul2/g2.h"
 /*
 Ghoul2 Insert end
 */

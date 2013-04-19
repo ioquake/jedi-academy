@@ -8,8 +8,8 @@
 #include "cg_media.h"
 #include "FxScheduler.h"
 #include "cg_lights.h"
-#include "..\game\wp_saber.h"
-#include "..\game\g_vehicles.h"
+#include "../game/wp_saber.h"
+#include "../game/g_vehicles.h"
 
 #define MASK_CAMERACLIP (MASK_SOLID)
 #define CAMERA_SIZE	4

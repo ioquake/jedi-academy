@@ -2,7 +2,7 @@
 
 #ifdef _IMMERSION
 
-#include "..\win32\win_local.h"
+#include "../win32/win_local.h"
 
 ////----------------
 /// FFMultiSet::Init

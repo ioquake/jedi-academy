@@ -88,28 +88,28 @@
 	#include "ragl_common.h"
 #endif
 #if !defined(RATL_ARRAY_VS_INC)
-	#include "..\Ratl\array_vs.h"
+	#include "../Ratl/array_vs.h"
 #endif
 #if !defined(RATL_VECTOR_VS_INC)
-	#include "..\Ratl\vector_vs.h"
+	#include "../Ratl/vector_vs.h"
 #endif
 #if !defined(RATL_BITS_INC)
-	#include "..\Ratl\bits_vs.h"
+	#include "../Ratl/bits_vs.h"
 #endif
 #if !defined(RATL_QUEUE_VS_INC)
-	#include "..\Ratl\queue_vs.h"
+	#include "../Ratl/queue_vs.h"
 #endif
 #if !defined(RATL_STACK_VS_INC)
-	#include "..\Ratl\stack_vs.h"
+	#include "../Ratl/stack_vs.h"
 #endif
 #if !defined(RBTREE_MAP_VS_INC)
-	#include "..\Ratl\map_vs.h"
+	#include "../Ratl/map_vs.h"
 #endif
 #if !defined(RATL_POOL_VS_INC)
-	#include "..\Ratl\pool_vs.h"
+	#include "../Ratl/pool_vs.h"
 #endif
 #if !defined(RATL_GRID_VS_INC)
-	#include "..\Ratl\grid_vs.h"
+	#include "../Ratl/grid_vs.h"
 #endif
 namespace ragl
 {

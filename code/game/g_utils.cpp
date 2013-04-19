@@ -9,9 +9,9 @@
 #include "g_functions.h"
 #ifdef _XBOX
 #include "anims.h"
-#include "..\renderer\mdx_format.h"
-#include "..\qcommon\cm_public.h"
-#include "..\qcommon\cm_local.h"
+#include "../renderer/mdx_format.h"
+#include "../qcommon/cm_public.h"
+#include "../qcommon/cm_local.h"
 #endif
 
 #define ACT_ACTIVE		qtrue
@@ -295,7 +295,7 @@ void G_EntityPosition( int i, vec3_t ret )
 //===Bypass network for sounds on specific channels====================
 
 extern void cgi_S_StartSound( const vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx );
-#include "..\cgame\cg_media.h"	//access to cgs
+#include "../cgame/cg_media.h"	//access to cgs
 extern qboolean CG_TryPlayCustomSound( vec3_t origin, int entityNum, soundChannel_t channel, const char *soundName, int customSoundSet );
 extern cvar_t *g_timescale;
 //NOTE: Do NOT Try to use this before the cgame DLL is valid, it will NOT work!

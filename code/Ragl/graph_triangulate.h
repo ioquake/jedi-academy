@@ -87,7 +87,7 @@
 	#include "graph_vs.h"
 #endif
 #if !defined(RATL_LIST_VS_INC)
-	#include "..\Ratl\list_vs.h"
+	#include "../Ratl/list_vs.h"
 #endif
 namespace ragl
 {
