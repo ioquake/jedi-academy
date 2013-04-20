@@ -38,7 +38,7 @@ static int R_ACullModel( md4Header_t *header, trRefEntity_t *ent ) {
 
 	if (header->ofsFrames<0) // Compressed
 	{
-		frameSize = (int)( &((md4CompFrame_t *)0)->bones[ tr.currentModel->md4->numBones ] );		
+		frameSize = (size_t)( &((md4CompFrame_t *)0)->bones[ tr.currentModel->md4->numBones ] );		
 		newFrame = (md4Frame_t *)((byte *)header - header->ofsFrames + ent->e.frame * frameSize );
 		oldFrame = (md4Frame_t *)((byte *)header - header->ofsFrames + ent->e.oldframe * frameSize );
 		// HACK! These frames actually are md4CompFrames, but the first fields are the same, 
@@ -46,7 +46,7 @@ static int R_ACullModel( md4Header_t *header, trRefEntity_t *ent ) {
 	}
 	else
 	{
-		frameSize = (int)( &((md4Frame_t *)0)->bones[ tr.currentModel->md4->numBones ] );		
+		frameSize = (size_t)( &((md4Frame_t *)0)->bones[ tr.currentModel->md4->numBones ] );		
 		newFrame = (md4Frame_t *)((byte *)header + header->ofsFrames + ent->e.frame * frameSize );
 		oldFrame = (md4Frame_t *)((byte *)header + header->ofsFrames + ent->e.oldframe * frameSize );
 	}
@@ -144,14 +144,14 @@ static int R_AComputeFogNum( md4Header_t *header, trRefEntity_t *ent ) {
 
 	if (header->ofsFrames<0) // Compressed
 	{
-		frameSize = (int)( &((md4CompFrame_t *)0)->bones[ header->numBones ] );		
+		frameSize = (size_t)( &((md4CompFrame_t *)0)->bones[ header->numBones ] );		
 		frame = (md4Frame_t *)((byte *)header - header->ofsFrames + ent->e.frame * frameSize );
 		// HACK! These frames actually are md4CompFrames, but the first fields are the same, 
 		// so this will work for this routine.
 	}
 	else
 	{
-		frameSize = (int)( &((md4Frame_t *)0)->bones[ header->numBones ] );		
+		frameSize = (size_t)( &((md4Frame_t *)0)->bones[ header->numBones ] );		
 		frame = (md4Frame_t *)((byte *)header + header->ofsFrames + ent->e.frame * frameSize );
 	}
 
@@ -376,14 +376,14 @@ void RB_SurfaceAnim( md4Surface_t *surface ) {
 	if (header->ofsFrames<0) // Compressed
 	{
 		compressed = qtrue;
-		frameSize = (int)( &((md4CompFrame_t *)0)->bones[ header->numBones ] );		
+		frameSize = (size_t)( &((md4CompFrame_t *)0)->bones[ header->numBones ] );		
 		cframe = (md4CompFrame_t *)((byte *)header - header->ofsFrames + backEnd.currentEntity->e.frame * frameSize );
 		coldFrame = (md4CompFrame_t *)((byte *)header - header->ofsFrames + backEnd.currentEntity->e.oldframe * frameSize );
 	}
 	else
 	{
 		compressed = qfalse;
-		frameSize = (int)( &((md4Frame_t *)0)->bones[ header->numBones ] );
+		frameSize = (size_t)( &((md4Frame_t *)0)->bones[ header->numBones ] );
 		frame = (md4Frame_t *)((byte *)header + header->ofsFrames + 
 			backEnd.currentEntity->e.frame * frameSize );
 		oldFrame = (md4Frame_t *)((byte *)header + header->ofsFrames + 

@@ -26,7 +26,7 @@ public:
 	void Free(IGameInterface* game);
 
 	int WriteMember ( FILE * );				//Writes the member's data, in block format, to FILE *
-	int	ReadMember( char **, long *, CIcarus* icarus );		//Reads the member's data, in block format, from FILE *
+	int	ReadMember( char **, int *, CIcarus* icarus );		//Reads the member's data, in block format, from FILE *
 
 	void SetID( int id )		{	m_id = id;		}	//Set the ID member variable
 	void SetSize( int size )	{	m_size = size;	}	//Set the size member variable
@@ -205,7 +205,7 @@ protected:
 	char	m_fileName[CIcarus::MAX_FILENAME_LENGTH];	//Name of the current file
 
 	char	*m_stream;							//Stream of data to be parsed
-	long	m_streamPos;
+	int	m_streamPos;
 
 	static char*			s_IBI_EXT;
 	static char*			s_IBI_HEADER_ID;

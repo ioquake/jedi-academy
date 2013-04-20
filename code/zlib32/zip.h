@@ -117,7 +117,7 @@ typedef enum
 // number of distance codes
 #define D_CODES					30
 
-extern const ulong extra_dbits[D_CODES];
+extern const uint32_t extra_dbits[D_CODES];
 
 // Structure to be used by external applications
 
@@ -129,12 +129,12 @@ extern const ulong extra_dbits[D_CODES];
 typedef struct z_stream_s 
 {
 	byte			*next_in;			// next input unsigned char
-	ulong			avail_in;			// number of unsigned chars available at next_in
-	ulong			total_in;			// total number of bytes processed so far
+	uint32_t			avail_in;			// number of unsigned chars available at next_in
+	uint32_t			total_in;			// total number of bytes processed so far
 										  
 	byte			*next_out;			// next output unsigned char should be put there
-	ulong			avail_out;			// remaining free space at next_out
-	ulong			total_out;			// total number of bytes output
+	uint32_t			avail_out;			// remaining free space at next_out
+	uint32_t			total_out;			// total number of bytes output
 						  
 	EStatus			status;
 	EStatus			error;				// error code
@@ -142,7 +142,7 @@ typedef struct z_stream_s
 	struct inflate_state_s	*istate;	// not visible by applications
 	struct deflate_state_s	*dstate;	// not visible by applications
 
-	ulong			quality;
+	uint32_t			quality;
 } z_stream;
 
 //     Update a running crc with the bytes buf[0..len-1] and return the updated
@@ -151,14 +151,14 @@ typedef struct z_stream_s
 //   within this function so it shouldn't be done by the application.
 //   Usage example:
 //
-//     ulong crc = crc32(0L, NULL, 0);
+//     uint32_t crc = crc32(0L, NULL, 0);
 //
 //     while (read_buffer(buffer, length) != EOF) {
 //       crc = crc32(crc, buffer, length);
 //     }
 //     if (crc != original_crc) error();
 
-ulong crc32(ulong crc, const byte *buf, ulong len);
+unsigned long crc32(unsigned long crc, const byte *buf, unsigned int len);
 
 //     Update a running Adler-32 checksum with the bytes buf[0..len-1] and
 //   return the updated checksum. If buf is NULL, this function returns
@@ -166,14 +166,14 @@ ulong crc32(ulong crc, const byte *buf, ulong len);
 //   An Adler-32 checksum is almost as reliable as a CRC32 but can be computed
 //   much faster. Usage example:
 //
-//     ulong adler = adler32(0L, NULL, 0);
+//     uint32_t adler = adler32(0L, NULL, 0);
 //
 //     while (read_buffer(buffer, length) != EOF) {
 //       adler = adler32(adler, buffer, length);
 //     }
 //     if (adler != original_adler) error();
 
-ulong adler32(ulong adler, const byte *buf, ulong len);
+unsigned long adler32(unsigned long adler, const byte *buf, unsigned int len);
 
 // External calls to the deflate code
 EStatus deflateInit(z_stream *strm, ELevel level, int noWrap = 0);
@@ -189,7 +189,7 @@ EStatus inflateEnd(z_stream *strm);
 const char *inflateError(void);
 
 // External calls to the zipfile code
-bool InflateFile(byte *src, ulong compressedSize, byte *dst, ulong uncompressedSize, int noWrap = 0);
-bool DeflateFile(byte *src, ulong uncompressedSize, byte *dst, ulong maxCompressedSize, ulong *compressedSize, ELevel level, int noWrap = 0);
+bool InflateFile(byte *src, uint32_t compressedSize, byte *dst, uint32_t uncompressedSize, int noWrap = 0);
+bool DeflateFile(byte *src, uint32_t uncompressedSize, byte *dst, uint32_t maxCompressedSize, uint32_t *compressedSize, ELevel level, int noWrap = 0);
 
 // end

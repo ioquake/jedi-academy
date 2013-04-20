@@ -318,12 +318,12 @@ void *Sys_GetGameAPI (void *parms)
 	return GetGameAPI (parms);
 }
 
-void * Sys_LoadCgame( int (**entryPoint)(int, ...), int (*systemcalls)(int, ...) )
+void * Sys_LoadCgame( intptr_t (**entryPoint)(intptr_t, ...), intptr_t (*systemcalls)(intptr_t, ...) )
 {
-	void    (*dllEntry)( int (*syscallptr)(int, ...) );
+	void    (*dllEntry)( intptr_t (*syscallptr)(intptr_t, ...) );
 
-	dllEntry = ( void (*)( int (*)( int, ... ) ) )dlsym( game_library, "dllEntry" );
-	*entryPoint = (int (*)(int,...))dlsym( game_library, "vmMain" );
+	dllEntry = ( void (*)( intptr_t (*)( intptr_t, ... ) ) )dlsym( game_library, "dllEntry" );
+	*entryPoint = (intptr_t (*)(intptr_t,...))dlsym( game_library, "vmMain" );
 	if ( !*entryPoint || !dllEntry ) {
 		return NULL;
 	}

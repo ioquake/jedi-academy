@@ -431,8 +431,16 @@ void *VM_ArgPtr( int intValue );
 void CM_SnapPVS(vec3_t origin,byte *buffer);
 //#define	VMA(x) VM_ArgPtr(args[x])
 #define	VMA(x) ((void*)args[x])
-#define	VMF(x)	((float *)args)[x]
-int CL_CgameSystemCalls( int *args ) {
+
+static inline float _vmf(intptr_t x)
+{
+	floatint_t fi;
+	fi.i = (int) x;
+	return fi.f;
+}
+#define	VMF(x)	_vmf(args[x]) 
+
+intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 	switch( args[0] ) {
 	case CG_PRINT:
 		Com_Printf( "%s", VMA(1) );
@@ -825,7 +833,7 @@ Ghoul2 Insert End
 	  return 0;
 
 	case CG_Z_MALLOC:
-		return (int)Z_Malloc(args[1], (memtag_t) args[2], qfalse);
+		return (intptr_t)Z_Malloc(args[1], (memtag_t) args[2], qfalse);
 
 	case CG_Z_FREE:
 		Z_Free((void *) VMA(1));

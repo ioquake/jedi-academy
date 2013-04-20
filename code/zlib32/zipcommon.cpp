@@ -2,7 +2,7 @@
 // Table of CRC-32's of all single-byte values (made by make_crc_table)
 // -----------------------------------------------------------------------------------------------
 
-static const unsigned long crc_table[256] = 
+static const unsigned int crc_table[256] = 
 {
   0x00000000L, 0x77073096L, 0xee0e612cL, 0x990951baL, 0x076dc419L,
   0x706af48fL, 0xe963a535L, 0x9e6495a3L, 0x0edb8832L, 0x79dcb8a4L,
@@ -62,7 +62,7 @@ static const unsigned long crc_table[256] =
 // Calculate 32 bit CRC checksum for len bytes
 // -----------------------------------------------------------------------------------------------
 
-unsigned long crc32(unsigned long crc, const unsigned char *buf, unsigned long len)
+unsigned long crc32(unsigned long crc, const unsigned char *buf, unsigned int len)
 {
 	if(!buf)
 	{
@@ -85,7 +85,7 @@ unsigned long crc32(unsigned long crc, const unsigned char *buf, unsigned long l
 // NMAX is the largest n such that 255n(n+1)/2 + (n+1)(BASE-1) <= 2^32-1
 #define NMAX		5552
 
-unsigned long adler32(unsigned long adler, const unsigned char *buf, unsigned long len)
+unsigned long adler32(unsigned long adler, const unsigned char *buf, unsigned int len)
 {
     unsigned long	s1;
     unsigned long	s2;

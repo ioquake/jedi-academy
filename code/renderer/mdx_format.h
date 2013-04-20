@@ -192,7 +192,7 @@ typedef struct {
 			int			parentIndex;		// this points to the index in the file of the parent surface. -1 if null/root
 			int			numChildren;		// number of surfaces which are children of this one
 			int			childIndexes[1];	// [mdxmSurfHierarch_t->numChildren] (variable sized)
-		} mdxmSurfHierarchy_t;	// struct size = (int)( &((mdxmSurfHierarch_t *)0)->childIndexes[ mdxmSurfHierarch_t->numChildren ] );
+		} mdxmSurfHierarchy_t;	// struct size = (size_t)( &((mdxmSurfHierarch_t *)0)->childIndexes[ mdxmSurfHierarch_t->numChildren ] );
 // }
 
 
@@ -393,7 +393,7 @@ typedef struct {
 			mdxaBone_t	BasePoseMatInv;		// inverse, to save run-time calc
 			int			numChildren;		// number of children bones
 			int			children[1];		// [mdxaSkel_t->numChildren] (variable sized)
-		} mdxaSkel_t;	// struct size = (int)( &((mdxaSkel_t *)0)->children[ mdxaSkel_t->numChildren ] );
+		} mdxaSkel_t;	// struct size = (size_t)( &((mdxaSkel_t *)0)->children[ mdxaSkel_t->numChildren ] );
 // }
 
 

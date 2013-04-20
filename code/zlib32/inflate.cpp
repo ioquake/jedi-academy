@@ -142,7 +142,7 @@ static const char *inflate_error = "OK";
 //      the two sets of lengths.
 
 // And'ing with mask[n] masks the lower n bits
-static const ulong inflate_mask[17] = 
+static const uint32_t inflate_mask[17] = 
 {
     0x0000,
     0x0001, 0x0003, 0x0007, 0x000f, 0x001f, 0x003f, 0x007f, 0x00ff,
@@ -150,35 +150,35 @@ static const ulong inflate_mask[17] =
 };
 
 // Order of the bit length code lengths
-static const ulong border[] = 
+static const uint32_t border[] = 
 { 
 	16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15
 };
 
 // Copy lengths for literal codes 257..285 (see note #13 above about 258)
-static const ulong cplens[31] = 
+static const uint32_t cplens[31] = 
 { 
 	3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
 	35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0
 };
 
 // Extra bits for literal codes 257..285 (112 == invalid)
-static const ulong cplext[31] = 
+static const uint32_t cplext[31] = 
 { 
 	0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
 	3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 112, 112
 }; 
 
 // Copy offsets for distance codes 0..29
-static const ulong cpdist[30] = 
+static const uint32_t cpdist[30] = 
 { 
 	1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
 	257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145,
 	8193, 12289, 16385, 24577
 };
 
-static ulong fixed_bl = 9;
-static ulong fixed_bd = 5;
+static uint32_t fixed_bl = 9;
+static uint32_t fixed_bd = 5;
 
 static inflate_huft_t fixed_tl[] = 
 {
@@ -377,7 +377,7 @@ static inflate_blocks_state_t *inflate_blocks_new(z_stream *z, check_func check)
 // copy as much as possible from the sliding window to the output area
 // ===============================================================================
 
-static void inflate_flush_copy(z_stream *z, inflate_blocks_state_t *s, ulong count)
+static void inflate_flush_copy(z_stream *z, inflate_blocks_state_t *s, uint32_t count)
 {
 	if(count > z->avail_out)
 	{
@@ -409,7 +409,7 @@ static void inflate_flush_copy(z_stream *z, inflate_blocks_state_t *s, ulong cou
 
 static void inflate_flush(z_stream *z, inflate_blocks_state_t *s)
 {
-	ulong	count;
+	uint32_t	count;
 
 	// compute number of bytes to copy as as end of window
 	count = (s->read <= s->write ? s->write : s->end) - s->read;
@@ -435,7 +435,7 @@ static void inflate_flush(z_stream *z, inflate_blocks_state_t *s)
 // get bytes and bits
 // ===============================================================================
 
-static bool getbits(z_stream *z, inflate_blocks_state_t *s, ulong bits)								 
+static bool getbits(z_stream *z, inflate_blocks_state_t *s, uint32_t bits)								 
 {			
 	while(s->bitk < bits) 							
 	{											
@@ -460,7 +460,7 @@ static bool getbits(z_stream *z, inflate_blocks_state_t *s, ulong bits)
 // output bytes
 // ===============================================================================
 
-static ulong needout(z_stream *z, inflate_blocks_state_t *s, ulong bytesToEnd) 
+static uint32_t needout(z_stream *z, inflate_blocks_state_t *s, uint32_t bytesToEnd) 
 { 
 	if(!bytesToEnd)
 	{ 
@@ -525,7 +525,7 @@ inline byte *qcopy(byte *dst, byte *src, int count)
 	return(retval);
 }
 
-inline ulong get_remaining(inflate_blocks_state_t *s)
+inline uint32_t get_remaining(inflate_blocks_state_t *s)
 {
 	if(s->write < s->read)
 	{
@@ -534,21 +534,21 @@ inline ulong get_remaining(inflate_blocks_state_t *s)
 	return(s->end - s->write); 
 }
 
-static EStatus inflate_fast(ulong lengthMask, ulong distMask, inflate_huft_t *lengthTree, inflate_huft_t *distTree, inflate_blocks_state_t *s, z_stream *z)
+static EStatus inflate_fast(uint32_t lengthMask, uint32_t distMask, inflate_huft_t *lengthTree, inflate_huft_t *distTree, inflate_blocks_state_t *s, z_stream *z)
 {
 	inflate_huft_t	*huft;			// temporary pointer
 	byte			*data;			
 	byte			*src; 			// copy source pointer
 	byte			*dst;			
-	ulong			extraBits;		// extra bits or operation
-	ulong			bytesToEnd;		// bytes to end of window or read pointer
-	ulong			count;			// bytes to copy
-	ulong			dist;			// distance back to copy from
-	ulong			bitb;
-	ulong			bitk;
-	ulong			availin;
-	ulong			morebits;
-	ulong			copymore;
+	uint32_t			extraBits;		// extra bits or operation
+	uint32_t			bytesToEnd;		// bytes to end of window or read pointer
+	uint32_t			count;			// bytes to copy
+	uint32_t			dist;			// distance back to copy from
+	uint32_t			bitb;
+	uint32_t			bitk;
+	uint32_t			availin;
+	uint32_t			morebits;
+	uint32_t			copymore;
 
 	// load input, output, bit values
 	data = z->next_in;
@@ -737,8 +737,8 @@ static EStatus inflate_fast(ulong lengthMask, ulong distMask, inflate_huft_t *le
 static void inflate_codes(z_stream *z, inflate_blocks_state_t *s)
 {
 	inflate_huft_t			*huft; 		// temporary pointer
-	ulong					extraBits;	// extra bits or operation
-	ulong					bytesToEnd;	// bytes to end of window or read pointer
+	uint32_t					extraBits;	// extra bits or operation
+	uint32_t					bytesToEnd;	// bytes to end of window or read pointer
 	byte					*src; 		// pointer to copy strings from
 	inflate_codes_state_t	*infCodes;	// codes state
 
@@ -948,7 +948,7 @@ static void inflate_codes(z_stream *z, inflate_blocks_state_t *s)
 // ===============================================================================
 // ===============================================================================
 
-static inflate_codes_state_t *inflate_codes_new(z_stream *z, ulong bl, ulong bd, inflate_huft_t *lengthTree, inflate_huft_t *distTree)
+static inflate_codes_state_t *inflate_codes_new(z_stream *z, uint32_t bl, uint32_t bd, inflate_huft_t *lengthTree, inflate_huft_t *distTree)
 {
 	inflate_codes_state_t		*c;
 
@@ -965,16 +965,16 @@ static inflate_codes_state_t *inflate_codes_new(z_stream *z, ulong bl, ulong bd,
 // ===============================================================================
 // Generate Huffman trees for efficient decoding
 
-//	ulong b				// code lengths in bits (all assumed <= BMAX)
-//	ulong n             // number of codes (assumed <= 288)
-//	ulong s             // number of simple-valued codes (0..s-1)
-//	const ulong *d      // list of base values for non-simple codes
-//	const ulong *e      // list of extra bits for non-simple codes
+//	uint32_t b				// code lengths in bits (all assumed <= BMAX)
+//	uint32_t n             // number of codes (assumed <= 288)
+//	uint32_t s             // number of simple-valued codes (0..s-1)
+//	const uint32_t *d      // list of base values for non-simple codes
+//	const uint32_t *e      // list of extra bits for non-simple codes
 //	inflate_huft ** t	// result: starting table
-//	ulong *m            // maximum lookup bits, returns actual
+//	uint32_t *m            // maximum lookup bits, returns actual
 //	inflate_huft *hp    // space for trees
-//	ulong *hn           // hufts used in space
-//	ulong *workspace    // working area: values in order of bit length
+//	uint32_t *hn           // hufts used in space
+//	uint32_t *workspace    // working area: values in order of bit length
 //
 //   Given a list of code lengths and a maximum table size, make a set of
 //   tables to decode that set of codes.  Return Z_OK on success, Z_BUF_ERROR
@@ -1013,26 +1013,26 @@ static inflate_codes_state_t *inflate_codes_new(z_stream *z, ulong bl, ulong bd,
 //   possibly even between compilers.  Your mileage may vary.
 // ===============================================================================
 
-static EStatus huft_build(ulong *b, ulong numCodes, ulong s, const ulong *d, const ulong *e, inflate_huft_t **t, ulong *m, inflate_huft_t *hp, ulong *hn, ulong *workspace)
+static EStatus huft_build(uint32_t *b, uint32_t numCodes, uint32_t s, const uint32_t *d, const uint32_t *e, inflate_huft_t **t, uint32_t *m, inflate_huft_t *hp, uint32_t *hn, uint32_t *workspace)
 {
-	ulong			codeCounter;					// counter for codes of length bitsPerCode
-	ulong			bitLengths[BMAX + 1] = { 0 };	// bit length count table
-	ulong			bitOffsets[BMAX + 1];			// bit offsets, then code stack
-	ulong			f;								// i repeats in table every f entries
+	uint32_t			codeCounter;					// counter for codes of length bitsPerCode
+	uint32_t			bitLengths[BMAX + 1] = { 0 };	// bit length count table
+	uint32_t			bitOffsets[BMAX + 1];			// bit offsets, then code stack
+	uint32_t			f;								// i repeats in table every f entries
 	int 			maxCodeLen;						// maximum code length
 	int 			tableLevel;						// table level
-	ulong			i;								// counter, current code
-	ulong			j;								// counter
+	uint32_t			i;								// counter, current code
+	uint32_t			j;								// counter
 	int 			bitsPerCode;					// number of bits in current code
-	ulong 			bitsPerTable;					// bits per table (returned in m)
+	uint32_t 			bitsPerTable;					// bits per table (returned in m)
 	int 			bitsBeforeTable;				// bits before this table == (bitsPerTable * tableLevel)
-	ulong			*p; 							// pointer into bitLengths[], b[], or workspace[]
+	uint32_t			*p; 							// pointer into bitLengths[], b[], or workspace[]
 	inflate_huft_t	*q; 							// points to current table
 	inflate_huft_t	r;								// table entry for structure assignment
 	inflate_huft_t	*tableStack[BMAX];				// table stack
-	ulong			*xp;							// pointer into bitOffsets
+	uint32_t			*xp;							// pointer into bitOffsets
 	int 			dummyCodes;						// number of dummy codes added
-	ulong			entryCount;						// number of entries in current table
+	uint32_t			entryCount;						// number of entries in current table
 
 	// Generate counts for each bit length
 	// assume all entries <= BMAX
@@ -1248,16 +1248,16 @@ static EStatus huft_build(ulong *b, ulong numCodes, ulong s, const ulong *d, con
 }
 
 // ===============================================================================
-// ulong *c 				19 code lengths
-// ulong *bb				bits tree desired/actual depth
+// uint32_t *c 				19 code lengths
+// uint32_t *bb				bits tree desired/actual depth
 // inflate_huft **tb		bits tree result
 // inflate_huft *hp 		space for trees
 // ===============================================================================
 
-static void inflate_trees_bits(z_stream *z, ulong *c, ulong *bb, inflate_huft_t **tb, inflate_huft_t *hp)
+static void inflate_trees_bits(z_stream *z, uint32_t *c, uint32_t *bb, inflate_huft_t **tb, inflate_huft_t *hp)
 {
-	ulong	hn = 0;				// hufts used in space
-	ulong	workspace[19];		// work area for huft_build
+	uint32_t	hn = 0;				// hufts used in space
+	uint32_t	workspace[19];		// work area for huft_build
 
 	z->error = huft_build(c, 19, 19, NULL, NULL, tb, bb, hp, &hn, workspace);
 	if(z->error == Z_DATA_ERROR)
@@ -1272,18 +1272,18 @@ static void inflate_trees_bits(z_stream *z, ulong *c, ulong *bb, inflate_huft_t 
 }
 
 // ===============================================================================
-// ulong *c 				// that many (total) code lengths
-// ulong *bl				// literal desired/actual bit depth
-// ulong *bd				// distance desired/actual bit depth
+// uint32_t *c 				// that many (total) code lengths
+// uint32_t *bl				// literal desired/actual bit depth
+// uint32_t *bd				// distance desired/actual bit depth
 // inflate_huft **tl		// literal/length tree result
 // inflate_huft **td		// distance tree result
 // inflate_huft *hp 		// space for trees
 // ===============================================================================
 
-static void inflate_trees_dynamic(z_stream *z, ulong numLiteral, ulong numDist, ulong *c, ulong *bl, ulong *bd, inflate_huft_t **tl, inflate_huft_t **td, inflate_huft_t *hp)
+static void inflate_trees_dynamic(z_stream *z, uint32_t numLiteral, uint32_t numDist, uint32_t *c, uint32_t *bl, uint32_t *bd, inflate_huft_t **tl, inflate_huft_t **td, inflate_huft_t *hp)
 {
-	ulong		hn = 0;				// hufts used in space
-	ulong		workspace[288]; 	// work area for huft_build
+	uint32_t		hn = 0;				// hufts used in space
+	uint32_t		workspace[288]; 	// work area for huft_build
 
 	// build literal/length tree
 	z->error = huft_build(c, numLiteral, 257, cplens, cplext, tl, bl, hp, &hn, workspace);
@@ -1304,15 +1304,15 @@ static void inflate_trees_dynamic(z_stream *z, ulong numLiteral, ulong numDist, 
 }
 
 // ===============================================================================
-// ulong *bl				// literal desired/actual bit depth
-// ulong *bd				// distance desired/actual bit depth
+// uint32_t *bl				// literal desired/actual bit depth
+// uint32_t *bd				// distance desired/actual bit depth
 // inflate_huft **tl		// literal/length tree result
 // inflate_huft **td		// distance tree result
 // ===============================================================================
 
 // Fixme: Calculate dynamically
 
-static void inflate_trees_fixed(z_stream *z, ulong *bl, ulong *bd, inflate_huft_t **tl, inflate_huft_t **td)
+static void inflate_trees_fixed(z_stream *z, uint32_t *bl, uint32_t *bd, inflate_huft_t **tl, inflate_huft_t **td)
 {
 	*bl = fixed_bl;
 	*bd = fixed_bd;
@@ -1326,9 +1326,9 @@ static void inflate_trees_fixed(z_stream *z, ulong *bl, ulong *bd, inflate_huft_
 
 static void inflate_blocks(inflate_blocks_state_t *s, z_stream *z)
 {
-	ulong					t;				// temporary storage
-	ulong					bytesToEnd;		// bytes to end of window or read pointer
-	ulong					bl, bd;
+	uint32_t					t;				// temporary storage
+	uint32_t					bytesToEnd;		// bytes to end of window or read pointer
+	uint32_t					bl, bd;
 	inflate_huft_t			*lengthTree = NULL;
 	inflate_huft_t			*distTree = NULL;
 	inflate_codes_state_t	*c;
@@ -1448,7 +1448,7 @@ static void inflate_blocks(inflate_blocks_state_t *s, z_stream *z)
 				return;
 			}
 			t = 258 + (t & 0x1f) + ((t >> 5) & 0x1f);
-			s->trees.blens = (ulong *)Z_Malloc(t * sizeof(ulong), TAG_INFLATE, qfalse);
+			s->trees.blens = (uint32_t *)Z_Malloc(t * sizeof(uint32_t), TAG_INFLATE, qfalse);
 			s->bitb >>= 14;
 			s->bitk -= 14;
 			s->trees.index = 0;
@@ -1483,7 +1483,7 @@ static void inflate_blocks(inflate_blocks_state_t *s, z_stream *z)
 			while(t = s->trees.table, s->trees.index < 258 + (t & 0x1f) + ((t >> 5) & 0x1f))
 			{
 				inflate_huft_t *h;
-				ulong i, j, c;
+				uint32_t i, j, c;
 
 				t = s->trees.bb;
 				if(!getbits(z, s, t))
@@ -1648,7 +1648,7 @@ EStatus inflateInit(z_stream *z, EFlush flush, int noWrap)
 
 EStatus inflate(z_stream *z)
 {
-	ulong		b;
+	uint32_t		b;
 
 	// Sanity check data
 	assert(z);
@@ -1790,7 +1790,7 @@ const char *inflateError(void)
 // External calls
 // ===============================================================================
 
-bool InflateFile(byte *src, ulong compressedSize, byte *dst, ulong uncompressedSize, int noWrap)
+bool InflateFile(byte *src, uint32_t compressedSize, byte *dst, uint32_t uncompressedSize, int noWrap)
 {
 	z_stream	z = { 0 };
 

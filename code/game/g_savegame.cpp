@@ -722,7 +722,7 @@ static void EvaluateFields(const save_field_t *pFields, byte *pbData, byte *pbOr
 				if ( iSize == (int)(iReadSize+((sizeof(saberInfo_t)-sizeof(saberInfoRetail_t))*2)) )
 				{
 					gclient_t newClient;
-					const int	preSaberDataSize = ((int)&newClient.ps.saber[0]-(int)&newClient);
+					const int	preSaberDataSize = ((size_t)&newClient.ps.saber[0]-(size_t)&newClient);
 					memcpy( &newClient, pbData, preSaberDataSize );
 					SG_ConvertRetailSaberinfoToNewSaberinfo( ((void *)(&((gclient_t *)(pbData))->ps.saber[0])), &newClient.ps.saber[0] ); 
 					memcpy( &newClient.ps.dualSabers, pbData+preSaberDataSize+(sizeof(saberInfoRetail_t)*2), sizeof(newClient)-(preSaberDataSize+(sizeof(saberInfo_t)*2)) );
