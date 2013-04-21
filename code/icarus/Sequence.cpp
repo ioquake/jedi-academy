@@ -631,7 +631,8 @@ int CSequence::Load( CIcarus* icarus )
 	icarus->BufferRead( &iNumChildren, sizeof( iNumChildren ) );
 
 	//Reload all children
-	for ( int i = 0; i < iNumChildren; i++ )
+	int i;
+	for ( i = 0; i < iNumChildren; i++ )
 	{
 		//Get the child sequence ID
 		icarus->BufferRead( &id, sizeof( id ) );

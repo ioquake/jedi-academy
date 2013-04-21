@@ -2553,7 +2553,8 @@ int	CSequencer::Load( CIcarus* icarus, IGameInterface* game )
 	pIcarus->BufferRead( &numSequences, sizeof( numSequences ) );
 
 	//Read in all the sequences
-	for ( int i = 0; i < numSequences; i++ )
+	int i;
+	for ( i = 0; i < numSequences; i++ )
 	{
 		pIcarus->BufferRead( &seqID, sizeof( seqID ) );
 

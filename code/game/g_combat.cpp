@@ -480,7 +480,8 @@ void G_AlertTeam( gentity_t *victim, gentity_t *attacker, float radius, float so
 		return;
 
 	//Setup the bbox to search in
-	for ( int i = 0; i < 3; i++ )
+	int i;
+	for ( i = 0; i < 3; i++ )
 	{
 		mins[i] = victim->currentOrigin[i] - radius;
 		maxs[i] = victim->currentOrigin[i] + radius;

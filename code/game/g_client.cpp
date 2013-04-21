@@ -639,7 +639,8 @@ void Player_CacheFromPrevLevel(void)
 			&ibits	//client->ps.stats[STAT_ITEMS]
 			);
 
-		for ( int i = 1 ; i < 16 ; i++ ) 
+		int i;
+		for ( i = 1 ; i < 16 ; i++ ) 
 		{
 			if ( bits & ( 1 << i ) ) 
 			{

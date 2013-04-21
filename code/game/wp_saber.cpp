@@ -1752,7 +1752,8 @@ void WP_SaberDamageAdd( float trDmg, int trVictimEntityNum, vec3_t trDmgDir, vec
 	}
 	if ( trDmg )
 	{//did some damage to something
-		for ( int i = 0; i < numVictims; i++ )
+		int i;
+		for ( i = 0; i < numVictims; i++ )
 		{
 			if ( victimEntityNum[i] == trVictimEntityNum )
 			{//already hit this guy before
@@ -8345,7 +8346,8 @@ qboolean G_CheckEnemyPresence( gentity_t *ent, int dir, float radius, float tole
 	//Get all ents in range, see if they're living clients and enemies, then check dot to them...
 
 	//Setup the bbox to search in
-	for ( int i = 0; i < 3; i++ )
+	int i;
+	for ( i = 0; i < 3; i++ )
 	{
 		mins[i] = ent->currentOrigin[i] - radius;
 		maxs[i] = ent->currentOrigin[i] + radius;

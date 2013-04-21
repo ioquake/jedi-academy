@@ -893,7 +893,8 @@ qboolean RE_InitDissolve(qboolean bForceCircularExtroWipe)
 			//
 			// do it...
 			//
-			for (int y = 0; y < glConfig.vidHeight; y++)
+			int y;
+			for (y = 0; y < glConfig.vidHeight; y++)
 			{
 				pbDst -= iClearBytes;
 				memset(pbDst,0,iClearBytes);

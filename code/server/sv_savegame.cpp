@@ -888,7 +888,8 @@ void SG_ReadServerConfigStrings( void )
 {
 	// trash the whole table...
 	//
-	for (int i=0; i<MAX_CONFIGSTRINGS; i++)
+	int i;
+	for (i=0; i<MAX_CONFIGSTRINGS; i++)
 	{
 		if (i!=CS_SYSTEMINFO)
 		{

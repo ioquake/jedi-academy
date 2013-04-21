@@ -1849,7 +1849,8 @@ void CTaskManager::Load( CIcarus* icarus )
 	pIcarus->BufferRead( &numTasks, sizeof( numTasks ) );
 	
 	//Reload all the tasks
-	for ( int i = 0; i < numTasks; i++ )
+	int i;
+	for ( i = 0; i < numTasks; i++ )
 	{
 		task = new CTask;
 
