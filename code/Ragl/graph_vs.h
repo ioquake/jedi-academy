@@ -750,7 +750,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////
 	// Connect Node Without Allocating An Edge Object  (A->B)  if reflexive, also (B->A)
     ////////////////////////////////////////////////////////////////////////////////////
-	void		connect_node(int nodeA, int nodeB, bool reflexive=true)
+	int		connect_node(int nodeA, int nodeB, bool reflexive=true)
 	{
 		if (nodeA==nodeB || !nodeA || !nodeB || !mNodes.is_used(nodeA) || !mNodes.is_used(nodeB))
 		{
