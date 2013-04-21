@@ -1095,7 +1095,6 @@ static	void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump, world
 			out->parms.color[0] = 1.0f;
 			out->parms.color[1] = 0.0f;
 			out->parms.color[2] = 0.0f;
-			out->parms.color[3] = 0.0f;
 			out->parms.depthForOpaque = 250.0f;
 		}
 		else
@@ -1135,7 +1134,6 @@ static	void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump, world
 		out->parms.color[0] = 0.0f;
 		out->parms.color[1] = 0.0f;
 		out->parms.color[2] = 0.0f;
-		out->parms.color[3] = 0.0f;
 		out->parms.depthForOpaque = 0.0f;
 		out->colorInt = 0x00000000;
 		out->tcScale = 0.0f;
