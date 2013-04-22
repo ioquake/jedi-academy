@@ -170,6 +170,26 @@ void Sys_PumpEvents( void );
 
 #endif
 
+//======================= OPENBSD DEFINES =================================
+
+// the mac compiler can't handle >32k of locals, so we
+// just waste space and make big arrays static...
+#ifdef __OpenBSD__
+
+#define	MAC_STATIC
+
+#ifdef __i386__
+#define	CPUSTRING	"openbsd-i386"
+#elif defined(__amd64__) || defined(__x86_64__)
+#define	CPUSTRING	"openbsd-amd64"
+#else
+#define	CPUSTRING	"openbsd-other"
+#endif
+
+#define	PATH_SEP '/'
+
+#endif
+
 //=============================================================
 
 typedef unsigned long		ulong;
