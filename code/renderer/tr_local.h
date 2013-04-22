@@ -1679,7 +1679,11 @@ struct shaderCommands_s
 	bool		fading;
 };
 
+#ifdef _MSC_VER
 typedef __declspec(align(16)) shaderCommands_s	shaderCommands_t;
+#else
+typedef __attribute__((aligned(16))) shaderCommands_s shaderCommands_t;
+#endif
 
 extern	shaderCommands_t	tess;
 
