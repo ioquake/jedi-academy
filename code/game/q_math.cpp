@@ -629,8 +629,7 @@ int BoxOnPlaneSide2 (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
 ==================
 */
 
-#if !(defined __linux__ && defined __i386__) || defined __LCC__
-#if !id386
+#ifndef _MSC_VER
 
 int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
 {
@@ -929,8 +928,7 @@ Lerror:
 }
 #pragma warning( default: 4035 )
 
-#endif
-#endif
+#endif // !def _MSC_VER
 
 /*
 =================
