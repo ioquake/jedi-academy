@@ -509,6 +509,8 @@ extern	const vec3_t	axisDefault[3];
 
 #define	IS_NAN(x) (((*(int *)&x)&nanmask)==nanmask)
 
+#define Q_isnan(x) (isnan(x))
+
 #ifdef _XBOX
 inline void Q_CastShort2Float(float *f, const short *s)
 {
