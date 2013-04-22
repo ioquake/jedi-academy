@@ -1174,7 +1174,7 @@ void RB_CalcRotateTexCoords( float degsPerSecond, float *st )
 
 
 
-#if id386 && !(defined __linux__ && defined __i386__)
+#if (defined(_MSVC_VER) && (defined __i386__))
 #pragma warning(disable: 4035)
 long myftol( float f ) {
 	static int tmp;
