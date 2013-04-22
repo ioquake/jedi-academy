@@ -605,7 +605,7 @@ qboolean CG_Credits_Draw( void )
 					int iYpos = SCREEN_HEIGHT + (CreditLine.iLine * iFontHeight);
 						iYpos-= (int) (fPixelsPerSecond * fSecondsElapsed);
 
-					int iTextLinesThisItem = max(CreditLine.vstrText.size(),1);
+					int iTextLinesThisItem = max((int)CreditLine.vstrText.size(),1);
 					if (iYpos + (iTextLinesThisItem * iFontHeight) < 0)
 					{
 						// scrolled off top of screen, so erase it...

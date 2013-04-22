@@ -1787,10 +1787,10 @@ void Menu_TransitionItemByName(menuDef_t *menu, const char *p, const rectDef_t *
 			item->window.offsetTime = time;
 			memcpy(&item->window.rectClient, rectFrom, sizeof(rectDef_t));
 			memcpy(&item->window.rectEffects, rectTo, sizeof(rectDef_t));
-			item->window.rectEffects2.x = abs(rectTo->x - rectFrom->x) / amt;
-			item->window.rectEffects2.y = abs(rectTo->y - rectFrom->y) / amt;
-			item->window.rectEffects2.w = abs(rectTo->w - rectFrom->w) / amt;
-			item->window.rectEffects2.h = abs(rectTo->h - rectFrom->h) / amt;
+			item->window.rectEffects2.x = abs((int)(rectTo->x - rectFrom->x)) / amt;
+			item->window.rectEffects2.y = abs((int)(rectTo->y - rectFrom->y)) / amt;
+			item->window.rectEffects2.w = abs((int)(rectTo->w - rectFrom->w)) / amt;
+			item->window.rectEffects2.h = abs((int)(rectTo->h - rectFrom->h)) / amt;
 			Item_UpdatePosition(item);
 		}
 	}
@@ -1837,17 +1837,17 @@ void Menu_Transition3ItemByName(menuDef_t *menu, const char *p, const float minx
 
 //				VectorSet(modelptr->g2maxs2, maxx, maxy, maxz);
 
-				modelptr->g2maxsEffect[0] = abs(modelptr->g2maxs2[0] - modelptr->g2maxs[0]) / amt;
-				modelptr->g2maxsEffect[1] = abs(modelptr->g2maxs2[1] - modelptr->g2maxs[1]) / amt;
-				modelptr->g2maxsEffect[2] = abs(modelptr->g2maxs2[2] - modelptr->g2maxs[2]) / amt;
+				modelptr->g2maxsEffect[0] = abs((long)(modelptr->g2maxs2[0] - modelptr->g2maxs[0])) / amt;
+				modelptr->g2maxsEffect[1] = abs((long)(modelptr->g2maxs2[1] - modelptr->g2maxs[1])) / amt;
+				modelptr->g2maxsEffect[2] = abs((long)(modelptr->g2maxs2[2] - modelptr->g2maxs[2])) / amt;
 
-				modelptr->g2minsEffect[0] = abs(modelptr->g2mins2[0] - modelptr->g2mins[0]) / amt;
-				modelptr->g2minsEffect[1] = abs(modelptr->g2mins2[1] - modelptr->g2mins[1]) / amt;
-				modelptr->g2minsEffect[2] = abs(modelptr->g2mins2[2] - modelptr->g2mins[2]) / amt;
+				modelptr->g2minsEffect[0] = abs((long)(modelptr->g2mins2[0] - modelptr->g2mins[0])) / amt;
+				modelptr->g2minsEffect[1] = abs((long)(modelptr->g2mins2[1] - modelptr->g2mins[1])) / amt;
+				modelptr->g2minsEffect[2] = abs((long)(modelptr->g2mins2[2] - modelptr->g2mins[2])) / amt;
 				
 
-				modelptr->fov_Effectx = abs(modelptr->fov_x2 - modelptr->fov_x) / amt;
-				modelptr->fov_Effecty = abs(modelptr->fov_y2 - modelptr->fov_y) / amt;
+				modelptr->fov_Effectx = abs((long)(modelptr->fov_x2 - modelptr->fov_x)) / amt;
+				modelptr->fov_Effecty = abs((long)(modelptr->fov_y2 - modelptr->fov_y)) / amt;
 			}
 				
 		}
