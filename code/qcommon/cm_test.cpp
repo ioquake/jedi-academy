@@ -17,13 +17,13 @@ public:
 		z(_z)
 	{
 	}
-	bool operator== (const CPoint& _P) const {return((x==_P.x)&&(y==_P.y)&&(z==_P.z));}
+	bool operator== (const CPoint& _p) const {return((x==_p.x)&&(y==_p.y)&&(z==_p.z));}
 };
 /*
 class CPointComparator
 {
 public:
-	bool operator()(const CPoint& _A,const CPoint& _B) const {return((_A.x==_B.x)&&(_A.y==_B.y)&&(_A.z==_B.z));}
+	bool operator()(const CPoint& _a,const CPoint& _b) const {return((_a.x==_b.x)&&(_a.y==_b.y)&&(_a.z==_b.z));}
 };
 */
 
