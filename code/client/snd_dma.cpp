@@ -555,7 +555,7 @@ void S_Init( void ) {
 			for (j = 0; j < NUM_STREAMING_BUFFERS; j++)
 			{
 				alGenBuffers(1, &(ch->buffers[j].BufferID));
-				ch->buffers[j].Status = UNQUEUED;
+				ch->buffers[j].status = UNQUEUED;
 				ch->buffers[j].Data = (char *)Z_Malloc(STREAMING_BUFFER_SIZE, TAG_SND_RAWDATA, qfalse);
 			}
 		}
@@ -672,7 +672,7 @@ void S_Shutdown( void )
 			{
 				alDeleteBuffers(1, &(ch->buffers[j].BufferID));
 				ch->buffers[j].BufferID = 0;
-				ch->buffers[j].Status = UNQUEUED;
+				ch->buffers[j].status = UNQUEUED;
 				if (ch->buffers[j].Data)
 				{
 					Z_Free(ch->buffers[j].Data);
@@ -2862,7 +2862,7 @@ void S_Update_(void) {
 
 				// Reset streaming buffers status's
 				for (i = 0; i < NUM_STREAMING_BUFFERS; i++)
-					ch->buffers[i].Status = UNQUEUED;
+					ch->buffers[i].status = UNQUEUED;
 
 				// Decode (STREAMING_BUFFER_SIZE / 1152) MP3 frames for each of the NUM_STREAMING_BUFFERS AL Buffers
 				for (i = 0; i < NUM_STREAMING_BUFFERS; i++)
@@ -2914,7 +2914,7 @@ void S_Update_(void) {
 					alSourceQueueBuffers(s_channels[source].alSource, 1, &(ch->buffers[i].BufferID));
 					if (alGetError() == AL_NO_ERROR)
 					{
-						ch->buffers[i].Status = QUEUED;
+						ch->buffers[i].status = QUEUED;
 					}
 				}
 
@@ -3095,7 +3095,7 @@ void UpdateSingleShotSounds()
 						{
 							if (ch->buffers[j].BufferID == buffer)
 							{
-								ch->buffers[j].Status = UNQUEUED;
+								ch->buffers[j].status = UNQUEUED;
 								break;
 							}
 						}
@@ -3106,7 +3106,7 @@ void UpdateSingleShotSounds()
 
 					for (j = 0; j < NUM_STREAMING_BUFFERS; j++)
 					{
-						if ((ch->buffers[j].Status == UNQUEUED) & (ch->MP3StreamHeader.iSourceBytesRemaining > 0))
+						if ((ch->buffers[j].status == UNQUEUED) & (ch->MP3StreamHeader.iSourceBytesRemaining > 0))
 						{
 							nTotalBytesDecoded = 0;
 		
@@ -3156,7 +3156,7 @@ void UpdateSingleShotSounds()
 								alSourceQueueBuffers(ch->alSource, 1, &(ch->buffers[j].BufferID));
 
 								// Update status of Buffer
-								ch->buffers[j].Status = QUEUED;
+								ch->buffers[j].status = QUEUED;
 
 								break;
 							}
@@ -3169,7 +3169,7 @@ void UpdateSingleShotSounds()
 								alSourceQueueBuffers(ch->alSource, 1, &(ch->buffers[j].BufferID));
 								
 								// Update status of Buffer
-								ch->buffers[j].Status = QUEUED;
+								ch->buffers[j].status = QUEUED;
 							}
 						}
 					}

@@ -82,7 +82,7 @@ typedef struct {
 typedef struct
 {
 	ALuint	BufferID;
-	ALuint	Status;
+	ALuint	status;
 	char	*Data;
 } STREAMINGBUFFER;
 
