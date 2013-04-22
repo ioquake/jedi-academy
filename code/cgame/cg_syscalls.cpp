@@ -27,6 +27,7 @@ extern void CG_PreInit();
 
 static int (*qsyscall)( int arg, ... ) = (int (*)( int, ...))-1;
 
+extern "C" {
 #ifdef _XBOX
 void cg_dllEntry( int (*syscallptr)( int arg,... ) ) {
 #else
@@ -35,6 +36,7 @@ void dllEntry( int (*syscallptr)( int arg,... ) ) {
 	qsyscall = syscallptr;
 	CG_PreInit();
 }
+} // extern "C"
 
 
 inline int PASSFLOAT( float x ) {

@@ -15,10 +15,12 @@
 
 static int (*qsyscall)( int arg, ... ) = (int (*)( int, ...))-1;
 
+extern "C" {
 void dllEntry( int (*syscallptr)( int arg,... ) ) {
 	qsyscall = syscallptr;
 //	CG_PreInit();
 }
+} // extern "C"
 
 inline int PASSFLOAT( float x ) 
 {
