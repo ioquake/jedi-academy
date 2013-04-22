@@ -2383,7 +2383,7 @@ int CSequencer::DestroySequence( CSequence *sequence, CIcarus* icarus )
 	{
 		if((*tsi).second == sequence)
 		{
-			tsi = m_taskSequences.erase(tsi);
+			m_taskSequences.erase(tsi++);
 		}
 		else
 		{

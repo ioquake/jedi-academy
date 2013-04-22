@@ -278,7 +278,7 @@ qboolean RE_RegisterModels_LevelLoadEnd(qboolean bDeleteEverythingNotUsedThisLev
 					bAtLeastoneModelFreed = qtrue;
 				}
 
-				itModel = CachedModels->erase(itModel);
+				CachedModels->erase(itModel++);
 				bEraseOccured = qtrue;
 
 				iLoadedModelBytes = GetModelDataAllocSize();				
@@ -328,7 +328,7 @@ static void RE_RegisterModels_DeleteAll(void)
 			Z_Free(CachedModel.pModelDiskImage);					
 		}
 
-		itModel = CachedModels->erase(itModel);			
+		CachedModels->erase(itModel++);
 	}
 
 	extern void RE_AnimationCFGs_DeleteAll(void);
