@@ -43,7 +43,7 @@
 typedef	ratl::hash_pool<BLOCK_SIZE, MAX_HASH>		TStrPool;
 
 
-TStrPool&	Pool()
+static TStrPool&	Pool()
 {
 	static TStrPool TSP;
 	return TSP;
