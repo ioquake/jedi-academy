@@ -370,9 +370,9 @@ static void ProcessMoveCommands( Vehicle_t *pVeh )
 	qboolean isLandingOrLaunching = qfalse;
 #ifndef _JK2MP//SP
 	int curTime = level.time;
-#elif QAGAME//MP GAME
+#elif defined QAGAME//MP GAME
 	int curTime = level.time;
-#elif CGAME//MP CGAME
+#elif defined CGAME//MP CGAME
 	//FIXME: pass in ucmd?  Not sure if this is reliable...
 	int curTime = pm->cmd.serverTime;
 #endif
@@ -511,9 +511,9 @@ static void ProcessMoveCommands( Vehicle_t *pVeh )
 			{
 #ifndef _JK2MP//SP
 				G_SoundIndexOnEnt( pVeh->m_pParentEntity, CHAN_AUTO, pVeh->m_pVehicleInfo->soundTurbo );
-#elif QAGAME//MP GAME-side
+#elif defined QAGAME//MP GAME-side
 				G_EntitySound( ((gentity_t *)(pVeh->m_pParentEntity)), CHAN_AUTO, pVeh->m_pVehicleInfo->soundTurbo );
-#elif CGAME//MP CGAME-side
+#elif defined CGAME//MP CGAME-side
 				//trap_S_StartSound( NULL, pVeh->m_pParentEntity->s.number, CHAN_AUTO, pVeh->m_pVehicleInfo->soundTurbo );
 #endif		
 			}
@@ -1175,9 +1175,9 @@ static void ProcessOrientCommands( Vehicle_t *pVeh )
 	qboolean isLandingOrLanded = qfalse;
 #ifndef _JK2MP//SP
 	int curTime = level.time;
-#elif QAGAME//MP GAME
+#elif defined QAGAME//MP GAME
 	int curTime = level.time;
-#elif CGAME//MP CGAME
+#elif defined CGAME//MP CGAME
 	//FIXME: pass in ucmd?  Not sure if this is reliable...
 	int curTime = pm->cmd.serverTime;
 #endif
@@ -1559,9 +1559,9 @@ static void AnimateVehicle( Vehicle_t *pVeh )
 #endif
 #ifndef _JK2MP//SP
 	//nothing
-#elif QAGAME//MP GAME
+#elif defined QAGAME//MP GAME
 	int curTime = level.time;
-#elif CGAME//MP CGAME
+#elif defined CGAME//MP CGAME
 	//FIXME: pass in ucmd?  Not sure if this is reliable...
 	int curTime = pm->cmd.serverTime;
 #endif
