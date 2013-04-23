@@ -9,10 +9,12 @@
 #include "../mp3code/mp3struct.h"
 
 // Open AL Specific
-#include "openal/al.h"
-#include "openal/alc.h"
+#include <AL/al.h>
+#include <AL/alc.h>
+#ifdef HAVE_EAX
 #include "eax/eax.h"
 #include "eax/eaxman.h"
+#endif
 
 // Added for Open AL to know when to mute all sounds (e.g when app. loses focus)
 void S_AL_MuteAllSounds(qboolean bMute);

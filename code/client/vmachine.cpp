@@ -1,5 +1,6 @@
 // vmachine.cpp -- wrapper to fake virtual machine for client
 
+#include "../game/q_shared.h"
 #include "vmachine.h"
 #pragma warning (disable : 4514)
 /*

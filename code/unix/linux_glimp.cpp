@@ -15,12 +15,16 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
+#ifdef __linux__
 #include <sys/vt.h>
+#endif
 #include <stdarg.h>
 #include <stdio.h>
 #include <signal.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <dlfcn.h>
+#include <unistd.h>
 
 //#include "../qcommon/qcommon.h"
 //#include "../client/keys.h"

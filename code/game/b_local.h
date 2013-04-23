@@ -6,7 +6,7 @@
 #include "g_local.h"
 #include "say.h"
 
-#include "AI.h"
+#include "ai.h"
 
 #define	AI_TIMERS 0//turn on to see print-outs of AI/nav timing
 //

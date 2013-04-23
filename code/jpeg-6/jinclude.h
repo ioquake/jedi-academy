@@ -70,6 +70,11 @@
 
 #include <stdio.h>
 
+#ifndef WIN32
+#include <stdint.h>
+typedef int32_t INT32;
+#endif
+
 /*
  * We need memory copying and zeroing functions, plus strncpy().
  * ANSI and System V implementations declare these in <string.h>.

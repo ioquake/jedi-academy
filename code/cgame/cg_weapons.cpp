@@ -8,6 +8,7 @@
 #include "../game/g_vehicles.h"
 
 #include "../game/anims.h"
+#include "../game/g_local.h"
 
 #ifdef _IMMERSION
 #include "../ff/ff.h"

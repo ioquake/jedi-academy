@@ -8,6 +8,7 @@
 
 #include "../qcommon/sstring.h"
 #include <algorithm>
+#include <string>
 
 #ifdef _XBOX
 #include "snd_local_console.h"

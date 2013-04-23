@@ -8,6 +8,7 @@
 #include "cg_media.h"
 #include "../game/objectives.h"
 #include "../game/g_vehicles.h"
+#include "../game/g_local.h"
 
 #ifdef _XBOX
 #include "../client/fffx.h"

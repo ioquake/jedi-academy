@@ -6,7 +6,7 @@
 #include "b_public.h"
 #include "anims.h"
 #include "wp_saber.h"
-#include "g_Vehicles.h"
+#include "g_vehicles.h"
 #if !defined(RUFL_HSTRING_INC)
 	#include "../Rufl/hstring.h"
 #endif

@@ -4,7 +4,7 @@
 
 
 // this include must remain at the top of every Icarus CPP file
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "IcarusImplementation.h"
 
 #include "BlockStream.h"

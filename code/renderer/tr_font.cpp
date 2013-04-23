@@ -8,6 +8,8 @@
 
 #include "../qcommon/stringed_ingame.h"
 
+#include <string>
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // This file is shared in the single and multiplayer codebases, so be CAREFUL WHAT YOU ADD/CHANGE!!!!!

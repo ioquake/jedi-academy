@@ -14,7 +14,7 @@
 //	#include "../game/q_math.h"
 //#endif
 
-#ifdef _XBOX
+#if defined(_XBOX) || defined(__GNUC__)
 #define GAME_INCLUDE
 	#include "../game/b_local.h"
 	#include "../cgame/cg_local.h"

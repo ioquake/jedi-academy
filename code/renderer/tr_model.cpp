@@ -5,7 +5,7 @@
 #include "../server/exe_headers.h"
 
 #include "tr_local.h"
-#include "MatComp.h"
+#include "matcomp.h"
 #include "../qcommon/sstring.h"
 
 #define	LL(x) x=LittleLong(x)

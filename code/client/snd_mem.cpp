@@ -8,6 +8,8 @@
 #include "snd_local.h"
 #include "cl_mp3.h"
 
+#include <string>
+
 // Open AL
 void S_PreProcessLipSync(sfx_t *sfx);
 extern int s_UseOpenAL;

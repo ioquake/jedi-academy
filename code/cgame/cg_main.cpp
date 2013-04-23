@@ -8,6 +8,7 @@
 
 #include "../client/vmachine.h"
 #include "cg_lights.h"
+#include "../game/g_local.h"
 
 #ifdef _IMMERSION
 #include "../ff/ff.h"

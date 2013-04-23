@@ -10,6 +10,8 @@
 #include "../game/anims.h"
 #include "../game/wp_saber.h"
 #include "../game/g_vehicles.h"
+#include "../game/g_local.h"
+#include "../game/b_local.h"
 #include "../Rufl/hstring.h"
 
 #define	LOOK_SWING_SCALE	0.5f

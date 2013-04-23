@@ -15,14 +15,14 @@
 	#include "../qcommon/qcommon.h"
 #endif
 
-#include "../renderer/MatComp.h"
+#include "../renderer/matcomp.h"
 
 #if !defined(G2_H_INC)
 	#include "G2.h"
 #endif
 
 //rww - RAGDOLL_BEGIN
-#include <FLOAT.H>
+#include <float.h>
 #include "ghoul2_gore.h"
 //rww - RAGDOLL_END
 

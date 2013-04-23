@@ -150,7 +150,7 @@ extern qboolean	G2API_SetBoneAnglesIndex(CGhoul2Info *ghlInfo, const int index, 
 										 qhandle_t *modelList, int blendTime, int currentTime);
 extern qboolean	G2API_SetBoneAnimIndex(CGhoul2Info *ghlInfo, const int index, const int startFrame, const int endFrame, const int flags, const float animSpeed, const int currentTime, const float setFrame, const int blendTime);
 */
-#include "../ghoul2/g2.h"
+#include "../ghoul2/G2.h"
 extern int		SG_Read			(unsigned long chid, void *pvAddress, int iLength, void **ppvAddressPtr);
 extern int		SG_ReadOptional	(unsigned long chid, void *pvAddress, int iLength, void **ppvAddressPtr);
 #endif

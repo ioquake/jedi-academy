@@ -10,7 +10,7 @@
 #include "anims.h"
 #include "g_functions.h"
 #include "wp_saber.h"
-#include "g_Vehicles.h"
+#include "g_vehicles.h"
 
 extern qboolean G_CheckForStrongAttackMomentum( gentity_t *self );
 extern void G_AddVoiceEvent( gentity_t *self, int event, int speakDebounceTime );
