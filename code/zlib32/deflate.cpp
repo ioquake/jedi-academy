@@ -1210,6 +1210,7 @@ static void lm_init(deflate_state *s)
 inline byte *qcmp(byte *scan, byte *match, ulong count)
 {
 	byte	*retval;
+#ifdef _MSC_VER
 	_asm
 	{
 		push	esi
@@ -1226,6 +1227,12 @@ inline byte *qcmp(byte *scan, byte *match, ulong count)
 		mov		[retval], esi
 		pop		esi
 	}
+#else
+	asm("repe cmpsb;"
+	    : "=S"(retval)
+	    : "S"(scan), "D"(match), "c"(count)
+	);
+#endif
 	return(--retval);
 }
 
