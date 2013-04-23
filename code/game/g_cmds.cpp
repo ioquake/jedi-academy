@@ -600,7 +600,7 @@ Cmd_Where_f
 */
 void Cmd_Where_f( gentity_t *ent ) {
 	const char *s = gi.argv(1);
-	const len = strlen(s);
+	const int len = strlen(s);
 	gentity_t	*check;
 	
 	if ( gi.argc () < 2 ) {
