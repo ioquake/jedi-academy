@@ -709,7 +709,7 @@ void SP_CreatePuffSystem( gentity_t *ent )
 			continue;
 
 		// Send the command.
-		_snprintf( temp, 128, "puff%i %s %s", iPuffSystem, key, value );
+		snprintf( temp, 128, "puff%i %s %s", iPuffSystem, key, value );
 		G_FindConfigstringIndex( temp, CS_WORLD_FX, MAX_WORLD_FX, qtrue );
  	}
 }

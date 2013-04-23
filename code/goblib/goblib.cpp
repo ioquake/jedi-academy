@@ -516,7 +516,7 @@ GOBError GOBArchiveCreate(const GOBChar* file)
 	}
 	
 	// create an empty GFC
-	_snprintf(ControlFileName, GOB_MAX_FILE_NAME_LEN, "%s.gfc", file);
+	snprintf(ControlFileName, GOB_MAX_FILE_NAME_LEN, "%s.gfc", file);
 
 	ArchiveSize = 0;
 	ArchiveNumBlocks = 0;
@@ -526,7 +526,7 @@ GOBError GOBArchiveCreate(const GOBChar* file)
 	CommitFileTable();
 
 	// create an empty GOB
-	_snprintf(fname, GOB_MAX_FILE_NAME_LEN, "%s.gob", file);
+	snprintf(fname, GOB_MAX_FILE_NAME_LEN, "%s.gob", file);
 	handle = FSFuncs.open(fname, GOBACCESS_WRITE);
 	if (InvalidHandle(handle)) return GOBERR_CANNOT_CREATE;
 	
@@ -550,7 +550,7 @@ GOBError GOBArchiveOpen(const GOBChar* file, GOBAccessType atype,
 	if (!InvalidHandle(ArchiveHandle)) return GOBERR_ALREADY_OPEN;
 
 	// open the GFC
-	_snprintf(ControlFileName, GOB_MAX_FILE_NAME_LEN, "%s.gfc", file);
+	snprintf(ControlFileName, GOB_MAX_FILE_NAME_LEN, "%s.gfc", file);
 	handle = FSFuncs.open(ControlFileName, atype);
 	if (InvalidHandle(handle)) return GOBERR_FILE_NOT_FOUND;
 
@@ -663,7 +663,7 @@ GOBError GOBArchiveOpen(const GOBChar* file, GOBAccessType atype,
 	FSFuncs.close(&handle);
 
 	// open the GOB
-	_snprintf(fname, GOB_MAX_FILE_NAME_LEN, "%s.gob", file);
+	snprintf(fname, GOB_MAX_FILE_NAME_LEN, "%s.gob", file);
 	ArchiveHandle = FSFuncs.open(fname, atype);
 	if (InvalidHandle(ArchiveHandle)) return GOBERR_FILE_NOT_FOUND;
 
@@ -1592,7 +1592,7 @@ GOBError GOBRearrange(const GOBChar* file, const GOBUInt32* xlat, GOBFileSysRena
 	FSFuncs.close(&temp_handle);
 
 	// overrwrite archive with temp file
-	_snprintf(full_name, GOB_MAX_FILE_NAME_LEN, "%s.gob", file);
+	snprintf(full_name, GOB_MAX_FILE_NAME_LEN, "%s.gob", file);
 	if (_rename("~temp.tmp", full_name)) return GOBERR_FILE_RENAME;
 
 	ArchiveSize = size;
