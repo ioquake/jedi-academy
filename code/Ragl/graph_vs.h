@@ -1129,7 +1129,7 @@ private:
 		{}
 		search_node(const search_node& t) : 
 			mNode(t.mNode), 
-			mParentVisit(t.mParentVisit)
+			mParentVisit(t.mParentVisit),
 			mCostToGoal(t.mCostToGoal),
 			mCostFromStart(t.mCostFromStart)
 		{}
