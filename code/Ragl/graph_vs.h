@@ -290,7 +290,7 @@ public:
 			// I. Fill All The Cells With The Points Contained By Those Cells
 			//----------------------------------------------------------------
 			bool full = false;
-			for (TNodes::iterator it=mGraph.nodes_begin(); it!=mGraph.nodes_end() && !full; it++)
+			for (typename TNodes::iterator it=mGraph.nodes_begin(); it!=mGraph.nodes_end() && !full; it++)
 			{
 				TNODE&	node = (*it);
 				SCell&	cell = mCells.get(node[0], node[1]);
@@ -306,8 +306,8 @@ public:
 			// II. Go To All Neighboring Cells And Get Them
 			//==============================================
 			int					iRange = (int)(range) + 1;
-			TCells::riterator	rcell;
-			TCells::riterator	rcellend;
+			typename TCells::riterator	rcell;
+			typename TCells::riterator	rcellend;
 			CVec3				cellCenter(0,0,0);
 			CVec3				nodeCenter(0,0,0);
 
@@ -392,7 +392,7 @@ public:
 			// I. Fill All The Cells With The Points Contained By Those Cells
 			//----------------------------------------------------------------
 			bool full = false;
-			for (TEdges::iterator eit=mGraph.edges_begin(); eit!=mGraph.edges_end() && !full; eit++)
+			for (typename TEdges::iterator eit=mGraph.edges_begin(); eit!=mGraph.edges_end() && !full; eit++)
 			{
 				TEDGE&	edge = (*eit);
 				SCell&	cell = mCells.get(edge[0], edge[1]);
@@ -409,8 +409,8 @@ public:
 			// II. Go To All Neighboring Cells And Get Them
 			//==============================================
 			int					iRange = (int)(range) + 1;
-			TCells::riterator	rcell;
-			TCells::riterator	rcellend;
+			typename TCells::riterator	rcell;
+			typename TCells::riterator	rcellend;
 			CVec3				cellCenter(0,0,0);
 			CVec3				nodeCenter(0,0,0);
 
