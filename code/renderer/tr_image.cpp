@@ -748,7 +748,7 @@ static void Upload32( unsigned *data,
 						  qboolean isLightmap, 
 						  qboolean allowTC, 
 						  int *pformat, 
-						  USHORT *pUploadWidth, USHORT *pUploadHeight )
+						  unsigned short *pUploadWidth, unsigned short *pUploadHeight )
 {
 	if (format == GL_RGBA)
 	{

@@ -119,7 +119,7 @@ typedef struct image_s {
 	char		imgName[MAX_QPATH];		// game path, including extension
 	int			frameUsed;			// for texture usage in frame statistics
 #endif
-	USHORT		width, height;				// source image
+	unsigned short	width, height;				// source image
 //	int			imgfileSize;
 
 	GLuint		texnum;					// gl texture binding
