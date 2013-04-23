@@ -23,10 +23,14 @@
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
 
+#include "unix_local.h"
+
 cvar_t *nostdout;
 
 // Structure containing functions exported from refresh DLL
+#if 0
 refexport_t	re;
+#endif
 
 unsigned	sys_frame_time;
 
@@ -36,6 +40,11 @@ qboolean stdin_active = qtrue;
 // =======================================================================
 // General routines
 // =======================================================================
+
+qboolean Sys_LowPhysicalMemory()
+{
+	return qfalse;
+}
 
 void Sys_BeginProfiling( void ) {
 }
@@ -64,11 +73,11 @@ void Sys_ConsoleOutput (char *string)
 void Sys_Printf (char *fmt, ...)
 {
 	va_list		argptr;
-	char		text[1024];
+	char		text[4096];
 	unsigned char		*p;
 
 	va_start (argptr,fmt);
-	vsprintf (text,fmt,argptr);
+	vsnprintf (text,sizeof(text),fmt,argptr);
 	va_end (argptr);
 
 	if (strlen(text) > sizeof(text))
@@ -97,13 +106,11 @@ void Sys_Init(void)
 {
 	Cmd_AddCommand ("in_restart", Sys_In_Restart_f);
 
-#if id386
-	Sys_SetFPCW();
-#endif
-
 #if defined __linux__
 #if defined __i386__
 	Cvar_Set( "arch", "linux i386" );
+#elif defined(__amd64__) || defined(__x86_64__)
+	Cvar_Set( "arch", "linux amd64" );
 #elif defined __alpha__
 	Cvar_Set( "arch", "linux alpha" );
 #elif defined __sparc__
@@ -124,6 +131,14 @@ void Sys_Init(void)
 	Cvar_Set( "arch", "sgi mips" );
 #else
 	Cvar_Set( "arch", "sgi unknown" );
+#endif
+#elif defined __OpenBSD__
+#if defined __i386__
+	Cvar_Set( "arch", "openbsd i386" );
+#elif defined(__amd64__) || defined(__x86_64__)
+	Cvar_Set( "arch", "openbsd amd64" );
+#else
+	Cvar_Set( "arch", "openbsd unknown" );
 #endif
 #else
 	Cvar_Set( "arch", "unknown" );
@@ -193,8 +208,10 @@ char *Sys_ConsoleInput(void)
 	fd_set	fdset;
     struct timeval timeout;
 
+#if 0
 	if (!com_dedicated || !com_dedicated->value)
 		return NULL;
+#endif
 
 	if (!stdin_active)
 		return NULL;
@@ -223,12 +240,24 @@ char *Sys_ConsoleInput(void)
 
 static void *game_library;
 
+#ifdef QAGAME
 #ifdef __i386__
 	const char *gamename = "qagamei386.so";
+#elif defined(__amd64__) || defined(__x86_64__)
+	const char *gamename = "qagameamd64.so";
 #elif defined __alpha__
 	const char *gamename = "qagameaxp.so";
 #elif defined __mips__
 	const char *gamename = "qagamemips.so";
+#else
+#error Unknown arch
+#endif
+#endif // QAGAME
+
+#ifdef __i386__
+	const char *gamename = "jagamex86.so";
+#elif defined(__amd64__) || defined(__x86_64__)
+	const char *gamename = "jagameamd64.so";
 #else
 #error Unknown arch
 #endif
@@ -278,14 +307,29 @@ void *Sys_GetGameAPI (void *parms)
 		Com_Error( ERR_FATAL, "Couldn't load game" );
 	}
 
-	GetGameAPI = (void *)dlsym (game_library, "GetGameAPI");
+	GetGameAPI = (void *(*)(void *))dlsym (game_library, "GetGameAPI");
 	if (!GetGameAPI)
 	{
+		Com_Error( ERR_FATAL, "dlsym GetGameAPI failed %s\n", dlerror());
 		Sys_UnloadGame ();		
 		return NULL;
 	}
 
 	return GetGameAPI (parms);
+}
+
+void * Sys_LoadCgame( int (**entryPoint)(int, ...), int (*systemcalls)(int, ...) )
+{
+	void    (*dllEntry)( int (*syscallptr)(int, ...) );
+
+	dllEntry = ( void (*)( int (*)( int, ... ) ) )dlsym( game_library, "dllEntry" );
+	*entryPoint = (int (*)(int,...))dlsym( game_library, "vmMain" );
+	if ( !*entryPoint || !dllEntry ) {
+		return NULL;
+	}
+
+	dllEntry( systemcalls );
+	return game_library;
 }
 
 /*****************************************************************************/
@@ -313,12 +357,16 @@ Loads the game dll
 */
 void *Sys_GetCGameAPI (void)
 {
+	return (NULL);
+#if 0
 	void	*(*api) (void);
 
 	char	name[MAX_OSPATH];
 	char	curpath[MAX_OSPATH];
 #ifdef __i386__
 	const char *cgamename = "cgamei386.so";
+#elif defined(__amd64__) || defined(__x86_64__)
+	const char *cgamename = "cgameamd64.so";
 #elif defined __alpha__
 	const char *cgamename = "cgameaxp.so";
 #elif defined __mips__
@@ -348,6 +396,7 @@ void *Sys_GetCGameAPI (void)
 	}
 
 	return api();
+#endif
 }
 
 /*****************************************************************************/
@@ -381,6 +430,8 @@ void *Sys_GetUIAPI (void)
 	char	curpath[MAX_OSPATH];
 #ifdef __i386__
 	const char *uiname = "uii386.so";
+#elif defined(__amd64__) || defined(__x86_64__)
+	const char *uiname = "uiamd64.so";
 #elif defined __alpha__
 	const char *uiname = "uiaxp.so";
 #elif defined __mips__
@@ -416,7 +467,10 @@ void *Sys_GetUIAPI (void)
 
 void *Sys_GetRefAPI (void *parms) 
 {
+	return (NULL);
+#if 0
 	return (void *)GetRefAPI(REF_API_VERSION, parms);
+#endif
 }
 
 /*
@@ -427,191 +481,33 @@ BACKGROUND FILE STREAMING
 ========================================================================
 */
 
-typedef struct {
-#if 0
-	HANDLE	threadHandle;
-	int		threadId;
-	CRITICAL_SECTION	crit;
-#endif
-	FILE	*file;
-	byte	*buffer;
-	qboolean	eof;
-	int		bufferSize;
-	int		streamPosition;	// next byte to be returned by Sys_StreamRead
-	int		threadPosition;	// next byte to be read from file
-} streamState_t;
-
-streamState_t	stream;
-
-/*
-===============
-Sys_StreamThread
-
-A thread will be sitting in this loop forever
-================
-*/
-void Sys_StreamThread( void ) 
-{
-	int		buffer;
-	int		count;
-	int		readCount;
-	int		bufferPoint;
-	int		r;
-
-//Loop here
-//	EnterCriticalSection (&stream.crit);
-
-	// if there is any space left in the buffer, fill it up
-	if ( !stream.eof ) {
-		count = stream.bufferSize - (stream.threadPosition - stream.streamPosition);
-		if ( count ) {
-			bufferPoint = stream.threadPosition % stream.bufferSize;
-			buffer = stream.bufferSize - bufferPoint;
-			readCount = buffer < count ? buffer : count;
-			r = fread( stream.buffer + bufferPoint, 1, readCount, stream.file );
-			stream.threadPosition += r;
-
-			if ( r != readCount )
-				stream.eof = qtrue;
-		}
-	}
-
-//	LeaveCriticalSection (&stream.crit);
-}
-
-/*
-===============
-Sys_InitStreamThread
-
-================
-*/
 void Sys_InitStreamThread( void ) 
 {
 }
 
-/*
-===============
-Sys_ShutdownStreamThread
-
-================
-*/
 void Sys_ShutdownStreamThread( void ) 
 {
 }
 
 
-/*
-===============
-Sys_BeginStreamedFile
-
-================
-*/
 void Sys_BeginStreamedFile( fileHandle_t f, int readAhead ) 
 {
-	if ( stream.file ) {
-		Com_Error( ERR_FATAL, "Sys_BeginStreamedFile: unclosed stream");
-	}
-
-	stream.file = f;
-	stream.buffer = Z_Malloc( readAhead );
-	stream.bufferSize = readAhead;
-	stream.streamPosition = 0;
-	stream.threadPosition = 0;
-	stream.eof = qfalse;
-
-	// let the thread start running
-//	LeaveCriticalSection( &stream.crit );
 }
 
-/*
-===============
-Sys_EndStreamedFile
-
-================
-*/
 void Sys_EndStreamedFile( FILE *f ) 
 {
-	if ( f != stream.file ) {
-		Com_Error( ERR_FATAL, "Sys_EndStreamedFile: wrong file");
-	}
-	// don't leave critical section until another stream is started
-//	EnterCriticalSection( &stream.crit );
-
-	stream.file = NULL;
-	Z_Free( stream.buffer );
 }
 
-
-/*
-===============
-Sys_StreamedRead
-
-================
-*/
-int Sys_StreamedRead( void *buffer, int size, int count, FILE *f ) 
-{
-	int		available;
-	int		remaining;
-	int		sleepCount;
-	int		copy;
-	int		bufferCount;
-	int		bufferPoint;
-	byte	*dest;
-
-	dest = (byte *)buffer;
-	remaining = size * count;
-
-	if ( remaining <= 0 ) {
-		Com_Error( ERR_FATAL, "Streamed read with non-positive size" );
-	}
-
-	sleepCount = 0;
-	while ( remaining > 0 ) {
-		available = stream.threadPosition - stream.streamPosition;
-		if ( !available ) {
-			if (stream.eof)
-				break;
-			Sys_StreamThread();
-			continue;
-		}
-
-		bufferPoint = stream.streamPosition % stream.bufferSize;
-		bufferCount = stream.bufferSize - bufferPoint;
-
-		copy = available < bufferCount ? available : bufferCount;
-		if ( copy > remaining ) {
-			copy = remaining;
-		}
-		memcpy( dest, stream.buffer + bufferPoint, copy );
-		stream.streamPosition += copy;
-		dest += copy;
-		remaining -= copy;
-	}
-
-	return (count * size - remaining) / size;
+void Sys_EndStreamedFile( fileHandle_t f ) {
 }
 
-/*
-===============
-Sys_StreamSeek
-
-================
-*/
-void Sys_StreamSeek( FILE *f, int offset, int origin ) {
-
-	// halt the thread
-//	EnterCriticalSection( &stream.crit );
-
-	// clear to that point
-	fseek( f, offset, origin );
-	stream.streamPosition = 0;
-	stream.threadPosition = 0;
-	stream.eof = qfalse;
-
-	// let the thread start running at the new position
-//	LeaveCriticalSection( &stream.crit );
+int Sys_StreamedRead( void *buffer, int size, int count, fileHandle_t f ) {
+	return FS_Read( buffer, size * count, f );
 }
 
+void Sys_StreamSeek( fileHandle_t f, int offset, int origin ) {
+	FS_Seek( f, offset, origin );
+}
 
 /*
 ========================================================================
@@ -684,7 +580,7 @@ sysEvent_t Sys_GetEvent( void ) {
 		int		len;
 
 		len = strlen( s ) + 1;
-		b = malloc( len );
+		b = (char *)malloc( len );
 		strcpy( b, s );
 		Sys_QueEvent( 0, SE_CONSOLE, 0, 0, len, b );
 	}
@@ -694,6 +590,7 @@ sysEvent_t Sys_GetEvent( void ) {
 
 	// check for network packets
 	MSG_Init( &netmsg, sys_packetReceived, sizeof( sys_packetReceived ) );
+#if 0
 	if ( Sys_GetPacket ( &adr, &netmsg ) ) {
 		netadr_t		*buf;
 		int				len;
@@ -705,6 +602,7 @@ sysEvent_t Sys_GetEvent( void ) {
 		memcpy( buf+1, netmsg.data, netmsg.cursize );
 		Sys_QueEvent( 0, SE_PACKET, 0, 0, len, buf );
 	}
+#endif
 
 	// return if we have data
 	if ( eventHead > eventTail ) {
@@ -752,7 +650,7 @@ int main (int argc, char **argv)
 	// merge the command line, this is kinda silly
 	for (len = 1, i = 1; i < argc; i++)
 		len += strlen(argv[i]) + 1;
-	cmdline = malloc(len);
+	cmdline = (char *)malloc(len);
 	*cmdline = 0;
 	for (i = 1; i < argc; i++) {
 		if (i > 1)
@@ -760,7 +658,9 @@ int main (int argc, char **argv)
 		strcat(cmdline, argv[i]);
 	}
 	Com_Init(cmdline);
+#if 0
 	NET_Init();
+#endif
 
 	fcntl(0, F_SETFL, fcntl (0, F_GETFL, 0) | FNDELAY);
 
@@ -774,7 +674,9 @@ int main (int argc, char **argv)
     {
 		// set low precision every frame, because some system calls
 		// reset it arbitrarily
+#if 0
 		Sys_LowFPPrecision ();    
+#endif
 
         Com_Frame ();
     }

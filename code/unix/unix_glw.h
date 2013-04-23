@@ -1,7 +1,3 @@
-#ifndef __linux__
-#error You shouldnt be including this file on non-Linux platforms
-#endif
-
 #ifndef __GLW_LINUX_H__
 #define __GLW_LINUX_H__
 
