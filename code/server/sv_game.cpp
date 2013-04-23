@@ -542,7 +542,10 @@ void SV_InitGameProgs (void) {
 	import.FS_GetFileList = FS_GetFileList;
 
 	import.AppendToSaveGame = SG_Append;
-#ifndef _XBOX
+#if defined(_XBOX) || defined(__GNUC__)
+	import._ReadFromSaveGame	= SG_Read;
+	import._ReadFromSaveGameOptional = SG_ReadOptional;
+#else
 	import.ReadFromSaveGame	= SG_Read;
 	import.ReadFromSaveGameOptional = SG_ReadOptional;
 #endif
@@ -571,7 +574,16 @@ Ghoul2 Insert Start
 	import.G2API_GetBoneAnimIndex = G2API_GetBoneAnimIndex;
 	import.G2API_AddSurface = G2API_AddSurface;
 	import.G2API_HaveWeGhoul2Models =G2API_HaveWeGhoul2Models;
-#ifndef _XBOX
+#if defined(_XBOX) || defined(__GNUC__)
+	import._G2API_InitGhoul2Model = G2API_InitGhoul2Model;
+	import._G2API_SetBoneAngles = G2API_SetBoneAngles;
+	import._G2API_SetBoneAnglesMatrix = G2API_SetBoneAnglesMatrix;
+	import._G2API_SetBoneAnim = G2API_SetBoneAnim;
+	import._G2API_SetSkin = G2API_SetSkin;
+	import._G2API_CopyGhoul2Instance = G2API_CopyGhoul2Instance;
+	import._G2API_SetBoneAnglesIndex = G2API_SetBoneAnglesIndex;
+	import._G2API_SetBoneAnimIndex = G2API_SetBoneAnimIndex;
+#else
 	import.G2API_InitGhoul2Model = G2API_InitGhoul2Model;
 	import.G2API_SetBoneAngles = G2API_SetBoneAngles;
 	import.G2API_SetBoneAnglesMatrix = G2API_SetBoneAnglesMatrix;

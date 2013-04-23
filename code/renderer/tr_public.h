@@ -113,18 +113,22 @@ typedef struct {
 	void	(*WorldEffectCommand)(const char *command);
 
 	int		(*RegisterFont)(const char *name);
-#ifdef _XBOX	// No default arguments through function pointers.
+#if defined(_XBOX) || defined(__GNUC__)	// No default arguments through function pointers.
+	int		(*_Font_HeightPixels)(const int index, const float scale);
+	int		(*_Font_StrLenPixels)(const char *s, const int index, const float scale);
+	void	(*_Font_DrawString)(int x, int y, const char *s, const float *rgba, const int iFontHandle, int iMaxPixelWidth, const float scale);
+
 	int		Font_HeightPixels(const int index, const float scale = 1.0f)
 	{
-		return RE_Font_HeightPixels(index, scale);
+		return (*_Font_HeightPixels)(index, scale);
 	}
 	int		Font_StrLenPixels(const char *s, const int index, const float scale = 1.0f)
 	{
-		return RE_Font_StrLenPixels(s, index, scale);
+		return (*_Font_StrLenPixels)(s, index, scale);
 	}
 	void	Font_DrawString(int x, int y, const char *s, const float *rgba, const int iFontHandle, int iMaxPixelWidth, const float scale = 1.0f)
 	{
-		return RE_Font_DrawString(x, y, s, rgba, iFontHandle, iMaxPixelWidth, scale);
+		return (*_Font_DrawString)(x, y, s, rgba, iFontHandle, iMaxPixelWidth, scale);
 	}
 #else
 	int		(*Font_HeightPixels)(const int index, const float scale = 1.0f);

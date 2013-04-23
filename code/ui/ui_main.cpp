@@ -2564,12 +2564,16 @@ void _UI_Init( qboolean inGameLoad )
 
 	uiInfo.uiDC.registerSkin		= re.RegisterSkin;
 
-#ifndef _XBOX
+#if defined(_XBOX) || defined(__GNUC__)
+	uiInfo.uiDC._g2_SetSkin = G2API_SetSkin;
+	uiInfo.uiDC._g2_SetBoneAnim = G2API_SetBoneAnim;
+	uiInfo.uiDC._g2_InitGhoul2Model = G2API_InitGhoul2Model;
+#else
 	uiInfo.uiDC.g2_SetSkin = G2API_SetSkin;
 	uiInfo.uiDC.g2_SetBoneAnim = G2API_SetBoneAnim;
+	uiInfo.uiDC.g2_InitGhoul2Model = G2API_InitGhoul2Model;
 #endif
 	uiInfo.uiDC.g2_RemoveGhoul2Model = G2API_RemoveGhoul2Model;
-	uiInfo.uiDC.g2_InitGhoul2Model = G2API_InitGhoul2Model;
 	uiInfo.uiDC.g2_CleanGhoul2Models = G2API_CleanGhoul2Models;
 	uiInfo.uiDC.g2_AddBolt = G2API_AddBolt;
 	uiInfo.uiDC.g2_GetBoltMatrix = G2API_GetBoltMatrix;

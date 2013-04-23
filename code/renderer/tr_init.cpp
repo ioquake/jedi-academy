@@ -1622,7 +1622,11 @@ refexport_t *GetRefAPI ( int apiVersion ) {
 	re.GetBModelVerts = RE_GetBModelVerts;
 
 	re.RegisterFont = RE_RegisterFont;
-#ifndef _XBOX
+#if defined(_XBOX) || defined(__GNUC__)
+	re._Font_StrLenPixels = RE_Font_StrLenPixels;
+	re._Font_HeightPixels = RE_Font_HeightPixels;	
+	re._Font_DrawString = RE_Font_DrawString;
+#else
 	re.Font_StrLenPixels = RE_Font_StrLenPixels;
 	re.Font_HeightPixels = RE_Font_HeightPixels;	
 	re.Font_DrawString = RE_Font_DrawString;
