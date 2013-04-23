@@ -167,6 +167,7 @@ extern PFNGLGETFINALCOMBINERINPUTPARAMETERFVNV	qglGetFinalCombinerInputParameter
 extern PFNGLGETFINALCOMBINERINPUTPARAMETERIVNV	qglGetFinalCombinerInputParameterivNV;
 
 
+#ifdef _WIN32
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Pixel Format extension definitions. - AReis
 /***********************************************************************************************************/
@@ -184,7 +185,6 @@ typedef BOOL (WINAPI * PFNWGLCHOOSEPIXELFORMATARBPROC) (HDC hdc, const int *piAt
 extern PFNWGLGETPIXELFORMATATTRIBIVARBPROC		qwglGetPixelFormatAttribivARB;
 extern PFNWGLGETPIXELFORMATATTRIBFVARBPROC		qwglGetPixelFormatAttribfvARB;
 extern PFNWGLCHOOSEPIXELFORMATARBPROC			qwglChoosePixelFormatARB;
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Pixel Buffer extension definitions. - AReis
@@ -236,6 +236,7 @@ extern PFNWGLBINDTEXIMAGEARBPROC			qwglBindTexImageARB;
 extern PFNWGLRELEASETEXIMAGEARBPROC			qwglReleaseTexImageARB;
 extern PFNWGLSETPBUFFERATTRIBARBPROC		qwglSetPbufferAttribARB;
 
+#endif	// _WIN32
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Vertex and Fragment Program extension definitions. - AReis
