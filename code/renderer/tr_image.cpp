@@ -949,7 +949,7 @@ typedef tmap (int, image_t *)	AllocatedImages_t;
 class CStringComparator
 {
 public:
-	bool operator()(const char *s1, const char *s2) const { return(stricmp(s1, s2) < 0); } 
+	bool operator()(const char *s1, const char *s2) const { return(Q_stricmp(s1, s2) < 0); } 
 };
 
 typedef map <LPCSTR, image_t *, CStringComparator>	AllocatedImages_t;
@@ -3016,7 +3016,7 @@ static char *CommaParse( char **data_p ) {
 class CStringComparator
 {
 public:
-	bool operator()(const char *s1, const char *s2) const { return(stricmp(s1, s2) < 0); } 
+	bool operator()(const char *s1, const char *s2) const { return(Q_stricmp(s1, s2) < 0); } 
 };
 */
 typedef map<sstring_t,char * /*, CStringComparator*/ >	AnimationCFGs_t;

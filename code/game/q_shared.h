@@ -1212,13 +1212,46 @@ int Q_isalpha( int c );
 //char	*Q_strrchr( const char* string, int c );
 
 // NON-portable (but faster) versions
+#ifdef WIN32
 inline int	Q_stricmp (const char *s1, const char *s2) { return stricmp(s1, s2); }
+inline int	Q_strnicmp (const char *s1, const char *s2, int n) { return strnicmp(s1, s2, n); }
+inline int	Q_strcmpi (const char *s1, const char *s2) { return strcmpi(s1, s2); }
 inline int	Q_strncmp (const char *s1, const char *s2, int n) { return strncmp(s1, s2, n); }
 inline int	Q_stricmpn (const char *s1, const char *s2, int n) { return strnicmp(s1, s2, n); }
 inline char	*Q_strlwr( char *s1 ) { return strlwr(s1); }
 inline char	*Q_strupr( char *s1 ) { return strupr(s1); }
-inline char	*Q_strrchr( const char* str, int c ) { return strrchr(str, c); }
+#else
+inline int	Q_stricmp (const char *s1, const char *s2) { return strcasecmp(s1, s2); }
+inline int	Q_strnicmp (const char *s1, const char *s2, int n) { return strncasecmp(s1, s2, n); }
+inline int	Q_strcmpi (const char *s1, const char *s2) { return strcasecmp(s1, s2); }
+inline int	Q_strncmp (const char *s1, const char *s2, int n) { return strncasecmp(s1, s2, n); }
+inline int	Q_stricmpn (const char *s1, const char *s2, int n) { return strncasecmp(s1, s2, n); }
 
+inline char *Q_strlwr( char *s1 )
+{
+	char	*s;
+
+	s = s1;
+	while ( *s ) {
+		*s = tolower(*s);
+		s++;
+	}
+	return s1;
+}
+
+inline char *Q_strupr( char *s1 )
+{
+	char	*s;
+
+	s = s1;
+	while ( *s ) {
+		*s = toupper(*s);
+		s++;
+	}
+	return s1;
+}
+#endif
+inline char	*Q_strrchr( const char* str, int c ) { return strrchr(str, c); }
 
 // buffer size safe library replacements
 void	Q_strncpyz( char *dest, const char *src, int destsize, qboolean bBarfIfTooLong=qfalse );

@@ -173,7 +173,7 @@ MEM_BOOL MEM_CALLBACK MyMemReporter2(MEM_ERROR_INFO *info)
 	{
 		if (StackCache[i]<0||StackCache[i]>=nStack)
 			continue;
-		if (!strcmpi(start,StackNames[StackCache[i]]))
+		if (!Q_strcmpi(start,StackNames[StackCache[i]]))
 			break;
 	}
 	if (i<48)
@@ -185,7 +185,7 @@ MEM_BOOL MEM_CALLBACK MyMemReporter2(MEM_ERROR_INFO *info)
 	{
 		for (i=0;i<nStack;i++)
 		{
-			if (!strcmpi(start,StackNames[i]))
+			if (!Q_strcmpi(start,StackNames[i]))
 				break;
 		}
 		if (i<nStack)
@@ -354,7 +354,7 @@ MEM_BOOL MEM_CALLBACK MyMemReporter3(MEM_ERROR_INFO *info)
 	{
 		if (StackCache[i]<0||StackCache[i]>=nStack)
 			continue;
-		if (!strcmpi(start,StackNames[StackCache[i]]))
+		if (!Q_strcmpi(start,StackNames[StackCache[i]]))
 			break;
 	}
 	if (i<48)
@@ -366,7 +366,7 @@ MEM_BOOL MEM_CALLBACK MyMemReporter3(MEM_ERROR_INFO *info)
 	{
 		for (i=0;i<nStack;i++)
 		{
-			if (!strcmpi(start,StackNames[i]))
+			if (!Q_strcmpi(start,StackNames[i]))
 				break;
 		}
 		if (i<nStack)

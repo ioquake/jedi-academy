@@ -658,7 +658,7 @@ static qboolean Music_ParseLeveldata(const char *psLevelName)
 
 			// kludge up an enum, only interested in boss or not at the moment, so...
 			//
-			MusicState_e eMusicState = !stricmp(psMusicStateType,"boss") ? eBGRNDTRACK_BOSS : !stricmp(psMusicStateType,"death") ? eBGRNDTRACK_DEATH : eBGRNDTRACK_EXPLORE;
+			MusicState_e eMusicState = !Q_stricmp(psMusicStateType,"boss") ? eBGRNDTRACK_BOSS : !Q_stricmp(psMusicStateType,"death") ? eBGRNDTRACK_DEATH : eBGRNDTRACK_EXPLORE;
 
 			if (!MusicFile.MusicExitTimes.empty())
 			{
@@ -798,7 +798,7 @@ qboolean Music_DynamicDataAvailable(const char *psDynamicMusicLabel)
 {		
 	char sLevelName[MAX_QPATH];
 	Q_strncpyz(sLevelName,COM_SkipPath( const_cast<char*>( (psDynamicMusicLabel&&psDynamicMusicLabel[0])?psDynamicMusicLabel:gsLevelNameFromServer.c_str() ) ),sizeof(sLevelName));
-	strlwr(sLevelName);
+	Q_strlwr(sLevelName);
 
 	if (strlen(sLevelName))	// avoid error messages when there's no music waiting to be played and we try and restart it...
 	{

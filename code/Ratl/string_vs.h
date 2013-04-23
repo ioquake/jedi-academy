@@ -181,7 +181,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////
 	bool			operator==(const string_vs &o) const
 	{
-		if (!stricmp(mData,o.mData))
+		if (!Q_stricmp(mData,o.mData))
 		{
 			return true;
 		}

@@ -2739,7 +2739,7 @@ qboolean Script_SetCvar(itemDef_t *item, const char **args)
 	const char *cvar, *val;
 	if (String_Parse(args, &cvar) && String_Parse(args, &val)) 
 	{
-		if(!stricmp(val,"(NULL)"))
+		if(!Q_stricmp(val,"(NULL)"))
 		{
 			DC->setCVar(cvar, "");
 		}
@@ -3189,7 +3189,7 @@ qboolean ItemParse_asset_model( itemDef_t *item )
 	}
 	char modelPath[MAX_QPATH];
 	
-	if (!stricmp(temp,"ui_char_model") )
+	if (!Q_stricmp(temp,"ui_char_model") )
 	{
 		Com_sprintf( modelPath, sizeof( modelPath ), "models/players/%s/model.glm", Cvar_VariableString ( "g_char_model" ) );
 	}
@@ -4456,7 +4456,7 @@ qboolean ItemParse_cvarFloat( itemDef_t *item)
 		!PC_ParseFloat(&editPtr->minVal) &&
 		!PC_ParseFloat(&editPtr->maxVal)) 
 	{
-		if (!stricmp(item->cvar,"r_ext_texture_filter_anisotropic"))
+		if (!Q_stricmp(item->cvar,"r_ext_texture_filter_anisotropic"))
 		{//hehe, hook up the correct max value here.
 			editPtr->maxVal=glConfig.maxTextureFilterAnisotropy;
 		}
@@ -4491,17 +4491,17 @@ qboolean ItemParse_cvarStrList( itemDef_t *item)
 		return qfalse;
 	}
 
-	if (!stricmp(token,"feeder") && item->special == FEEDER_PLAYER_SPECIES) 
+	if (!Q_stricmp(token,"feeder") && item->special == FEEDER_PLAYER_SPECIES) 
 	{
 		for (; multiPtr->count < uiInfo.playerSpeciesCount; multiPtr->count++)
 		{
-			multiPtr->cvarList[multiPtr->count] = String_Alloc(strupr(va("@MENUS_%s",uiInfo.playerSpecies[multiPtr->count].Name )));	//look up translation
+			multiPtr->cvarList[multiPtr->count] = String_Alloc(Q_strupr(va("@MENUS_%s",uiInfo.playerSpecies[multiPtr->count].Name )));	//look up translation
 			multiPtr->cvarStr[multiPtr->count] = uiInfo.playerSpecies[multiPtr->count].Name;	//value
 		}
 		return qtrue;
 	}
 	// languages
-	if (!stricmp(token,"feeder") && item->special == FEEDER_LANGUAGES) 
+	if (!Q_stricmp(token,"feeder") && item->special == FEEDER_LANGUAGES) 
 	{
 		for (; multiPtr->count < uiInfo.languageCount; multiPtr->count++)
 		{

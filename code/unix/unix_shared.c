@@ -45,14 +45,6 @@ void	Sys_Mkdir( const char *path )
     mkdir (path, 0777);
 }
 
-char *strlwr (char *s)
-{
-	while (*s) {
-		*s = tolower(*s);
-		s++;
-	}
-}
-
 //============================================
 
 /* Like glob_match, but match PATTERN against any final segment of TEXT.  */

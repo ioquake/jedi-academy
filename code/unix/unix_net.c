@@ -373,7 +373,7 @@ int NET_IPSocket (char *net_interface, int port)
 		return 0;
 	}
 
-	if (!net_interface || !net_interface[0] || !stricmp(net_interface, "localhost"))
+	if (!net_interface || !net_interface[0] || !Q_stricmp(net_interface, "localhost"))
 		address.sin_addr.s_addr = INADDR_ANY;
 	else
 		Sys_StringToSockaddr (net_interface, (struct sockaddr *)&address);

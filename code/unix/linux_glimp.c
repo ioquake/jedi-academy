@@ -1073,7 +1073,7 @@ void GLimp_Init( void )
 	// chipset specific configuration
 	//
 	strcpy( buf, glConfig.renderer_string );
-	strlwr( buf );
+	Q_strlwr( buf );
 
 	if ( Q_stricmp( lastValidRenderer->string, glConfig.renderer_string ) )
 	{
@@ -1163,7 +1163,7 @@ void GLimp_EndFrame (void)
 #endif
 
 	// don't flip if drawing to front buffer
-	if ( stricmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
+	if ( Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
 	{
 		qglXSwapBuffers(dpy, win);
 	}

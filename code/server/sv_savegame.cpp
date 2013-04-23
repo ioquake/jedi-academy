@@ -495,7 +495,7 @@ void SV_WipeGame_f(void)
 		Com_Printf (S_COLOR_RED "USAGE: wipe <name>\n");
 		return;
 	}
-	if (!stricmp (Cmd_Argv(1), "auto") )
+	if (!Q_stricmp (Cmd_Argv(1), "auto") )
 	{
 		Com_Printf (S_COLOR_RED "Can't wipe 'auto'\n");
 		return;
@@ -560,7 +560,7 @@ void SV_LoadGame_f(void)
 	}
 
 #ifndef _XBOX	// VVFIXME : Part of super-bootleg SG hackery
-	if (!stricmp (psFilename, "current"))
+	if (!Q_stricmp (psFilename, "current"))
 	{
 		Com_Printf (S_COLOR_RED "Can't load from \"current\"\n");
 		return;
@@ -570,7 +570,7 @@ void SV_LoadGame_f(void)
 	// special case, if doing a respawn then check that the available auto-save (if any) is from the same map
 	//	as we're currently on (if in a map at all), if so, load that "auto", else re-load the last-loaded file...
 	//
-	if (!stricmp(psFilename, "*respawn"))
+	if (!Q_stricmp(psFilename, "*respawn"))
 	{
 		psFilename = "auto";	// default to standard respawn behaviour
 
@@ -672,7 +672,7 @@ void SV_SaveGame_f(void)
 
 	char *psFilename = Cmd_Argv(1);
 
-	if (!stricmp (psFilename, "current"))
+	if (!Q_stricmp (psFilename, "current"))
 	{
 		Com_Printf (S_COLOR_RED "Can't save to 'current'\n");
 		return;
@@ -687,7 +687,7 @@ void SV_SaveGame_f(void)
 	if (!SG_GameAllowedToSaveHere(qfalse))	//full check
 		return;	// this prevents people saving via quick-save now during cinematics.
 
-	if ( !stricmp (psFilename, "auto") )
+	if ( !Q_stricmp (psFilename, "auto") )
 	{
 		
 #ifdef _XBOX

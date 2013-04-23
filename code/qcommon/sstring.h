@@ -80,7 +80,7 @@ public:
 	}
 	bool operator==(const sstring<MaxSize> &o) const
 	{
-		if (!strcmpi(mStorage.data,o.mStorage.data))
+		if (!Q_strcmpi(mStorage.data,o.mStorage.data))
 		{
 			return true;
 		}
@@ -88,7 +88,7 @@ public:
 	}
 	bool operator!=(const sstring<MaxSize> &o) const
 	{
-		if (strcmpi(mStorage.data,o.mStorage.data)!=0)
+		if (Q_strcmpi(mStorage.data,o.mStorage.data)!=0)
 		{
 			return true;
 		}
@@ -96,7 +96,7 @@ public:
 	}
 	bool operator<(const sstring<MaxSize> &o) const
 	{
-		if (strcmpi(mStorage.data,o.mStorage.data)<0)
+		if (Q_strcmpi(mStorage.data,o.mStorage.data)<0)
 		{
 			return true;
 		}
@@ -104,7 +104,7 @@ public:
 	}
 	bool operator>(const sstring<MaxSize> &o) const
 	{
-		if (strcmpi(mStorage.data,o.mStorage.data)>0)
+		if (Q_strcmpi(mStorage.data,o.mStorage.data)>0)
 		{
 			return true;
 		}

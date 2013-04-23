@@ -2431,7 +2431,7 @@ static void UI_BuildPlayerModel_List( qboolean inGameLoad )
 
 				if (bIsImageFile(dirptr, skinname, building))
 				{ //if it exists
-					if (strnicmp(skinname,"head_",5) == 0)
+					if (Q_strnicmp(skinname,"head_",5) == 0)
 					{
 						if (uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinHeadCount < MAX_PLAYERMODELS) 
 						{
@@ -2439,7 +2439,7 @@ static void UI_BuildPlayerModel_List( qboolean inGameLoad )
 							iSkinParts |= 1<<0;
 						}
 					} else
-					if (strnicmp(skinname,"torso_",6) == 0)
+					if (Q_strnicmp(skinname,"torso_",6) == 0)
 					{
 						if (uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinTorsoCount < MAX_PLAYERMODELS) 
 						{
@@ -2447,7 +2447,7 @@ static void UI_BuildPlayerModel_List( qboolean inGameLoad )
 							iSkinParts |= 1<<1;
 						}
 					} else
-					if (strnicmp(skinname,"lower_",6) == 0)
+					if (Q_strnicmp(skinname,"lower_",6) == 0)
 					{
 						if (uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinLegCount < MAX_PLAYERMODELS) 
 						{
@@ -4282,7 +4282,7 @@ static void UI_GetCharacterCvars ( void )
 
 	for (int i = 0; i < uiInfo.playerSpeciesCount; i++)
 	{
-		if ( !stricmp(model, uiInfo.playerSpecies[i].Name) )
+		if ( !Q_stricmp(model, uiInfo.playerSpecies[i].Name) )
 		{
 			uiInfo.playerSpeciesIndex = i;
 		}
@@ -4301,12 +4301,12 @@ static void UI_UpdateSaberCvars ( void )
 static void UI_UpdateFightingStyleChoices ( void )
 {
 	// 
-	if (!strcmpi("staff",Cvar_VariableString ( "ui_saber_type" )))
+	if (!Q_strcmpi("staff",Cvar_VariableString ( "ui_saber_type" )))
 	{
 		Cvar_Set ( "ui_fightingstylesallowed", "0" );
 		Cvar_Set ( "ui_newfightingstyle", "4" );		// SS_STAFF
 	}
-	else if (!strcmpi("dual",Cvar_VariableString ( "ui_saber_type" )))
+	else if (!Q_strcmpi("dual",Cvar_VariableString ( "ui_saber_type" )))
 	{
 		Cvar_Set ( "ui_fightingstylesallowed", "0" );
 		Cvar_Set ( "ui_newfightingstyle", "3" );		// SS_DUAL

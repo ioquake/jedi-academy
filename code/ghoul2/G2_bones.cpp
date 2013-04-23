@@ -56,7 +56,7 @@ int G2_Find_Bone(CGhoul2Info *ghlInfo, boneInfo_v &blist, const char *boneName)
 		skel = (mdxaSkel_t *)((byte *)ghlInfo->aHeader + sizeof(mdxaHeader_t) + offsets->offsets[blist[i].boneNumber]);
 
 		// if name is the same, we found it
-		if (!stricmp(skel->name, boneName))
+		if (!Q_stricmp(skel->name, boneName))
 		{
 			return i;
 		}
@@ -89,7 +89,7 @@ int G2_Add_Bone (const model_t *mod, boneInfo_v &blist, const char *boneName)
  	{
  		skel = (mdxaSkel_t *)((byte *)mod->mdxa + sizeof(mdxaHeader_t) + offsets->offsets[x]);
  		// if name is the same, we found it
- 		if (!stricmp(skel->name, boneName))
+ 		if (!Q_stricmp(skel->name, boneName))
 		{
 			break;
 		}
@@ -112,7 +112,7 @@ int G2_Add_Bone (const model_t *mod, boneInfo_v &blist, const char *boneName)
 		{
 			skel = (mdxaSkel_t *)((byte *)mod->mdxa + sizeof(mdxaHeader_t) + offsets->offsets[blist[i].boneNumber]);
 			// if name is the same, we found it
-			if (!stricmp(skel->name, boneName))
+			if (!Q_stricmp(skel->name, boneName))
 			{
 #if DEBUG_G2_BONES
 				{
@@ -1180,7 +1180,7 @@ int G2_Find_Bone_Rag(CGhoul2Info *ghlInfo, boneInfo_v &blist, const char *boneNa
 		//skel = (mdxaSkel_t *)((byte *)aHeader + sizeof(mdxaHeader_t) + offsets->offsets[blist[i].boneNumber]);
 
 		// if name is the same, we found it
-		if (!stricmp(skel->name, boneName))
+		if (!Q_stricmp(skel->name, boneName))
 		{
 			return i;
 		}

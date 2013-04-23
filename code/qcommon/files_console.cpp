@@ -789,7 +789,7 @@ static int FS_AddFileToList( char *name, char *list[MAX_FOUND_FILES], int nfiles
 		return nfiles;
 	}
 	for ( i = 0 ; i < nfiles ; i++ ) {
-		if ( !stricmp( name, list[i] ) ) {
+		if ( !Q_stricmp( name, list[i] ) ) {
 			return nfiles;		// allready in list
 		}
 	}
@@ -900,7 +900,7 @@ static int FS_AddFileToListBuf( char *name, char *listbuf, int bufsize, int nfil
 
 	p = listbuf;
 	while ( *p ) {
-		if ( !stricmp( name, p ) ) {
+		if ( !Q_stricmp( name, p ) ) {
 			return nfiles;		// already in list
 		}
 		p += strlen( p ) + 1;

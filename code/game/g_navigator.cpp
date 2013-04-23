@@ -1874,8 +1874,8 @@ bool			NAV::LoadFromEntitiesAndSaveToFile(const char *filename, int checksum)
 		bool	CanGo		= false;
 		bool	IsDebugEdge = 
 			(g_nav1->string[0] && g_nav2->string[0] && 
-			(!stricmp(*(a.mName), g_nav1->string) || !stricmp(*(b.mName), g_nav1->string)) && 
-			(!stricmp(*(a.mName), g_nav2->string) || !stricmp(*(b.mName), g_nav2->string)));
+			(!Q_stricmp(*(a.mName), g_nav1->string) || !Q_stricmp(*(b.mName), g_nav1->string)) && 
+			(!Q_stricmp(*(a.mName), g_nav2->string) || !Q_stricmp(*(b.mName), g_nav2->string)));
 
 		// For debugging a connection between two known points:
 		//------------------------------------------------------

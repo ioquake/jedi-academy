@@ -435,9 +435,9 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 
 					l = strlen( filename );
 
-					if ( stricmp( filename + l - 4, ".cfg" )		// for config files
-						&& stricmp( filename + l - 4, ".sav" )  // for save games
-						&& stricmp( filename + l - 4, ".dat" ) ) {	// for journal files
+					if ( Q_stricmp( filename + l - 4, ".cfg" )		// for config files
+						&& Q_stricmp( filename + l - 4, ".sav" )  // for save games
+						&& Q_stricmp( filename + l - 4, ".dat" ) ) {	// for journal files
 						continue;
 					}
 				}
@@ -475,7 +475,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 
 				// if we are getting it from the cdpath, optionally copy it
 				//  to the basepath
-				if ( fs_copyfiles->integer && !stricmp( dir->path, fs_cdpath->string ) ) {
+				if ( fs_copyfiles->integer && !Q_stricmp( dir->path, fs_cdpath->string ) ) {
 					char	*copypath;
 
 					copypath = FS_BuildOSPath( fs_basepath->string, dir->gamedir, filename );
@@ -1002,7 +1002,7 @@ static int FS_AddFileToList( char *name, char *list[MAX_FOUND_FILES], int nfiles
 		return nfiles;
 	}
 	for ( i = 0 ; i < nfiles ; i++ ) {
-		if ( !stricmp( name, list[i] ) ) {
+		if ( !Q_stricmp( name, list[i] ) ) {
 			return nfiles;		// allready in list
 		}
 	}
@@ -1077,7 +1077,7 @@ char **FS_ListFiles( const char *path, const char *extension, int *numfiles ) {
 					continue;
 				}
 
-				if ( stricmp( name + length - extensionLength, extension ) ) {
+				if ( Q_stricmp( name + length - extensionLength, extension ) ) {
 					continue;
 				}
 
@@ -1159,7 +1159,7 @@ static int FS_AddFileToListBuf( char *name, char *listbuf, int bufsize, int nfil
 
 	p = listbuf;
 	while ( *p ) {
-		if ( !stricmp( name, p ) ) {
+		if ( !Q_stricmp( name, p ) ) {
 			return nfiles;		// already in list
 		}
 		p += strlen( p ) + 1;
@@ -1244,7 +1244,7 @@ int	FS_GetFileList(  const char *path, const char *extension, char *listbuf, int
 					continue;
 				}
 
-				if ( stricmp( name + length - extensionLength, extension ) ) {
+				if ( Q_stricmp( name + length - extensionLength, extension ) ) {
 					continue;
 				}
 
@@ -1459,7 +1459,7 @@ static int QDECL paksort( const void *a, const void *b ) {
 	aa = *(char **)a;
 	bb = *(char **)b;
 
-	return stricmp( aa, bb );
+	return Q_stricmp( aa, bb );
 }
 
 

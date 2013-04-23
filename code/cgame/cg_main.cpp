@@ -2095,7 +2095,7 @@ void CG_CreateMiscEntFromGent(gentity_t *ent, const vec3_t scale, float zOff)
 		return;
 	}
 	const int len = strlen(ent->model);
-	if (len < 4 || stricmp(&ent->model[len-4],".md3")!=0)
+	if (len < 4 || Q_stricmp(&ent->model[len-4],".md3")!=0)
 	{
 		Com_Error(ERR_DROP, "misc_model_static model(%s) is not an md3.",ent->model);
 		return;
