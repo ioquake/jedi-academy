@@ -98,7 +98,7 @@ template<class T, int IS_MULTI>
 class tree_base
 {
 public:
-	typedef typename T TStorageTraits;
+	typedef T TStorageTraits;
 	typedef typename T::TValue TTValue;
     ////////////////////////////////////////////////////////////////////////////////////
 	// Capacity Enum
@@ -831,7 +831,7 @@ class set_base : public tree_base<T,IS_MULTI>
 {
 
 public:
-	typedef typename T TStorageTraits;
+	typedef T TStorageTraits;
 	typedef typename T::TValue TTValue;
     ////////////////////////////////////////////////////////////////////////////////////
 	// Capacity Enum
@@ -850,7 +850,7 @@ public:
 		assert(!IS_MULTI || find_index(key)==tree_node::NULL_NODE); //fixme handle duplicates more sensibly?
 
 		alloc_key(key);
-		insert_alloced_key();
+		this->insert_alloced_key();
 
 	}
 
@@ -859,7 +859,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////
 	TTValue & alloc()
 	{		
-		return alloc_key();
+		return this->alloc_key();
 	}
 
     ////////////////////////////////////////////////////////////////////////////////////
@@ -867,7 +867,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////
 	TRatlNew *alloc_raw()
 	{
-		return alloc_key_raw();
+		return this->alloc_key_raw();
 	}
 	template<class CAST_TO>
 	CAST_TO *verify_alloc(CAST_TO *p) const
@@ -877,7 +877,7 @@ public:
 
 	void insert_alloced()
 	{
-		insert_alloced_key();
+		this->insert_alloced_key();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////
@@ -889,7 +889,7 @@ public:
 		int i=find_index(key);
 		if (i!=tree_node::NULL_NODE)
 		{
-			erase_index(i);
+			this->erase_index(i);
 		}
 	}
 
@@ -1068,7 +1068,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////
 	iterator	begin()
 	{
-		return iterator(this, front());	
+		return iterator(this, this->front());	
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////
@@ -1076,7 +1076,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////
 	iterator	rbegin()
 	{
-		return iterator(this, back());
+		return iterator(this, this->back());
 	}
 
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1100,7 +1100,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////
 	const_iterator	begin() const
 	{
-		return const_iterator(this, front());	
+		return const_iterator(this, this->front());	
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////
@@ -1108,7 +1108,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////
 	const_iterator	rbegin() const
 	{
-		return const_iterator(this, back());
+		return const_iterator(this, this->back());
 	}
 
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1195,9 +1195,9 @@ template<class K,class V,int IS_MULTI>
 class map_base : public tree_base<K,IS_MULTI>
 {
 public:
-	typedef typename K TKeyStorageTraits;
+	typedef K TKeyStorageTraits;
 	typedef typename K::TValue TKTValue;
-	typedef typename V TValueStorageTraits;
+	typedef V TValueStorageTraits;
 	typedef typename V::TValue TVTValue;
     ////////////////////////////////////////////////////////////////////////////////////
 	// Capacity Enum
@@ -1226,10 +1226,10 @@ public:
 	{
 		assert(!IS_MULTI || find_index(key)==tree_node::NULL_NODE); //fixme handle duplicates more sensibly?
 
-		alloc_key(key);
-		insert_alloced_key();		
+		this->alloc_key(key);
+		this->insert_alloced_key();		
 		assert(check_validity());
-		mValues.construct(index_of_alloced_key(),value);
+		mValues.construct(this->index_of_alloced_key(),value);
 	}
 
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1241,9 +1241,9 @@ public:
 		assert(!IS_MULTI || find_index(key)==tree_node::NULL_NODE); //fixme handle duplicates more sensibly?
 
 		alloc_key(key);
-		insert_alloced_key();		
+		this->insert_alloced_key();		
 
-		int idx=index_of_alloced_key();
+		int idx=this->index_of_alloced_key();
 		assert(check_validity());
 		mValues.construct(idx);
 		return mValues[idx];
@@ -1257,9 +1257,9 @@ public:
 		assert(!IS_MULTI || find_index(key)==tree_node::NULL_NODE); //fixme handle duplicates more sensibly?
 
 		alloc_key(key);
-		insert_alloced_key();		
+		this->insert_alloced_key();		
 		assert(check_validity());
-		return mValues.alloc_raw(index_of_alloced_key());
+		return mValues.alloc_raw(this->index_of_alloced_key());
 	}
 
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1267,8 +1267,8 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////
 	TVTValue &alloc_value()
 	{		
-		mValues.construct(index_of_alloced_key());
-		return mValues[index_of_alloced_key()];
+		mValues.construct(this->index_of_alloced_key());
+		return mValues[this->index_of_alloced_key()];
 	}
 
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1276,7 +1276,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////
 	TRatlNew *alloc_value_raw()
 	{
-		return mValues.alloc_raw(index_of_alloced_key());
+		return mValues.alloc_raw(this->index_of_alloced_key());
 	}
 
 	template<class CAST_TO>
@@ -1291,10 +1291,10 @@ public:
 	void		erase(const TKTValue &key)
 	{
 		//fixme this is a double search currently
-		int i=find_index(key);
+		int i=this->find_index(key);
 		if (i!=tree_node::NULL_NODE)
 		{
-			erase_index(i);
+			this->erase_index(i);
 			mValues.destruct(i);
 		}
 	}
@@ -1490,7 +1490,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////
 	iterator	find(const TKTValue &key)
 	{
-		return iterator(this,find_index(key));		
+		return iterator(this,this->find_index(key));		
 	}
 
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1498,7 +1498,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////
 	iterator	begin()
 	{
-		return iterator(this, front());	
+		return iterator(this, this->front());	
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////
@@ -1506,7 +1506,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////
 	iterator	rbegin()
 	{
-		return iterator(this, back());
+		return iterator(this, this->back());
 	}
 
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1530,7 +1530,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////
 	const_iterator	begin() const
 	{
-		return const_iterator(this, front());	
+		return const_iterator(this, this->front());	
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////
@@ -1538,7 +1538,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////
 	const_iterator	rbegin() const
 	{
-		return const_iterator(this, back());
+		return const_iterator(this, this->back());
 	}
 
     ////////////////////////////////////////////////////////////////////////////////////

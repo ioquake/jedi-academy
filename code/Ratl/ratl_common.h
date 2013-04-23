@@ -71,6 +71,8 @@
 #define STRING_H_INC
 #endif
 
+#include "../game/q_shared.h"
+
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // Forward Dec.
@@ -225,19 +227,19 @@ namespace str
 	}
 	inline int		icmp(const char *s1,const char *s2)
 	{
-		return stricmp(s1,s2);
+		return Q_stricmp(s1,s2);
 	}
 	inline int		cmpi(const char *s1,const char *s2)
 	{
-		return stricmp(s1,s2);
+		return Q_stricmp(s1,s2);
 	}
 	inline bool	ieql(const char *s1,const char *s2)
 	{
-		return !stricmp(s1,s2);
+		return !Q_stricmp(s1,s2);
 	}
 	inline bool	eqli(const char *s1,const char *s2)
 	{
-		return !stricmp(s1,s2);
+		return !Q_stricmp(s1,s2);
 	}
 
 	inline char	*tok(char *s,const char *gap)
@@ -787,11 +789,11 @@ namespace storage
 		// this is so node support does not need to be added to the primitive containers
 		static NODE & node(TValue &v)
 		{
-			return *(NODE *)((unsigned char *)(&v)+int(&((TStorage *)0)->nodeData)-int(&((TStorage *)0)->value));
+			return *(NODE *)((unsigned char *)(&v)+size_t(&((TStorage *)0)->nodeData)-size_t(&((TStorage *)0)->value));
 		}
 		static const NODE & node(const TValue &v)
 		{
-			return *(const NODE *)((unsigned char *)(&v)+int(&((TStorage *)0)->nodeData)-int(&((TStorage *)0)->value));
+			return *(const NODE *)((unsigned char *)(&v)+size_t(&((TStorage *)0)->nodeData)-size_t(&((TStorage *)0)->value));
 		}
 		static void swap(TStorage *s1,TStorage *s2)
 		{
@@ -801,8 +803,8 @@ namespace storage
 		static int pointer_to_index(const void *s1,const void *s2)
 		{
 			return 
-				((TStorage *)(((unsigned char *)s1)-int(&((TStorage *)0)->value))) - 
-				((TStorage *)(((unsigned char *)s2)-int(&((TStorage *)0)->value)));
+				((TStorage *)(((unsigned char *)s1)-size_t(&((TStorage *)0)->value))) - 
+				((TStorage *)(((unsigned char *)s2)-size_t(&((TStorage *)0)->value)));
 		}	
 	};
 
@@ -882,11 +884,11 @@ namespace storage
 		// this is so node support does not need to be added to the primitive containers
 		static NODE & node(TValue &v)
 		{
-			return *(NODE *)((unsigned char *)(&v)+int(&((TStorage *)0)->nodeData)-int(&((TStorage *)0)->value));
+			return *(NODE *)((unsigned char *)(&v)+size_t(&((TStorage *)0)->nodeData)-size_t(&((TStorage *)0)->value));
 		}
 		static const NODE & node(const TValue &v)
 		{
-			return *(const NODE *)((unsigned char *)(&v)+int(&((TStorage *)0)->nodeData)-int(&((TStorage *)0)->value));
+			return *(const NODE *)((unsigned char *)(&v)+size_t(&((TStorage *)0)->nodeData)-size_t(&((TStorage *)0)->value));
 		}
 		static void swap(TStorage *s1,TStorage *s2)
 		{
@@ -898,8 +900,8 @@ namespace storage
 		static int pointer_to_index(const void *s1,const void *s2)
 		{
 			return 
-				((TStorage *)(((unsigned char *)s1)-int(&((TStorage *)0)->value))) - 
-				((TStorage *)(((unsigned char *)s2)-int(&((TStorage *)0)->value)));
+				((TStorage *)(((unsigned char *)s1)-size_t(&((TStorage *)0)->value))) - 
+				((TStorage *)(((unsigned char *)s2)-size_t(&((TStorage *)0)->value)));
 		}	
 	};
 	template<class T,int SIZE,int MAX_CLASS_SIZE,class NODE>
@@ -973,11 +975,11 @@ namespace storage
 		// this is so node support does not need to be added to the primitive containers
 		static NODE & node(TValue &v)
 		{
-			return *(NODE *)((unsigned char *)(&v)+int(&((TStorage *)0)->nodeData)-int(&((TStorage *)0)->value));
+			return *(NODE *)((unsigned char *)(&v)+size_t(&((TStorage *)0)->nodeData)-size_t(&((TStorage *)0)->value));
 		}
 		static const NODE & node(const TValue &v)
 		{
-			return *(const NODE *)((unsigned char *)(&v)+int(&((TStorage *)0)->nodeData)-int(&((TStorage *)0)->value));
+			return *(const NODE *)((unsigned char *)(&v)+size_t(&((TStorage *)0)->nodeData)-size_t(&((TStorage *)0)->value));
 		}
 		// this is a bit suspicious, we are forced to do a memory swap, and for a class, that, say
 		// stores a pointer to itself, it won't work right
@@ -989,8 +991,8 @@ namespace storage
 		static int pointer_to_index(const void *s1,const void *s2)
 		{
 			return 
-				((TStorage *)(((unsigned char *)s1)-int(&((TStorage *)0)->value))) - 
-				((TStorage *)(((unsigned char *)s2)-int(&((TStorage *)0)->value)));
+				((TStorage *)(((unsigned char *)s1)-size_t(&((TStorage *)0)->value))) - 
+				((TStorage *)(((unsigned char *)s2)-size_t(&((TStorage *)0)->value)));
 		}	
 		template<class CAST_TO>
 		static CAST_TO *verify_alloc(CAST_TO *p)
@@ -1030,7 +1032,7 @@ public:
 	////////////////////////////////////////////////////////////////////////////////////
 	// Data
 	////////////////////////////////////////////////////////////////////////////////////
-	typedef typename T					TStorageTraits;
+	typedef T					TStorageTraits;
 	typedef typename T::TArray			TTArray;
 	typedef typename T::TValue			TTValue;
 	typedef typename T::TConstructed	TTConstructed;

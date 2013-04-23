@@ -220,6 +220,7 @@ PFNGLGETCOMBINEROUTPUTPARAMETERIVNV		qglGetCombinerOutputParameterivNV = NULL;
 PFNGLGETFINALCOMBINERINPUTPARAMETERFVNV	qglGetFinalCombinerInputParameterfvNV = NULL;
 PFNGLGETFINALCOMBINERINPUTPARAMETERIVNV	qglGetFinalCombinerInputParameterivNV = NULL;
 
+#ifdef _WIN32
 // Declare Pixel Format function pointers.
 PFNWGLGETPIXELFORMATATTRIBIVARBPROC		qwglGetPixelFormatAttribivARB = NULL;
 PFNWGLGETPIXELFORMATATTRIBFVARBPROC		qwglGetPixelFormatAttribfvARB = NULL;
@@ -236,6 +237,7 @@ PFNWGLQUERYPBUFFERARBPROC				qwglQueryPbufferARB = NULL;
 PFNWGLBINDTEXIMAGEARBPROC				qwglBindTexImageARB = NULL;
 PFNWGLRELEASETEXIMAGEARBPROC			qwglReleaseTexImageARB = NULL;
 PFNWGLSETPBUFFERATTRIBARBPROC			qwglSetPbufferAttribARB = NULL;
+#endif
 
 // Declare Vertex and Fragment Program function pointers.
 PFNGLPROGRAMSTRINGARBPROC qglProgramStringARB = NULL;
@@ -302,7 +304,7 @@ void R_Splash()
 	image_t *pImage;
 /*
 	const char* s = Cvar_VariableString("se_language");
-	if (stricmp(s,"english"))
+	if (Q_stricmp(s,"english"))
 	{
 		pImage = R_FindImageFile( "menu/splash_eur", qfalse, qfalse, qfalse, GL_CLAMP);
 	}
@@ -515,7 +517,7 @@ void R_TakeScreenshot( int x, int y, int width, int height, char *fileName ) {
 	byte		*buffer;
 	int			i, c, temp;
 
-	qboolean bSaveAsJPG = !strnicmp(&fileName[strlen(fileName)-4],".jpg",4);
+	qboolean bSaveAsJPG = !Q_strnicmp(&fileName[strlen(fileName)-4],".jpg",4);
 
 	if (bSaveAsJPG)
 	{
@@ -854,6 +856,27 @@ void GL_SetDefaultState( void )
 #endif
 }
 
+/*
+================
+R_PrintLongString
+
+Workaround for VID_Printf's 4096 characters buffer limit.
+================
+*/
+void R_PrintLongString(const char *string) {
+	char buffer[4096];
+	const char *p;
+	int size = strlen(string);
+
+	p = string;
+	while(size > 0)
+	{
+		Q_strncpyz(buffer, p, sizeof (buffer) );
+		VID_Printf( PRINT_ALL, "%s", buffer );
+		p += 4095;
+		size -= 4095;
+	}
+}
 
 /*
 ================
@@ -886,7 +909,9 @@ void GfxInfo_f( void )
 	VID_Printf( PRINT_ALL, "\nGL_VENDOR: %s\n", glConfig.vendor_string );
 	VID_Printf( PRINT_ALL, "GL_RENDERER: %s\n", glConfig.renderer_string );
 	VID_Printf( PRINT_ALL, "GL_VERSION: %s\n", glConfig.version_string );
-	VID_Printf( PRINT_ALL, "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
+	VID_Printf( PRINT_ALL, "GL_EXTENSIONS: " );
+	R_PrintLongString( glConfig.extensions_string );
+	VID_Printf( PRINT_ALL, "\n" );
 	VID_Printf( PRINT_ALL, "GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize );
 	VID_Printf( PRINT_ALL, "GL_MAX_ACTIVE_TEXTURES_ARB: %d\n", glConfig.maxActiveTextures );
 	VID_Printf( PRINT_ALL, "\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits );
@@ -1351,8 +1376,8 @@ void R_Init( void ) {
 	Swap_Init();
 
 #ifndef FINAL_BUILD
-	if ( (int)tess.xyz & 15 ) {
-		Com_Printf( "WARNING: tess.xyz not 16 byte aligned (%x)\n",(int)tess.xyz & 15 );
+	if ( (intptr_t)tess.xyz & 15 ) {
+		Com_Printf( "WARNING: tess.xyz not 16 byte aligned (%x)\n",(intptr_t)tess.xyz & 15 );
 	}
 #endif
 
@@ -1622,7 +1647,11 @@ refexport_t *GetRefAPI ( int apiVersion ) {
 	re.GetBModelVerts = RE_GetBModelVerts;
 
 	re.RegisterFont = RE_RegisterFont;
-#ifndef _XBOX
+#if defined(_XBOX) || defined(__GNUC__)
+	re._Font_StrLenPixels = RE_Font_StrLenPixels;
+	re._Font_HeightPixels = RE_Font_HeightPixels;	
+	re._Font_DrawString = RE_Font_DrawString;
+#else
 	re.Font_StrLenPixels = RE_Font_StrLenPixels;
 	re.Font_HeightPixels = RE_Font_HeightPixels;	
 	re.Font_DrawString = RE_Font_DrawString;

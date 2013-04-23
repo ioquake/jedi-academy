@@ -102,7 +102,7 @@ typedef enum {
 #define PMF_FIX_MINS		(1<<19)//524288	// Mins raised for dual forward jump, fix them
 #define	PMF_ALL_TIMES	(PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK|PMF_TIME_NOFRICTION)
 
-#if defined(_XBOX) && !defined(_TRACE_FUNCTOR_T_DEFINED_)
+#if (defined(_XBOX) || defined(__GNUC__)) && !defined(_TRACE_FUNCTOR_T_DEFINED_)
 // Function objects to replace the function pointers used for trace in pmove_t
 // We can't have default arguments on function pointers, but this allows us to
 // do the same thing with minimal impact elsewhere.
@@ -153,7 +153,7 @@ typedef struct {
 
 	// callbacks to test the world
 	// these will be different functions during game and cgame
-#ifdef _XBOX
+#if defined(_XBOX) || defined(__GNUC__)
 	Trace_Functor_t	trace;
 #else
 	void		(*trace)( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, 

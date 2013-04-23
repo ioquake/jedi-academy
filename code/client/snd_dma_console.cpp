@@ -717,7 +717,7 @@ int Lip_GetFileCode(const char* name)
 	char* osname = FS_BuildOSPath(name);
 
 	// Generate hash for file name
-	strlwr(osname);
+	Q_strlwr(osname);
 	unsigned int code = crc32(0, (const unsigned char *)osname, strlen(osname));
 
 	return code;

@@ -77,7 +77,7 @@ void FFSystem::Display( TNameTable &Unprocessed, TNameTable &Processed )
 	;	itName != Unprocessed.end()
 	;
 	){
-		if ( stricmp( "effects", (*itName).c_str() ) == 0 )
+		if ( Q_stricmp( "effects", (*itName).c_str() ) == 0 )
 		{
 			if ( ff_developer->integer )
 			{

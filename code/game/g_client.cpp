@@ -2,7 +2,7 @@
 #include "g_headers.h"
 
 
-#include "IcarusInterface.h"
+#include "../icarus/IcarusInterface.h"
 #include "Q3_Interface.h"
 #include "g_local.h"
 #include "g_functions.h"
@@ -639,7 +639,8 @@ void Player_CacheFromPrevLevel(void)
 			&ibits	//client->ps.stats[STAT_ITEMS]
 			);
 
-		for ( int i = 1 ; i < 16 ; i++ ) 
+		int i;
+		for ( i = 1 ; i < 16 ; i++ ) 
 		{
 			if ( bits & ( 1 << i ) ) 
 			{
@@ -1224,14 +1225,14 @@ qboolean G_SetG2PlayerModelInfo( gentity_t *ent, const char *modelName, const ch
 				// Setup the Exhausts.
 				for ( int i = 0; i < MAX_VEHICLE_EXHAUSTS; i++ )
 				{
-					_snprintf( strTemp, 128, "*exhaust%d", i + 1 );
+					snprintf( strTemp, 128, "*exhaust%d", i + 1 );
 					ent->m_pVehicle->m_iExhaustTag[i] = gi.G2API_AddBolt( &ent->ghoul2[ent->playerModel], strTemp );
 				}
 
 				// Setup the Muzzles.
 				for ( int i = 0; i < MAX_VEHICLE_MUZZLES; i++ )
 				{
-					_snprintf( strTemp, 128, "*muzzle%d", i + 1 );
+					snprintf( strTemp, 128, "*muzzle%d", i + 1 );
 					ent->m_pVehicle->m_iMuzzleTag[i] = gi.G2API_AddBolt( &ent->ghoul2[ent->playerModel], strTemp );
 				}
 			}

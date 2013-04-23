@@ -5,7 +5,7 @@
 #include "../server/exe_headers.h"
 
 #include "tr_local.h"
-#include "MatComp.h"
+#include "matcomp.h"
 #include "../qcommon/sstring.h"
 
 #define	LL(x) x=LittleLong(x)
@@ -278,7 +278,7 @@ qboolean RE_RegisterModels_LevelLoadEnd(qboolean bDeleteEverythingNotUsedThisLev
 					bAtLeastoneModelFreed = qtrue;
 				}
 
-				itModel = CachedModels->erase(itModel);
+				CachedModels->erase(itModel++);
 				bEraseOccured = qtrue;
 
 				iLoadedModelBytes = GetModelDataAllocSize();				
@@ -328,7 +328,7 @@ static void RE_RegisterModels_DeleteAll(void)
 			Z_Free(CachedModel.pModelDiskImage);					
 		}
 
-		itModel = CachedModels->erase(itModel);			
+		CachedModels->erase(itModel++);
 	}
 
 	extern void RE_AnimationCFGs_DeleteAll(void);
@@ -743,7 +743,7 @@ qhandle_t RE_RegisterModel( const char *name )
 
 		qhandle_t q = RE_RegisterModel_Actual( name );
 
-if (stricmp(&name[strlen(name)-4],".gla")){
+if (Q_stricmp(&name[strlen(name)-4],".gla")){
 	gbInsideRegisterModel = qfalse;		// GLA files recursively call this, so don't turn off half way. A reference count would be nice, but if any ERR_DROP ever occurs within the load then the refcount will be knackered from then on
 }
 

@@ -46,6 +46,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
+#include <limits.h>
+#include <stdint.h>
 
 #ifdef _XBOX
 #define tvector(T) std::vector< T >
@@ -158,10 +160,32 @@ void Sys_PumpEvents( void );
 
 #ifdef __i386__
 #define	CPUSTRING	"linux-i386"
+#elif defined(__amd64__) || defined(__x86_64__)
+#define	CPUSTRING	"linux-amd64"
 #elif defined __axp__
 #define	CPUSTRING	"linux-alpha"
 #else
 #define	CPUSTRING	"linux-other"
+#endif
+
+#define	PATH_SEP '/'
+
+#endif
+
+//======================= OPENBSD DEFINES =================================
+
+// the mac compiler can't handle >32k of locals, so we
+// just waste space and make big arrays static...
+#ifdef __OpenBSD__
+
+#define	MAC_STATIC
+
+#ifdef __i386__
+#define	CPUSTRING	"openbsd-i386"
+#elif defined(__amd64__) || defined(__x86_64__)
+#define	CPUSTRING	"openbsd-amd64"
+#else
+#define	CPUSTRING	"openbsd-other"
 #endif
 
 #define	PATH_SEP '/'
@@ -179,6 +203,13 @@ typedef const char *LPCSTR;
 
 typedef enum {qfalse, qtrue}	qboolean;
 #define	qboolean	int		//don't want strict type checking on the qboolean
+
+typedef union
+{
+	float f;
+	int i;
+	unsigned int ui;
+} floatint_t;
 
 typedef int		qhandle_t;
 typedef int		thandle_t;
@@ -506,6 +537,8 @@ extern	const vec3_t	axisDefault[3];
 #define	nanmask (255<<23)
 
 #define	IS_NAN(x) (((*(int *)&x)&nanmask)==nanmask)
+
+#define Q_isnan(x) (isnan(x))
 
 #ifdef _XBOX
 inline void Q_CastShort2Float(float *f, const short *s)
@@ -970,24 +1003,20 @@ inline float Q_crandom( int *seed ) {
 
 //  Returns a float min <= x < max (exclusive; will get max - 0.00001; but never max
 inline float Q_flrand(float min, float max) {
-	return ((rand() * (max - min)) / 32768.0F) + min;
+	return ((rand() * (max - min)) / (float)(RAND_MAX)) + min;
 }
 
 // Returns an integer min <= x <= max (ie inclusive)
 inline int Q_irand(int min, int max) {
 	max++; //so it can round down
-	return ((rand() * (max - min)) >> 15) + min;
+	return ((rand() * (max - min)) / (RAND_MAX)) + min;
 }
 
 //returns a float between 0 and 1.0
-inline float random() {
-	return (rand() / ((float)0x7fff));
-}
+#define random()	((rand () & 0x7fff) / ((float)0x7fff))
 
 //returns a float between -1 and 1.0
-inline float crandom() {
-	return (2.0F * (random() - 0.5F));
-}
+#define crandom()	(2.0F * (random() - 0.5F))
 
 float erandom( float mean );
 
@@ -1212,13 +1241,46 @@ int Q_isalpha( int c );
 //char	*Q_strrchr( const char* string, int c );
 
 // NON-portable (but faster) versions
+#ifdef WIN32
 inline int	Q_stricmp (const char *s1, const char *s2) { return stricmp(s1, s2); }
+inline int	Q_strnicmp (const char *s1, const char *s2, int n) { return strnicmp(s1, s2, n); }
+inline int	Q_strcmpi (const char *s1, const char *s2) { return strcmpi(s1, s2); }
 inline int	Q_strncmp (const char *s1, const char *s2, int n) { return strncmp(s1, s2, n); }
 inline int	Q_stricmpn (const char *s1, const char *s2, int n) { return strnicmp(s1, s2, n); }
 inline char	*Q_strlwr( char *s1 ) { return strlwr(s1); }
 inline char	*Q_strupr( char *s1 ) { return strupr(s1); }
-inline char	*Q_strrchr( const char* str, int c ) { return strrchr(str, c); }
+#else
+inline int	Q_stricmp (const char *s1, const char *s2) { return strcasecmp(s1, s2); }
+inline int	Q_strnicmp (const char *s1, const char *s2, int n) { return strncasecmp(s1, s2, n); }
+inline int	Q_strcmpi (const char *s1, const char *s2) { return strcasecmp(s1, s2); }
+inline int	Q_strncmp (const char *s1, const char *s2, int n) { return strncasecmp(s1, s2, n); }
+inline int	Q_stricmpn (const char *s1, const char *s2, int n) { return strncasecmp(s1, s2, n); }
 
+inline char *Q_strlwr( char *s1 )
+{
+	char	*s;
+
+	s = s1;
+	while ( *s ) {
+		*s = tolower(*s);
+		s++;
+	}
+	return s1;
+}
+
+inline char *Q_strupr( char *s1 )
+{
+	char	*s;
+
+	s = s1;
+	while ( *s ) {
+		*s = toupper(*s);
+		s++;
+	}
+	return s1;
+}
+#endif
+inline char	*Q_strrchr( const char* str, int c ) { return strrchr(str, c); }
 
 // buffer size safe library replacements
 void	Q_strncpyz( char *dest, const char *src, int destsize, qboolean bBarfIfTooLong=qfalse );
@@ -1367,7 +1429,7 @@ Ghoul2 Insert Start
 */
 
 #if !defined(GHOUL2_SHARED_H_INC)
-	#include "..\game\ghoul2_shared.h"	//for CGhoul2Info_v
+	#include "../game/ghoul2_shared.h"	//for CGhoul2Info_v
 #endif
 
 /*

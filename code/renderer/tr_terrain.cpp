@@ -561,7 +561,7 @@ void CTRLandScape::LoadTerrainDef(const char *td)
 		{
 			const char* type = items->GetName ( );
 
-			if(!stricmp( type, "altitudetexture"))
+			if(!Q_stricmp( type, "altitudetexture"))
 			{
 				int			height;
 				const char	*shaderName;
@@ -581,11 +581,11 @@ void CTRLandScape::LoadTerrainDef(const char *td)
 					}
 				}
 			}
-			else if(!stricmp(type, "water"))
+			else if(!Q_stricmp(type, "water"))
 			{
 				mWaterShader = R_GetShaderByHandle(RE_RegisterShader(items->FindPairValue("shader", "")));
 			}
-			else if(!stricmp(type, "flattexture"))
+			else if(!Q_stricmp(type, "flattexture"))
 			{
 				mFlatShader = RE_RegisterShader ( items->FindPairValue("shader", "") );
 			}
@@ -791,7 +791,7 @@ void CTRLandScape::CalculateShaders(void)
 	// Cleanup our temporary array
 	delete[] shaders;
 
-	qsort(mSortedPatches, mSortedCount, sizeof(*mSortedPatches), (int (__cdecl *)(const void *,const void *))ComparePatchInfo);
+	qsort(mSortedPatches, mSortedCount, sizeof(*mSortedPatches), (int (QDECL *)(const void *,const void *))ComparePatchInfo);
 
 #endif // PRE_RELEASE_DEMO
 }

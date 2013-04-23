@@ -4,14 +4,14 @@
 #include "bg_public.h"
 #include "g_public.h"
 #include "b_public.h"
-#include "../Icarus/Stdafx.h"	//need stl
+#include "../icarus/StdAfx.h"	//need stl
 #include "../renderer/tr_types.h"
 #include "../cgame/cg_public.h"
-#include "G_Vehicles.h"
+#include "g_vehicles.h"
 #include "hitlocs.h"
 #include "bset.h"
 
-#define	FOFS(x) ((int)&(((gentity_t *)0)->x))
+#define	FOFS(x) ((size_t)&(((gentity_t *)0)->x))
 
 #ifdef _XBOX
 #define MAX_NPC_WATER_UPDATE_PER_FRAME	2	// maxmum number of NPCs that will get updated water infromation per frame

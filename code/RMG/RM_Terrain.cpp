@@ -3,7 +3,7 @@
 #include "../client/client.h"
 #include "../qcommon/cm_local.h"
 #include "../renderer/tr_types.h"
-#include "rm_headers.h"
+#include "RM_Headers.h"
 
 //#include "../qcommon/q_imath.h"
 
@@ -85,7 +85,7 @@ void CRMLandScape::LoadMiscentDef(const char *td)
 		items = classes->GetSubGroups();
 		while(items)
 		{
-			if(!stricmp(items->GetName(), "miscent"))
+			if(!Q_stricmp(items->GetName(), "miscent"))
 			{
 				int			height, maxheight;
 
@@ -96,7 +96,7 @@ void CRMLandScape::LoadMiscentDef(const char *td)
 				model = items->GetSubGroups();
 				while(model)
 				{
-					if(!stricmp(model->GetName(), "model"))
+					if(!Q_stricmp(model->GetName(), "model"))
 					{
 						CRandomModel	hd;
 
@@ -109,19 +109,19 @@ void CRMLandScape::LoadMiscentDef(const char *td)
 						pair = model->GetPairs();
 						while(pair)
 						{
-							if(!stricmp(pair->GetName(), "name"))
+							if(!Q_stricmp(pair->GetName(), "name"))
 							{
 								hd.SetModel(pair->GetTopValue());
 							}
-							else if(!stricmp(pair->GetName(), "frequency"))
+							else if(!Q_stricmp(pair->GetName(), "frequency"))
 							{
 								hd.SetFrequency((float)atof(pair->GetTopValue()));
 							}
-							else if(!stricmp(pair->GetName(), "minscale"))
+							else if(!Q_stricmp(pair->GetName(), "minscale"))
 							{
 								hd.SetMinScale((float)atof(pair->GetTopValue()));
 							}
-							else if(!stricmp(pair->GetName(), "maxscale"))
+							else if(!Q_stricmp(pair->GetName(), "maxscale"))
 							{
 								hd.SetMaxScale((float)atof(pair->GetTopValue()));
 							}

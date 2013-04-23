@@ -5,9 +5,9 @@
 #pragma warning( disable : 4663) 
 #include <windows.h>
 
-#include "..\smartheap\smrtheap.h"
+#include "../smartheap/smrtheap.h"
 #include "../game/q_shared.h"
-#include "..\qcommon\qcommon.h"
+#include "../qcommon/qcommon.h"
 
 #include <stdio.h>
 #include <map>
@@ -15,7 +15,7 @@
 using namespace std;
 
 #if MEM_DEBUG
-#include "..\smartheap\heapagnt.h"
+#include "../smartheap/heapagnt.h"
 
 static const int maxStack=2048;
 static int TotalMem;
@@ -173,7 +173,7 @@ MEM_BOOL MEM_CALLBACK MyMemReporter2(MEM_ERROR_INFO *info)
 	{
 		if (StackCache[i]<0||StackCache[i]>=nStack)
 			continue;
-		if (!strcmpi(start,StackNames[StackCache[i]]))
+		if (!Q_strcmpi(start,StackNames[StackCache[i]]))
 			break;
 	}
 	if (i<48)
@@ -185,7 +185,7 @@ MEM_BOOL MEM_CALLBACK MyMemReporter2(MEM_ERROR_INFO *info)
 	{
 		for (i=0;i<nStack;i++)
 		{
-			if (!strcmpi(start,StackNames[i]))
+			if (!Q_strcmpi(start,StackNames[i]))
 				break;
 		}
 		if (i<nStack)
@@ -354,7 +354,7 @@ MEM_BOOL MEM_CALLBACK MyMemReporter3(MEM_ERROR_INFO *info)
 	{
 		if (StackCache[i]<0||StackCache[i]>=nStack)
 			continue;
-		if (!strcmpi(start,StackNames[StackCache[i]]))
+		if (!Q_strcmpi(start,StackNames[StackCache[i]]))
 			break;
 	}
 	if (i<48)
@@ -366,7 +366,7 @@ MEM_BOOL MEM_CALLBACK MyMemReporter3(MEM_ERROR_INFO *info)
 	{
 		for (i=0;i<nStack;i++)
 		{
-			if (!strcmpi(start,StackNames[i]))
+			if (!Q_strcmpi(start,StackNames[i]))
 				break;
 		}
 		if (i<nStack)

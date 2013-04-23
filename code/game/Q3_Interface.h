@@ -1,7 +1,7 @@
 #ifndef __Q3_INTERFACE__
 #define __Q3_INTERFACE__
 
-#include "../Icarus/IcarusInterface.h"
+#include "../icarus/IcarusInterface.h"
 
 //NOTENOTE: The enums and tables in this file will obviously bitch if they are included multiple times, don't do that
 
@@ -673,8 +673,8 @@ public:
 	void	FreeVariable( const char *name );
 
 	//Save / Load functions
-	int		WriteSaveData( unsigned long chid, void *data, int length );
-	int		ReadSaveData( unsigned long chid, void *address, int length, void **addressptr = NULL );
+	int		WriteSaveData( unsigned int chid, void *data, int length );
+	int		ReadSaveData( unsigned int chid, void *address, int length, void **addressptr = NULL );
 	int		LinkGame( int entID, int icarusID );
 	
 	// Access functions

@@ -15,7 +15,7 @@
 	#include "tr_local.h"
 #endif
 
-#include "MatComp.h"
+#include "matcomp.h"
 #if !defined(_QCOMMON_H_)
 	#include "../qcommon/qcommon.h"
 #endif
@@ -57,7 +57,7 @@ void G2Time_ReportTimers(void)
 #endif
 
 //rww - RAGDOLL_BEGIN
-#include <FLOAT.H>
+#include <float.h>
 //rww - RAGDOLL_END
 
 extern	cvar_t	*r_Ghoul2UnSqash;
@@ -2338,7 +2338,7 @@ void G2_TransformGhoulBones(boneInfo_v &rootBoneList,mdxaBone_t &rootMatrix, CGh
 //rww - RAGDOLL_END
 
 //	ghoul2.mBoneCache->mWraithID=0;
-	ghoul2.mBoneCache->frameSize = 0;// can be deleted in new G2 format	//(int)( &((mdxaFrame_t *)0)->boneIndexes[ ghoul2.aHeader->numBones ] );   
+	ghoul2.mBoneCache->frameSize = 0;// can be deleted in new G2 format	//(size_t)( &((mdxaFrame_t *)0)->boneIndexes[ ghoul2.aHeader->numBones ] );   
 
 	ghoul2.mBoneCache->rootBoneList=&rootBoneList;
 	ghoul2.mBoneCache->rootMatrix=rootMatrix;
@@ -3020,8 +3020,8 @@ static void RootMatrix(CGhoul2Info_v &ghoul2,int time,const vec3_t scale,mdxaBon
 extern cvar_t	*r_shadowRange;
 static inline bool bInShadowRange(vec3_t location)
 {
-	const float c = DotProduct( tr.viewParms.or.axis[0], tr.viewParms.or.origin );
-	const float dist = DotProduct( tr.viewParms.or.axis[0], location ) - c;
+	const float c = DotProduct( tr.viewParms.ori.axis[0], tr.viewParms.ori.origin );
+	const float dist = DotProduct( tr.viewParms.ori.axis[0], location ) - c;
 
 //	return (dist < tr.distanceCull/1.5f);
 	return (dist < r_shadowRange->value);
@@ -4109,7 +4109,7 @@ qboolean R_LoadMDXM( model_t *mod, void *buffer, const char *mod_name, qboolean 
 		LL(surfInfo->numChildren);
 		LL(surfInfo->parentIndex);
 
-		strlwr(surfInfo->name);	//just in case
+		Q_strlwr(surfInfo->name);	//just in case
 		if ( !strcmp( &surfInfo->name[strlen(surfInfo->name)-4],"_off") )
 		{
 			surfInfo->name[strlen(surfInfo->name)-4]=0;	//remove "_off" from name
@@ -4141,7 +4141,7 @@ qboolean R_LoadMDXM( model_t *mod, void *buffer, const char *mod_name, qboolean 
 		}
 
 		// find the next surface
-		surfInfo = (mdxmSurfHierarchy_t *)( (byte *)surfInfo + (int)( &((mdxmSurfHierarchy_t *)0)->childIndexes[ surfInfo->numChildren ] ));
+		surfInfo = (mdxmSurfHierarchy_t *)( (byte *)surfInfo + (size_t)( &((mdxmSurfHierarchy_t *)0)->childIndexes[ surfInfo->numChildren ] ));
   	}
 	
 	// swap all the LOD's	(we need to do the middle part of this even for intel, because of shader reg and err-check)
@@ -4347,12 +4347,12 @@ qboolean R_LoadMDXA( model_t *mod, void *buffer, const char *mod_name, qboolean 
 		}
 
 		// get next bone
-		boneInfo += (int)( &((mdxaSkel_t *)0)->children[ boneInfo->numChildren ] );
+		boneInfo += (size_t)( &((mdxaSkel_t *)0)->children[ boneInfo->numChildren ] );
 	}
 
 
 	// swap all the frames
-	frameSize = (int)( &((mdxaFrame_t *)0)->bones[ mdxa->numBones ] );
+	frameSize = (size_t)( &((mdxaFrame_t *)0)->bones[ mdxa->numBones ] );
 	for ( i = 0 ; i < mdxa->numFrames ; i++) 
 	{
 		cframe = (mdxaFrame_t *) ( (byte *)mdxa + mdxa->ofsFrames + i * frameSize );

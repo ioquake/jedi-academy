@@ -37,11 +37,11 @@ struct Reference_t
 	//
 	bool operator < (const Reference_t& _X) const 
 	{
-		int i = stricmp(sMenu.c_str(),_X.sMenu.c_str());
+		int i = Q_stricmp(sMenu.c_str(),_X.sMenu.c_str());
 		if (i)
 			return i<0;
 
-		return !!(stricmp(sReference.c_str(),_X.sReference.c_str()) < 0);
+		return !!(Q_stricmp(sReference.c_str(),_X.sReference.c_str()) < 0);
 	}
 };
 #include <list>
@@ -114,7 +114,7 @@ static LPCSTR CreateUniqueReference(LPCSTR psText)
 				p[i] = '_';
 			}
 		}
-		strupr(p);
+		Q_strupr(p);
 
 		// remove any trailing underscores...
 		//
@@ -174,7 +174,7 @@ static LPCSTR CreateUniqueReference(LPCSTR psText)
 				p[i] = '_';
 			}
 		}
-		strupr(p);
+		Q_strupr(p);
 
 		// remove any trailing underscores...
 		//
@@ -267,9 +267,9 @@ static void EnterRef(LPCSTR psReference, LPCSTR psText, LPCSTR psMenuFile)
 
 		CorrectionDataItem_t	CorrectionDataItem;
 								CorrectionDataItem.sMenuFile			= psMenuFile;
-								CorrectionDataItem.sTextToFind			= strlen(psReference) ? ( /* !stricmp(psReference,psNewReference) ? "" :*/ va("@%s",psReference) )
+								CorrectionDataItem.sTextToFind			= strlen(psReference) ? ( /* !Q_stricmp(psReference,psNewReference) ? "" :*/ va("@%s",psReference) )
 																			: va("\"%s\"",psText);
-								CorrectionDataItem.sTextToReplaceWith	= /* !stricmp(psReference,psNewReference) ? "" : */va("@%s",psNewReference);
+								CorrectionDataItem.sTextToReplaceWith	= /* !Q_stricmp(psReference,psNewReference) ? "" : */va("@%s",psNewReference);
 								//
 								CorrectionDataItem.sStripEdReference	= psNewReference;
 								CorrectionDataItem.sStripEdText			= psText;
@@ -295,7 +295,7 @@ static void EnterRef(LPCSTR psReference, LPCSTR psText, LPCSTR psMenuFile)
 
 		// only enter correction data if references are different...
 		//
-//		if (stricmp(psReference,psNewReference))
+//		if (Q_stricmp(psReference,psNewReference))
 		{
 			CorrectionDataItem_t	CorrectionDataItem;
 									CorrectionDataItem.sMenuFile			= psMenuFile;
@@ -722,9 +722,9 @@ void UI_Debug_EnterReference(LPCSTR ps4LetterType, LPCSTR psItemString)
 	{	
 		if (psItemString && psItemString[0]) 
 		{
-			if ( !stricmp(psItemString,"english") ||
-				 !stricmp(psItemString,"francais") ||
-				 !stricmp(psItemString,"deutsch")
+			if ( !Q_stricmp(psItemString,"english") ||
+				 !Q_stricmp(psItemString,"francais") ||
+				 !Q_stricmp(psItemString,"deutsch")
 				 )
 			{
 				// then don't localise it!

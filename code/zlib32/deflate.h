@@ -106,16 +106,16 @@ typedef struct ct_data_s
 typedef struct static_tree_desc_s				
 {												
     const ct_data	*static_tree; 				// static tree or NULL
-    const ulong		*extra_bits;  				// extra bits for each code or NULL
-    ulong			extra_base;	  				// base index for extra_bits
-    ulong			elems;		  				// max number of elements in the tree
-    ulong			max_length;	  				// max bit length for the codes
+    const uint32_t		*extra_bits;  				// extra bits for each code or NULL
+    uint32_t			extra_base;	  				// base index for extra_bits
+    uint32_t			elems;		  				// max number of elements in the tree
+    uint32_t			max_length;	  				// max bit length for the codes
 } static_tree_desc;
 
 typedef struct tree_desc_s 
 {
     ct_data 			*dyn_tree;				// the dynamic tree
-    ulong		 		max_code;				// largest code with non zero frequency
+    uint32_t		 		max_code;				// largest code with non zero frequency
     static_tree_desc	*stat_desc;				// the corresponding static tree
 } tree_desc;
 
@@ -123,14 +123,14 @@ typedef struct tree_desc_s
 typedef struct deflate_state_s
 {
     z_stream	*z;								// pointer back to this zlib stream
-    ulong		status;							// as the name implies
+    uint32_t		status;							// as the name implies
 												
     EFlush		last_flush;						// value of flush param for previous deflate call
     int 		noheader;						// suppress zlib header and adler32
 
     byte		pending_buf[MAX_BLOCK_SIZE + 5];// output still pending
     byte		*pending_out;					// next pending byte to output to the stream
-    ulong 		pending;						// nb of bytes in the pending buffer
+    uint32_t 		pending;						// nb of bytes in the pending buffer
 
     // Sliding window. Input bytes are read into the second half of the window,
     // and move to the first half later to keep a dictionary of at least wSize
@@ -148,33 +148,33 @@ typedef struct deflate_state_s
 
     word		head[HASH_SIZE];				// Heads of the hash chains or NULL.
 
-    ulong		ins_h;							// hash index of string to be inserted
+    uint32_t		ins_h;							// hash index of string to be inserted
 
     // Window position at the beginning of the current output block. Gets
     // negative when the window is moved backwards.
     int			block_start;
 
-    ulong		match_length;					// length of best match
-    ulong		prev_match;						// previous match
-    ulong		match_available;				// set if previous match exists
-    ulong		strstart;						// start of string to insert
-    ulong		match_start;					// start of matching string
-    ulong		lookahead;						// number of valid bytes ahead in window
+    uint32_t		match_length;					// length of best match
+    uint32_t		prev_match;						// previous match
+    uint32_t		match_available;				// set if previous match exists
+    uint32_t		strstart;						// start of string to insert
+    uint32_t		match_start;					// start of matching string
+    uint32_t		lookahead;						// number of valid bytes ahead in window
 
     // Length of the best match at previous step. Matches not greater than this
     // are discarded. This is used in the lazy match evaluation.
-    ulong		prev_length;
+    uint32_t		prev_length;
 
     // Attempt to find a better match only when the current match is strictly
     // smaller than this value. This mechanism is used only for compression	levels >= 4.
-    ulong		max_lazy_match;
+    uint32_t		max_lazy_match;
 
-    ulong		good_match;						// Use a faster search when the previous match is longer than this
-    ulong		nice_match;						// Stop searching when current match exceeds this
+    uint32_t		good_match;						// Use a faster search when the previous match is longer than this
+    uint32_t		nice_match;						// Stop searching when current match exceeds this
 
     // To speed up deflation, hash chains are never searched beyond this
     // length.  A higher limit improves compression ratio but degrades the speed.
-    ulong		max_chain_length;
+    uint32_t		max_chain_length;
 
     ELevel		level;							// compression level (0..9)
 												
@@ -190,30 +190,30 @@ typedef struct deflate_state_s
 
     // The sons of heap[n] are heap[2*n] and heap[2*n+1]. heap[0] is not used.
     // The same heap array is used to build all trees.
-    ulong		heap[(2 * L_CODES) + 1];		// heap used to build the Huffman trees
-    ulong		heap_len;						// number of elements in the heap
-    ulong		heap_max;						// element of largest frequency
+    uint32_t		heap[(2 * L_CODES) + 1];		// heap used to build the Huffman trees
+    uint32_t		heap_len;						// number of elements in the heap
+    uint32_t		heap_max;						// element of largest frequency
 
     byte		depth[(2 * L_CODES) + 1];		// Depth of each subtree used as tie breaker for trees of equal frequency
 
     byte		l_buf[LIT_BUFSIZE];				// buffer for literals or lengths
 
-    ulong		last_lit;						// running index in l_buf
+    uint32_t		last_lit;						// running index in l_buf
 
     // Buffer for distances. To simplify the code, d_buf and l_buf have
     // the same number of elements. To use different lengths, an extra flag
     // array would be necessary.
     word		d_buf[LIT_BUFSIZE];
  
-	ulong		opt_len;						// bit length of current block with optimal trees
-    ulong		static_len;						// bit length of current block with static trees
-    ulong		matches;						// number of string matches in current block
-    ulong		last_eob_len;					// bit length of EOB code for last block
+	uint32_t		opt_len;						// bit length of current block with optimal trees
+    uint32_t		static_len;						// bit length of current block with static trees
+    uint32_t		matches;						// number of string matches in current block
+    uint32_t		last_eob_len;					// bit length of EOB code for last block
 
     word		bi_buf;							// Output buffer. bits are inserted starting at the bottom (least significant bits).
-    ulong		bi_valid;						// Number of valid bits in bi_buf.  All bits above the last valid bit are always zero.
+    uint32_t		bi_valid;						// Number of valid bits in bi_buf.  All bits above the last valid bit are always zero.
 
-	ulong		adler;
+	uint32_t		adler;
 } deflate_state;
 
 // Compression function. Returns the block state after the call.

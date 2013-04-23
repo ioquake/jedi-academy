@@ -129,13 +129,13 @@ int G2_IsSurfaceLegal(const model_s *mod_m, const char *surfaceName, int *flags)
 
 	for ( int i = 0 ; i < mod_m->mdxm->numSurfaces ; i++) 
 	{
-	 	if (!stricmp(surfaceName, surf->name))
+	 	if (!Q_stricmp(surfaceName, surf->name))
 	 	{
 			*flags = surf->flags;
 			return i;
 		}
 		// find the next surface
-  		surf = (mdxmSurfHierarchy_t *)( (byte *)surf + (int)( &((mdxmSurfHierarchy_t *)0)->childIndexes[ surf->numChildren ] ));
+  		surf = (mdxmSurfHierarchy_t *)( (byte *)surf + (size_t)( &((mdxmSurfHierarchy_t *)0)->childIndexes[ surf->numChildren ] ));
 	}
 	return -1;
 }
@@ -172,7 +172,7 @@ const mdxmSurface_t *G2_FindSurface(CGhoul2Info *ghlInfo, surfaceInfo_v &slist, 
 			const mdxmSurfHierarchy_t	*surfInfo = (mdxmSurfHierarchy_t *)((byte *)surfIndexes + surfIndexes->offsets[surf->thisSurfaceIndex]);
 
   			// are these the droids we're looking for?
-			if (!stricmp (surfInfo->name, surfaceName))
+			if (!Q_stricmp (surfInfo->name, surfaceName))
 			{
 				// yup
 				if (surfIndex)

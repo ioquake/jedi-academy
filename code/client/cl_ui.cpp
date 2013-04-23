@@ -10,7 +10,7 @@
 
 int PC_ReadTokenHandle(int handle, struct pc_token_s *pc_token);
 
-int CL_UISystemCalls( int *args );
+intptr_t CL_UISystemCalls( intptr_t *args );
 
 //prototypes
 //extern qboolean SG_GetSaveImage( const char *psPathlessBaseName, void *pvAddress );
@@ -127,11 +127,10 @@ FloatAsInt
 */
 int FloatAsInt( float f ) 
 {
-	int		temp;
+	floatint_t	fi;
 
-	*(float *)&temp = f;
-
-	return temp;
+	fi.f = f;
+	return fi.i;
 }
 
 static void UI_Cvar_Create( const char *var_name, const char *var_value, int flags ) {
@@ -234,10 +233,10 @@ void CL_InitUI( void ) {
 	uii.R_RegisterShader		= re.RegisterShader;
 	uii.R_RegisterShaderNoMip	= re.RegisterShaderNoMip;
 	uii.R_RegisterFont			= re.RegisterFont;
-#ifndef _XBOX
-	uii.R_Font_StrLenPixels		= re.Font_StrLenPixels;
-	uii.R_Font_HeightPixels		= re.Font_HeightPixels;
-	uii.R_Font_DrawString		= re.Font_DrawString;
+#if defined(_XBOX) || defined(__GNUC__)
+	uii._R_Font_StrLenPixels		= re._Font_StrLenPixels;
+	uii._R_Font_HeightPixels		= re._Font_HeightPixels;
+	uii._R_Font_DrawString		= re._Font_DrawString;
 #endif
 	uii.R_Font_StrLenChars		= re.Font_StrLenChars;
 	uii.Language_IsAsian		= re.Language_IsAsian;
@@ -362,8 +361,18 @@ The ui module is making a system call
 vm_t	uivm;
 
 #define	VMA(x) ((void*)args[x])
-#define	VMF(x)	((float *)args)[x]
-int CL_UISystemCalls( int *args ) 
+//#define VMF(x)	((float *)args)[x]
+
+static inline float _vmf(intptr_t x)
+{
+	floatint_t fi;
+	fi.i = (int) x;
+	return fi.f;
+}
+#define	VMF(x)	 _vmf(args[x])
+
+
+intptr_t CL_UISystemCalls( intptr_t *args ) 
 {
 
 	switch( args[0] ) 

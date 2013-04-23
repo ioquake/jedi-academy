@@ -78,7 +78,7 @@ void		Menus_ShowItems(const char *menuName);
 qboolean	ParseRect(const char **p, rectDef_t *r);
 const char	*String_Alloc(const char *p);
 void		ToWindowCoords(float *x, float *y, windowDef_t *window);
-void		Window_Paint(Window *w, float fadeAmount, float fadeClamp, float fadeCycle);
+void		Window_Paint(qWindow *w, float fadeAmount, float fadeClamp, float fadeCycle);
 int			Item_ListBox_ThumbDrawPosition(itemDef_t *item);
 int			Item_ListBox_ThumbPosition(itemDef_t *item);
 int			Item_ListBox_MaxScroll(itemDef_t *item);
@@ -220,7 +220,7 @@ Initializes a window structure ( windowDef_t ) with defaults
  
 ==================
 */
-void Window_Init(Window *w) 
+void Window_Init(qWindow *w) 
 {
 	memset(w, 0, sizeof(windowDef_t));
 	w->borderSize = 1;
@@ -1787,10 +1787,10 @@ void Menu_TransitionItemByName(menuDef_t *menu, const char *p, const rectDef_t *
 			item->window.offsetTime = time;
 			memcpy(&item->window.rectClient, rectFrom, sizeof(rectDef_t));
 			memcpy(&item->window.rectEffects, rectTo, sizeof(rectDef_t));
-			item->window.rectEffects2.x = abs(rectTo->x - rectFrom->x) / amt;
-			item->window.rectEffects2.y = abs(rectTo->y - rectFrom->y) / amt;
-			item->window.rectEffects2.w = abs(rectTo->w - rectFrom->w) / amt;
-			item->window.rectEffects2.h = abs(rectTo->h - rectFrom->h) / amt;
+			item->window.rectEffects2.x = abs((int)(rectTo->x - rectFrom->x)) / amt;
+			item->window.rectEffects2.y = abs((int)(rectTo->y - rectFrom->y)) / amt;
+			item->window.rectEffects2.w = abs((int)(rectTo->w - rectFrom->w)) / amt;
+			item->window.rectEffects2.h = abs((int)(rectTo->h - rectFrom->h)) / amt;
 			Item_UpdatePosition(item);
 		}
 	}
@@ -1837,17 +1837,17 @@ void Menu_Transition3ItemByName(menuDef_t *menu, const char *p, const float minx
 
 //				VectorSet(modelptr->g2maxs2, maxx, maxy, maxz);
 
-				modelptr->g2maxsEffect[0] = abs(modelptr->g2maxs2[0] - modelptr->g2maxs[0]) / amt;
-				modelptr->g2maxsEffect[1] = abs(modelptr->g2maxs2[1] - modelptr->g2maxs[1]) / amt;
-				modelptr->g2maxsEffect[2] = abs(modelptr->g2maxs2[2] - modelptr->g2maxs[2]) / amt;
+				modelptr->g2maxsEffect[0] = abs((long)(modelptr->g2maxs2[0] - modelptr->g2maxs[0])) / amt;
+				modelptr->g2maxsEffect[1] = abs((long)(modelptr->g2maxs2[1] - modelptr->g2maxs[1])) / amt;
+				modelptr->g2maxsEffect[2] = abs((long)(modelptr->g2maxs2[2] - modelptr->g2maxs[2])) / amt;
 
-				modelptr->g2minsEffect[0] = abs(modelptr->g2mins2[0] - modelptr->g2mins[0]) / amt;
-				modelptr->g2minsEffect[1] = abs(modelptr->g2mins2[1] - modelptr->g2mins[1]) / amt;
-				modelptr->g2minsEffect[2] = abs(modelptr->g2mins2[2] - modelptr->g2mins[2]) / amt;
+				modelptr->g2minsEffect[0] = abs((long)(modelptr->g2mins2[0] - modelptr->g2mins[0])) / amt;
+				modelptr->g2minsEffect[1] = abs((long)(modelptr->g2mins2[1] - modelptr->g2mins[1])) / amt;
+				modelptr->g2minsEffect[2] = abs((long)(modelptr->g2mins2[2] - modelptr->g2mins[2])) / amt;
 				
 
-				modelptr->fov_Effectx = abs(modelptr->fov_x2 - modelptr->fov_x) / amt;
-				modelptr->fov_Effecty = abs(modelptr->fov_y2 - modelptr->fov_y) / amt;
+				modelptr->fov_Effectx = abs((long)(modelptr->fov_x2 - modelptr->fov_x)) / amt;
+				modelptr->fov_Effecty = abs((long)(modelptr->fov_y2 - modelptr->fov_y)) / amt;
 			}
 				
 		}
@@ -2739,7 +2739,7 @@ qboolean Script_SetCvar(itemDef_t *item, const char **args)
 	const char *cvar, *val;
 	if (String_Parse(args, &cvar) && String_Parse(args, &val)) 
 	{
-		if(!stricmp(val,"(NULL)"))
+		if(!Q_stricmp(val,"(NULL)"))
 		{
 			DC->setCVar(cvar, "");
 		}
@@ -3189,7 +3189,7 @@ qboolean ItemParse_asset_model( itemDef_t *item )
 	}
 	char modelPath[MAX_QPATH];
 	
-	if (!stricmp(temp,"ui_char_model") )
+	if (!Q_stricmp(temp,"ui_char_model") )
 	{
 		Com_sprintf( modelPath, sizeof( modelPath ), "models/players/%s/model.glm", Cvar_VariableString ( "g_char_model" ) );
 	}
@@ -4456,7 +4456,7 @@ qboolean ItemParse_cvarFloat( itemDef_t *item)
 		!PC_ParseFloat(&editPtr->minVal) &&
 		!PC_ParseFloat(&editPtr->maxVal)) 
 	{
-		if (!stricmp(item->cvar,"r_ext_texture_filter_anisotropic"))
+		if (!Q_stricmp(item->cvar,"r_ext_texture_filter_anisotropic"))
 		{//hehe, hook up the correct max value here.
 			editPtr->maxVal=glConfig.maxTextureFilterAnisotropy;
 		}
@@ -4491,17 +4491,17 @@ qboolean ItemParse_cvarStrList( itemDef_t *item)
 		return qfalse;
 	}
 
-	if (!stricmp(token,"feeder") && item->special == FEEDER_PLAYER_SPECIES) 
+	if (!Q_stricmp(token,"feeder") && item->special == FEEDER_PLAYER_SPECIES) 
 	{
 		for (; multiPtr->count < uiInfo.playerSpeciesCount; multiPtr->count++)
 		{
-			multiPtr->cvarList[multiPtr->count] = String_Alloc(strupr(va("@MENUS_%s",uiInfo.playerSpecies[multiPtr->count].Name )));	//look up translation
+			multiPtr->cvarList[multiPtr->count] = String_Alloc(Q_strupr(va("@MENUS_%s",uiInfo.playerSpecies[multiPtr->count].Name )));	//look up translation
 			multiPtr->cvarStr[multiPtr->count] = uiInfo.playerSpecies[multiPtr->count].Name;	//value
 		}
 		return qtrue;
 	}
 	// languages
-	if (!stricmp(token,"feeder") && item->special == FEEDER_LANGUAGES) 
+	if (!Q_stricmp(token,"feeder") && item->special == FEEDER_LANGUAGES) 
 	{
 		for (; multiPtr->count < uiInfo.languageCount; multiPtr->count++)
 		{
@@ -8443,7 +8443,7 @@ void GradientBar_Paint(rectDef_t *rect, vec4_t color)
 Window_Paint
 =================
 */
-void Window_Paint(Window *w, float fadeAmount, float fadeClamp, float fadeCycle) 
+void Window_Paint(qWindow *w, float fadeAmount, float fadeClamp, float fadeCycle) 
 {
   //float bordersize = 0;
   vec4_t color;

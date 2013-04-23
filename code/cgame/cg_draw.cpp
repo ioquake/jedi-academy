@@ -6,8 +6,9 @@
 
 //#include "cg_local.h"
 #include "cg_media.h"
-#include "..\game\objectives.h"
-#include "..\game\g_vehicles.h"
+#include "../game/objectives.h"
+#include "../game/g_vehicles.h"
+#include "../game/g_local.h"
 
 #ifdef _XBOX
 #include "../client/fffx.h"
@@ -2644,10 +2645,10 @@ qboolean CG_WorldCoordToScreenCoordFloat(vec3_t worldCoord, float *x, float *y)
 
 qboolean CG_WorldCoordToScreenCoord( vec3_t worldCoord, int *x, int *y )
 {
-	float	xF, yF;
-	qboolean retVal = CG_WorldCoordToScreenCoordFloat( worldCoord, &xF, &yF );
-	*x = (int)xF;
-	*y = (int)yF;
+	floatint_t xFI, yFI;
+	qboolean retVal = CG_WorldCoordToScreenCoordFloat( worldCoord, &xFI.f, &yFI.f );
+	*x = xFI.i;
+	*y = yFI.i;
 	return retVal;
 }
 

@@ -19,7 +19,7 @@ USER INTERFACE MAIN
 #include "../cgame/animtable.h" //we want this to be compiled into the module because we access it in the shared module.
 #include "../game/bg_saga.h"
 
-#include "..\cgame\holocronicons.h"
+#include "../cgame/holocronicons.h"
 
 extern void UI_SaberAttachToChar( itemDef_t *item );
 

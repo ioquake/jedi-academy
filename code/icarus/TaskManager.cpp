@@ -4,7 +4,7 @@
 
 
 // this include must remain at the top of every Icarus CPP file
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "IcarusImplementation.h"
 
 #include "BlockStream.h"
@@ -1849,7 +1849,8 @@ void CTaskManager::Load( CIcarus* icarus )
 	pIcarus->BufferRead( &numTasks, sizeof( numTasks ) );
 	
 	//Reload all the tasks
-	for ( int i = 0; i < numTasks; i++ )
+	int i;
+	for ( i = 0; i < numTasks; i++ )
 	{
 		task = new CTask;
 

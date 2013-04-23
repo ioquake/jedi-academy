@@ -5,6 +5,7 @@
 
 // this file is excluded from release builds because of intrinsics
 
+#ifdef WIN32
 size_t strlen( const char *string ) {
 	const char	*s;
 
@@ -78,15 +79,13 @@ char *strstr( const char *string, const char *strCharSet ) {
 	return (char *)0;
 }
 
-#ifndef _MSC_VER
-
+#if 0
 int tolower( int c ) {
 	if ( c >= 'A' && c <= 'Z' ) {
 		c += 'a' - 'A';
 	}
 	return c;
 }
-
 #endif
 
 int toupper( int c ) {
@@ -95,9 +94,7 @@ int toupper( int c ) {
 	}
 	return c;
 }
-
-//#ifndef _MSC_VER
-
+#endif // WIN32
 
 
 #if 0

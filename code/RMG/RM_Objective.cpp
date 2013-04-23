@@ -9,7 +9,7 @@
 
 #include "../server/exe_headers.h"
 
-#include "rm_headers.h"
+#include "RM_Headers.h"
 
 /************************************************************************************************
  * CRMObjective::CRMObjective
@@ -86,7 +86,7 @@ CRMObjective::CRMObjective ( CGPGroup* group )
 		}
 
 		// If the objective names dont match then ignore this trigger
-		if ( stricmp ( trigger->GetObjectiveName ( ), GetTrigger() ) )
+		if ( Q_stricmp ( trigger->GetObjectiveName ( ), GetTrigger() ) )
 		{
 			continue;
 		}

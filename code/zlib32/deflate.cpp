@@ -55,7 +55,7 @@ static const char *deflate_error = "OK";
 
 // ===============================================================================
 //  A word is an index in the character window. We use short instead of int to
-//  save space in the various tables. ulong is used only for parameter passing.
+//  save space in the various tables. uint32_t is used only for parameter passing.
 
 //  The static literal tree. Since the bit lengths are imposed, there is no
 //  need for the L_CODES extra codes used during heap construction. However
@@ -229,19 +229,19 @@ static const config configuration_table[10] =
 }; 
 
 // extra bits for each length code
-static ulong extra_lbits[LENGTH_CODES] = 
+static uint32_t extra_lbits[LENGTH_CODES] = 
 {
 	0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0
 };
 
 // Extra bits for distance codes
-const ulong extra_dbits[D_CODES] = 
+const uint32_t extra_dbits[D_CODES] = 
 { 
 	0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6,	7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13
 };
 
 // extra bits for each bit length code
-static ulong extra_blbits[BL_CODES] = 
+static uint32_t extra_blbits[BL_CODES] = 
 {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 7
 };
@@ -290,7 +290,7 @@ inline void put_shortMSB(deflate_state *s, const word w)
 	s->pending_buf[s->pending++] = (byte)(w & 0xff);
 }   
 
-inline void put_longMSB(deflate_state *s, const ulong l)
+inline void put_longMSB(deflate_state *s, const uint32_t l)
 {
     s->pending_buf[s->pending++] = (byte)(l >> 24);
     s->pending_buf[s->pending++] = (byte)(l >> 16);
@@ -303,7 +303,7 @@ inline void put_longMSB(deflate_state *s, const ulong l)
 // IN assertion: length <= 16 and value fits in length bits.
 // ===============================================================================
 
-static void send_bits(deflate_state *s, const ulong val, const ulong len)
+static void send_bits(deflate_state *s, const uint32_t val, const uint32_t len)
 {
 	assert(len <= 16);
 	assert(val <= 65536);
@@ -379,7 +379,7 @@ static void tr_init(deflate_state *s)
 // the subtrees have equal frequency. This minimizes the worst case length.
 // ===============================================================================
 
-static bool smaller(ct_data *tree, ulong son, ulong daughter, byte *depth)
+static bool smaller(ct_data *tree, uint32_t son, uint32_t daughter, byte *depth)
 {
 	if(tree[son].fc.freq < tree[daughter].fc.freq)
 	{
@@ -399,10 +399,10 @@ static bool smaller(ct_data *tree, ulong son, ulong daughter, byte *depth)
 // two sons).
 // ===============================================================================
 
-static void pqdownheap(deflate_state *s, ct_data *tree, ulong node)
+static void pqdownheap(deflate_state *s, ct_data *tree, uint32_t node)
 {
-    ulong	base; 
-    ulong	sibling;				// left son of node
+    uint32_t	base; 
+    uint32_t	sibling;				// left son of node
 
 	base = s->heap[node];
 	sibling = node << 1;
@@ -443,15 +443,15 @@ static void pqdownheap(deflate_state *s, ct_data *tree, ulong node)
 static void gen_bitlen(deflate_state *s, tree_desc *desc)
 {
     const ct_data	*stree;
-    const ulong		*extra;
-    ulong			base;
-    ulong			max_length;
-    ulong			heapIdx;		// heap index
-    ulong			n, m;			// iterate over the tree elements
-    ulong			bits;			// bit length
-    ulong			xbits;			// extra bits
+    const uint32_t		*extra;
+    uint32_t			base;
+    uint32_t			max_length;
+    uint32_t			heapIdx;		// heap index
+    uint32_t			n, m;			// iterate over the tree elements
+    uint32_t			bits;			// bit length
+    uint32_t			xbits;			// extra bits
     word			freq;			// frequency
-    ulong			overflow;		// number of elements with bit length too large
+    uint32_t			overflow;		// number of elements with bit length too large
 
     stree = desc->stat_desc->static_tree;
     extra = desc->stat_desc->extra_bits;
@@ -571,9 +571,9 @@ static void bi_windup(deflate_state *s)
 // method would use a table)
 // ===============================================================================
 
-static ulong bi_reverse(ulong code, ulong len)
+static uint32_t bi_reverse(uint32_t code, uint32_t len)
 {
-    ulong	res;
+    uint32_t	res;
 
 	assert(1 <= len);
 	assert(len <= 15);
@@ -597,13 +597,13 @@ static ulong bi_reverse(ulong code, ulong len)
 // OUT assertion: the field code is set for all tree elements of non zero code length.
 // ===============================================================================
 
-static void gen_codes(ct_data *tree, ulong max_code, word *bl_count)
+static void gen_codes(ct_data *tree, uint32_t max_code, word *bl_count)
 {
     word	next_code[MAX_WBITS + 1];	// next code value for each bit length
     word	code;						// running code value
-    ulong	bits;						// bit index
-    ulong	codes;						// code index
-	ulong	len;
+    uint32_t	bits;						// bit index
+    uint32_t	codes;						// code index
+	uint32_t	len;
 
     // The distribution counts are first used to generate the code values
     // without bit reversal.
@@ -642,10 +642,10 @@ static void build_tree(deflate_state *s, tree_desc *desc)
 {
     ct_data			*tree;
     const ct_data	*stree;
-    ulong			elems;
-    ulong			n, m;	 		// iterate over heap elements
-    ulong			max_code;		// largest code with non zero frequency
-    ulong			node;			// new node being created
+    uint32_t			elems;
+    uint32_t			n, m;	 		// iterate over heap elements
+    uint32_t			max_code;		// largest code with non zero frequency
+    uint32_t			node;			// new node being created
 
     tree = desc->dyn_tree;
     stree = desc->stat_desc->static_tree;
@@ -748,15 +748,15 @@ static void build_tree(deflate_state *s, tree_desc *desc)
 // in the bit length tree.
 // ===============================================================================
 
-static void scan_tree (deflate_state *s, ct_data *tree, ulong max_code)
+static void scan_tree (deflate_state *s, ct_data *tree, uint32_t max_code)
 {
-    ulong 	n;						// iterates over all tree elements
-    ulong	prevlen;				// last emitted length
-    ulong	curlen;					// length of current code
-    ulong	nextlen;				// length of next code
-    ulong	count;					// repeat count of the current code
-    ulong	max_count;				// max repeat count
-    ulong	min_count;				// min repeat count
+    uint32_t 	n;						// iterates over all tree elements
+    uint32_t	prevlen;				// last emitted length
+    uint32_t	curlen;					// length of current code
+    uint32_t	nextlen;				// length of next code
+    uint32_t	count;					// repeat count of the current code
+    uint32_t	max_count;				// max repeat count
+    uint32_t	min_count;				// min repeat count
 
     prevlen = 0xffff;
     nextlen = tree[0].dl.len;
@@ -824,15 +824,15 @@ static void scan_tree (deflate_state *s, ct_data *tree, ulong max_code)
 // Send a literal or distance tree in compressed form, using the codes in bl_tree.
 // ===============================================================================
 
-static void send_tree(deflate_state *s, ct_data *tree, ulong max_code)
+static void send_tree(deflate_state *s, ct_data *tree, uint32_t max_code)
 {
-    ulong	n;						// iterates over all tree elements
-    ulong	prevlen;				// last emitted length
-    ulong	curlen;					// length of current code
-    ulong	nextlen;				// length of next code
-    ulong	count;					// repeat count of the current code
-    ulong	max_count;				// max repeat count
-    ulong	min_count;				// min repeat count
+    uint32_t	n;						// iterates over all tree elements
+    uint32_t	prevlen;				// last emitted length
+    uint32_t	curlen;					// length of current code
+    uint32_t	nextlen;				// length of next code
+    uint32_t	count;					// repeat count of the current code
+    uint32_t	max_count;				// max repeat count
+    uint32_t	min_count;				// min repeat count
 
     prevlen = 0xffff;
     nextlen = tree[0].dl.len;
@@ -910,9 +910,9 @@ static void send_tree(deflate_state *s, ct_data *tree, ulong max_code)
 // bl_order of the last bit length code to send.
 // ===============================================================================
 
-static ulong build_bl_tree(deflate_state *s)
+static uint32_t build_bl_tree(deflate_state *s)
 {
-    ulong	max_blindex;			// index of last bit length code of non zero freq
+    uint32_t	max_blindex;			// index of last bit length code of non zero freq
 
     // Determine the bit length frequencies for literal and distance trees
     scan_tree(s, s->dyn_ltree, s->l_desc.max_code);
@@ -944,9 +944,9 @@ static ulong build_bl_tree(deflate_state *s)
 // IN assertion: lcodes >= 257, dcodes >= 1, blcodes >= 4.
 // ===========================================================================
 
-static void send_all_trees(deflate_state *s, ulong lcodes, ulong dcodes, ulong blcodes)
+static void send_all_trees(deflate_state *s, uint32_t lcodes, uint32_t dcodes, uint32_t blcodes)
 {
-    ulong	rank;				// index in bl_order
+    uint32_t	rank;				// index in bl_order
 
 	// not +255 as stated in appnote.txt
     send_bits(s, lcodes - 257, 5); 
@@ -971,11 +971,11 @@ static void send_all_trees(deflate_state *s, ulong lcodes, ulong dcodes, ulong b
 
 static void compress_block(deflate_state *s, const ct_data *ltree, const ct_data *dtree)
 {
-    ulong	dist;					// distance of matched string
-    ulong	lenCount;				// match length or unmatched char (if dist == 0)
-    ulong	lenIdx;					// running index in l_buf
-    ulong	code;					// the code to send
-    ulong	extra;					// number of extra bits to send
+    uint32_t	dist;					// distance of matched string
+    uint32_t	lenCount;				// match length or unmatched char (if dist == 0)
+    uint32_t	lenIdx;					// running index in l_buf
+    uint32_t	code;					// the code to send
+    uint32_t	extra;					// number of extra bits to send
 
 	lenIdx = 0;
     if(s->last_lit) 
@@ -1028,10 +1028,10 @@ static void compress_block(deflate_state *s, const ct_data *ltree, const ct_data
 // Send a stored block
 // ===========================================================================
 
-static void tr_stored_block(deflate_state *s, const byte *buf, ulong stored_len, bool eof)
+static void tr_stored_block(deflate_state *s, const byte *buf, uint32_t stored_len, bool eof)
 {
 	// send block type
-    send_bits(s, (STORED_BLOCK << 1) + (ulong)eof, 3);
+    send_bits(s, (STORED_BLOCK << 1) + (uint32_t)eof, 3);
 
 	// align on byte boundary
     bi_windup(s);        
@@ -1052,11 +1052,11 @@ static void tr_stored_block(deflate_state *s, const byte *buf, ulong stored_len,
 // trees or store, and output the encoded block to the zip file.
 // ===========================================================================
 
-static void tr_flush_block(deflate_state *s, const byte *buf, ulong stored_len, bool eof)
+static void tr_flush_block(deflate_state *s, const byte *buf, uint32_t stored_len, bool eof)
 {
-    ulong	opt_lenb;
-    ulong	static_lenb;
-    ulong	max_blindex;			// index of last bit length code of non zero freq
+    uint32_t	opt_lenb;
+    uint32_t	static_lenb;
+    uint32_t	max_blindex;			// index of last bit length code of non zero freq
 
     max_blindex = 0;
 
@@ -1102,12 +1102,12 @@ static void tr_flush_block(deflate_state *s, const byte *buf, ulong stored_len, 
     } 
 	else if(static_lenb == opt_lenb) 
 	{
-        send_bits(s, (STATIC_TREES << 1) + (ulong)eof, 3);
+        send_bits(s, (STATIC_TREES << 1) + (uint32_t)eof, 3);
         compress_block(s, static_ltree, static_dtree);
     } 
 	else 
 	{
-        send_bits(s, (DYN_TREES << 1) + (ulong)eof, 3);
+        send_bits(s, (DYN_TREES << 1) + (uint32_t)eof, 3);
         send_all_trees(s, s->l_desc.max_code + 1, s->d_desc.max_code + 1, max_blindex + 1);
         compress_block(s, s->dyn_ltree, s->dyn_dtree);
     }
@@ -1137,7 +1137,7 @@ inline bool tr_tally_lit(deflate_state *s, byte c)
 // ===============================================================================
 // ===============================================================================
 
-inline bool tr_tally_dist(deflate_state *s, ulong dist, ulong len)
+inline bool tr_tally_dist(deflate_state *s, uint32_t dist, uint32_t len)
 { 
 	assert(dist < 65536);
 	assert(len < 256);
@@ -1165,7 +1165,7 @@ inline bool tr_tally_dist(deflate_state *s, ulong dist, ulong len)
 //    (except for the last MIN_MATCH-1 bytes of the input file).
 // ===============================================================================
 
-inline void insert_string(deflate_state *s, ulong str, ulong &match_head)
+inline void insert_string(deflate_state *s, uint32_t str, uint32_t &match_head)
 {
 	s->ins_h = ((s->ins_h << HASH_SHIFT) ^ s->window[str + (MIN_MATCH - 1)]) & HASH_MASK;
 	match_head = s->head[s->ins_h];
@@ -1207,9 +1207,10 @@ static void lm_init(deflate_state *s)
 // OUT assertion: the match length is not greater than s->lookahead.
 // ===========================================================================
 
-inline byte *qcmp(byte *scan, byte *match, ulong count)
+inline byte *qcmp(byte *scan, byte *match, uint32_t count)
 {
 	byte	*retval;
+#ifdef _MSC_VER
 	_asm
 	{
 		push	esi
@@ -1226,18 +1227,24 @@ inline byte *qcmp(byte *scan, byte *match, ulong count)
 		mov		[retval], esi
 		pop		esi
 	}
+#else
+	asm("repe cmpsb;"
+	    : "=S"(retval)
+	    : "S"(scan), "D"(match), "c"(count)
+	);
+#endif
 	return(--retval);
 }
 
-static ulong longest_match(deflate_state *s, ulong cur_match)
+static uint32_t longest_match(deflate_state *s, uint32_t cur_match)
 {
-	ulong	chain_length;			// max hash chain length
-	ulong	limit;
+	uint32_t	chain_length;			// max hash chain length
+	uint32_t	limit;
 	byte	*scan;					// current string
 	byte	*match;					// matched string
-	ulong	len;					// length of current match
-	ulong	best_len;				// best match length so far
-	ulong	nice_match;				// stop if match long enough
+	uint32_t	len;					// length of current match
+	uint32_t	best_len;				// best match length so far
+	uint32_t	nice_match;				// stop if match long enough
     byte	scan_end1;
     byte	scan_end;
 
@@ -1314,7 +1321,7 @@ static ulong longest_match(deflate_state *s, ulong cur_match)
 
 static void flush_pending(z_stream *z)
 {
-    ulong	len = z->dstate->pending;
+    uint32_t	len = z->dstate->pending;
 
     if(len > z->avail_out) 
 	{
@@ -1347,9 +1354,9 @@ static void flush_pending(z_stream *z)
 // (See also flush_pending()).
 // ===========================================================================
 
-static ulong read_buf(z_stream *z, byte *buf, ulong size)
+static uint32_t read_buf(z_stream *z, byte *buf, uint32_t size)
 {
-    ulong	len;
+    uint32_t	len;
 
     len = z->avail_in;
     if(len > size)
@@ -1384,9 +1391,9 @@ static ulong read_buf(z_stream *z, byte *buf, ulong size)
 
 static void fill_window(deflate_state *s)
 {
-	ulong		n, m;
+	uint32_t		n, m;
 	word		*p;
-    ulong		more;				// Amount of free space at the end of the window.
+    uint32_t		more;				// Amount of free space at the end of the window.
 
     do 
 	{
@@ -1485,7 +1492,7 @@ static block_state deflate_stored(deflate_state *s, EFlush flush)
 {
     // Stored blocks are limited to 0xffff bytes, pending_buf is limited
     // to pending_buf_size, and each stored block has a 5 byte header:
-    ulong	max_start;
+    uint32_t	max_start;
 
     // Copy as much as possible from input to output:
     while(true) 
@@ -1548,7 +1555,7 @@ static block_state deflate_stored(deflate_state *s, EFlush flush)
 
 static block_state deflate_fast(deflate_state *s, EFlush flush)
 {
-    ulong		hash_head;			// head of the hash chain
+    uint32_t		hash_head;			// head of the hash chain
     bool		bflush;	 			// set if current block must be flushed
 
     hash_head = 0;
@@ -1655,8 +1662,8 @@ static block_state deflate_fast(deflate_state *s, EFlush flush)
 
 static block_state deflate_slow(deflate_state *s, EFlush flush)
 {
-    ulong		hash_head;			// head of hash chain
-	ulong		max_insert;
+    uint32_t		hash_head;			// head of hash chain
+	uint32_t		max_insert;
     bool		bflush;				// set if current block must be flushed
 
     hash_head = 0;
@@ -1863,8 +1870,8 @@ EStatus deflate(z_stream *z, EFlush flush)
 {
     EFlush			old_flush;		// value of flush param for previous deflate call
     deflate_state	*s;
-	ulong			header;
-	ulong			level_flags;
+	uint32_t			header;
+	uint32_t			level_flags;
 
 	assert(z);
 	assert(z->dstate);
@@ -2042,7 +2049,7 @@ const char *deflateError(void)
 // External calls
 // ===============================================================================
 
-bool DeflateFile(byte *src, ulong uncompressedSize, byte *dst, ulong maxCompressedSize, ulong *compressedSize, ELevel level, int noWrap)
+bool DeflateFile(byte *src, uint32_t uncompressedSize, byte *dst, uint32_t maxCompressedSize, uint32_t *compressedSize, ELevel level, int noWrap)
 {
 	z_stream	z = { 0 };
 

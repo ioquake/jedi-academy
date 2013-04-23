@@ -1,7 +1,7 @@
 #ifndef __TR_TYPES_H
 #define __TR_TYPES_H
 
-#include "..\game\ghoul2_shared.h"
+#include "../game/ghoul2_shared.h"
 
 #define	MAX_DLIGHTS		32			// can't be increased, because bit flags are used on surfaces
 #ifdef _XBOX
@@ -228,7 +228,11 @@ typedef struct {
 
 #if !defined _WIN32
 
+#ifdef __linux__
+#define OPENGL_DRIVER_NAME	"libGL.so.1"
+#else
 #define OPENGL_DRIVER_NAME	"libGL.so"
+#endif
 
 #else
 

@@ -126,7 +126,7 @@ static qboolean GLW_LoadOpenGL()
 {
 	char buffer[1024];
 
-	strlwr( strcpy( buffer, OPENGL_DRIVER_NAME ) );
+	Q_strlwr( strcpy( buffer, OPENGL_DRIVER_NAME ) );
 
 	//
 	// load the driver and bind our function pointers to it
@@ -149,7 +149,7 @@ static qboolean GLW_LoadOpenGL()
 void GLimp_EndFrame (void)
 {
 	// don't flip if drawing to front buffer
-//	if ( stricmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
+//	if ( Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
 	{
 	}
 }

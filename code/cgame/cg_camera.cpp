@@ -5,7 +5,7 @@
 
 #include "cg_media.h"
 
-#include "..\game\g_roff.h"
+#include "../game/g_roff.h"
 
 bool		in_camera = false;
 camera_t	client_camera={0};
@@ -1391,7 +1391,8 @@ void CGCam_UpdateShake( vec3_t origin, vec3_t angles )
 
 	intensity = client_camera.shake_intensity * intensity_scale;
 
-	for ( int i = 0; i < 3; i++ )
+	int i;
+	for ( i = 0; i < 3; i++ )
 	{
 		moveDir[i] = ( crandom() * intensity );
 	}

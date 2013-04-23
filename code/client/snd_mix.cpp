@@ -15,8 +15,7 @@ short	*snd_out;
 
 
 
-#if !(defined __linux__ && defined __i386__)
-#if	!id386
+#if !(defined(_MSC_VER) && defined(__i386__))
 
 
 void S_WriteLinearBlastStereo16 (void)
@@ -131,7 +130,6 @@ LExit:
 	}
 }
 
-#endif
 #endif
 
 

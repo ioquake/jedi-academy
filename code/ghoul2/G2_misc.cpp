@@ -12,21 +12,21 @@
 	#include "../renderer/tr_local.h"
 #endif
 
-#include "../renderer/MatComp.h"
+#include "../renderer/matcomp.h"
 
 #if !defined(G2_H_INC)
 	#include "G2.h"
 #endif
 
 #if !defined (MINIHEAP_H_INC)
-	#include "../qcommon/miniheap.h"
+	#include "../qcommon/MiniHeap.h"
 #endif
 
 #define G2_MODEL_OK(g) ((g)&&(g)->mValid&&(g)->aHeader&&(g)->currentModel&&(g)->animModel)
 
 #include "../server/server.h"
 
-#include <FLOAT.H>
+#include <float.h>
 
 #ifdef _G2_GORE
 #include "ghoul2_gore.h"
@@ -195,7 +195,7 @@ public:
 	const int			modelIndex;
 	const skin_t		*skin;
 	const shader_t		*cust_shader;
-	int					*TransformedVertsArray;
+	size_t			*TransformedVertsArray;
 	const EG2_Collision	eG2TraceType;
 	bool				hitOne;
 	float				m_fRadius;
@@ -224,7 +224,7 @@ public:
 		int					initmodelIndex,
 		const skin_t		*initskin,
 		const shader_t		*initcust_shader,
-		int					*initTransformedVertsArray,
+		size_t			*initTransformedVertsArray,
 		const EG2_Collision	einitG2TraceType,
 #ifdef _G2_GORE
 		float				fRadius,
@@ -290,7 +290,7 @@ void G2_List_Model_Surfaces(const char *fileName)
 			}
 		}
 		// find the next surface
-  		surf = (mdxmSurfHierarchy_t *)( (byte *)surf + (int)( &((mdxmSurfHierarchy_t *)0)->childIndexes[ surf->numChildren ] ));
+  		surf = (mdxmSurfHierarchy_t *)( (byte *)surf + (size_t)( &((mdxmSurfHierarchy_t *)0)->childIndexes[ surf->numChildren ] ));
   		surface =(mdxmSurface_t *)( (byte *)surface + surface->ofsEnd );
 	}
 
@@ -311,7 +311,7 @@ void G2_List_Model_Bones(const char *fileName, int frame)
 	// figure out where the offset list is
 	offsets = (mdxaSkelOffsets_t *)((byte *)header + sizeof(mdxaHeader_t));
 
-//    frameSize = (int)( &((mdxaFrame_t *)0)->boneIndexes[ header->numBones ] );   
+//    frameSize = (size_t)( &((mdxaFrame_t *)0)->boneIndexes[ header->numBones ] );   
 
 //	aframe = (mdxaFrame_t *)((byte *)header + header->ofsFrames + (frame * frameSize));
 	// walk each bone and list it's name
@@ -394,7 +394,7 @@ int G2_DecideTraceLod(CGhoul2Info &ghoul2, int useLod)
 // This is in tr_ghoul2 for various reasons.
 extern void R_TransformEachSurface( const mdxmSurface_t *surface, vec3_t scale, CMiniHeap *G2VertSpace, int *TransformedVertsArray,CBoneCache *boneCache);
 #else
-void R_TransformEachSurface( const mdxmSurface_t *surface, vec3_t scale, CMiniHeap *G2VertSpace, int *TransformedVertsArray,CBoneCache *boneCache) 
+void R_TransformEachSurface( const mdxmSurface_t *surface, vec3_t scale, CMiniHeap *G2VertSpace, size_t *TransformedVertsArray,CBoneCache *boneCache) 
 {
 	int				 j, k;
 	mdxmVertex_t 	*v;
@@ -407,7 +407,7 @@ void R_TransformEachSurface( const mdxmSurface_t *surface, vec3_t scale, CMiniHe
    
 	// alloc some space for the transformed verts to get put in
 	TransformedVerts = (float *)G2VertSpace->MiniHeapAlloc(surface->numVerts * 5 * 4);
-	TransformedVertsArray[surface->thisSurfaceIndex] = (int)TransformedVerts;
+	TransformedVertsArray[surface->thisSurfaceIndex] = (size_t)TransformedVerts;
 	if (!TransformedVerts)
 	{
 		assert(TransformedVerts);
@@ -509,7 +509,7 @@ void R_TransformEachSurface( const mdxmSurface_t *surface, vec3_t scale, CMiniHe
 #endif
 
 void G2_TransformSurfaces(int surfaceNum, surfaceInfo_v &rootSList, 
-					CBoneCache *boneCache, const model_t *currentModel, int lod, vec3_t scale, CMiniHeap *G2VertSpace, int *TransformedVertArray, bool secondTimeAround)
+					CBoneCache *boneCache, const model_t *currentModel, int lod, vec3_t scale, CMiniHeap *G2VertSpace, size_t *TransformedVertArray, bool secondTimeAround)
 {
 	int	i;
 	assert(currentModel);
@@ -633,7 +633,7 @@ void G2_TransformModel(CGhoul2Info_v &ghoul2, const int frameNum, vec3_t scale, 
 		}
 
 		// give us space for the transformed vertex array to be put in
-		g.mTransformedVertsArray = (int*)G2VertSpace->MiniHeapAlloc(g.currentModel->mdxm->numSurfaces * 4);
+		g.mTransformedVertsArray = (size_t*)G2VertSpace->MiniHeapAlloc(g.currentModel->mdxm->numSurfaces * 4);
 		if (!g.mTransformedVertsArray)
 		{
 			Com_Error(ERR_DROP, "Ran out of transform space for Ghoul2 Models. Adjust MiniHeapSize in SV_SpawnServer.\n");
@@ -1119,7 +1119,8 @@ static bool G2_TracePolys(const mdxmSurface_t *surface, const mdxmSurfHierarchy_
 		// did we hit it?
 		if (G2_SegmentTriangleTest(TS.rayStart, TS.rayEnd, point1, point2, point3, qtrue, qtrue, hitPoint, normal, &face))
 		{	// find space in the collision records for this record
-			for (int i=0; i<MAX_G2_COLLISIONS;i++)
+			int i;
+			for (i=0; i<MAX_G2_COLLISIONS;i++)
 			{
 				if (TS.collRecMap[i].mEntityNum == -1)
 				{
@@ -1142,7 +1143,7 @@ static bool G2_TracePolys(const mdxmSurface_t *surface, const mdxmSurfHierarchy_
 
 					VectorSubtract(hitPoint, TS.rayStart, distVect);
 					newCol.mDistance = VectorLength(distVect);
-					assert( !_isnan(newCol.mDistance) );
+					assert( !Q_isnan(newCol.mDistance) );
 
 					// put the hit point back into world space
 					TransformAndTranslatePoint(hitPoint, newCol.mCollisionPosition, &worldMatrix);
@@ -1351,7 +1352,8 @@ static bool G2_RadiusTracePolys(
 		{
 			// we hit a triangle, so init a collision record...
 			//
-			for (int i=0; i<MAX_G2_COLLISIONS;i++)
+			int i;
+			for (i=0; i<MAX_G2_COLLISIONS;i++)
 			{
 				if (TS.collRecMap[i].mEntityNum == -1)
 				{
@@ -1424,7 +1426,7 @@ static bool G2_RadiusTracePolys(
 
 					VectorSubtract(hitPoint, TS.rayStart, distVect);
 					newCol.mDistance = VectorLength(distVect);
-					assert( !_isnan(newCol.mDistance) );
+					assert( !Q_isnan(newCol.mDistance) );
 
 					// put the hit point back into world space
 					TransformAndTranslatePoint(hitPoint, newCol.mCollisionPosition, &worldMatrix);
@@ -1723,7 +1725,7 @@ void *G2_FindSurface(const model_s *mod, int index, int lod)
 	assert(mod->mdxm);
 
 	// point at first lod list
-	byte	*current = (byte*)((int)mod->mdxm + (int)mod->mdxm->ofsLODs);
+	byte	*current = (byte*)((size_t)mod->mdxm + (size_t)mod->mdxm->ofsLODs);
 	int i;
 
 	//walk the lods
@@ -1762,12 +1764,13 @@ void G2_SaveGhoul2Models(CGhoul2Info_v &ghoul2)
 	}
 
 	// this one isn't a define since I couldn't work out how to figure it out at compile time
-	const int ghoul2BlockSize = (int)&ghoul2[0].BSAVE_END_FIELD - (int)&ghoul2[0].BSAVE_START_FIELD;
+	const int ghoul2BlockSize = (size_t)&ghoul2[0].BSAVE_END_FIELD - (size_t)&ghoul2[0].BSAVE_START_FIELD;
 
 	// add in count for number of ghoul2 models
 	iGhoul2Size += 4;	
 	// start out working out the total size of the buffer we need to allocate
-	for (int i=0; i<ghoul2.size();i++)
+	int i;
+	for (i=0; i<ghoul2.size();i++)
 	{
 		iGhoul2Size += ghoul2BlockSize;
 		// add in count for number of surfaces
@@ -1803,7 +1806,8 @@ void G2_SaveGhoul2Models(CGhoul2Info_v &ghoul2)
 		tempBuffer +=4;
 
 		// now save the all the surface list info
-		for (int x=0; x<ghoul2[i].mSlist.size(); x++)
+		int x;
+		for (x=0; x<ghoul2[i].mSlist.size(); x++)
 		{
 			memcpy(tempBuffer, &ghoul2[i].mSlist[x], SURFACE_SAVE_BLOCK_SIZE);
 			tempBuffer += SURFACE_SAVE_BLOCK_SIZE;
@@ -1840,14 +1844,15 @@ int G2_FindConfigStringSpace(char *name, int start, int max)
 {
 	char	s[MAX_STRING_CHARS];
 
-	for (int  i=1 ; i<max ; i++ ) 
+	int i;
+	for ( i=1 ; i<max ; i++ ) 
 	{
 		SV_GetConfigstring( start + i, s, sizeof( s ) );
 		if ( !s[0] ) 
 		{
 			break;
 		}
-		if ( !stricmp( s, name ) ) 
+		if ( !Q_stricmp( s, name ) ) 
 		{
 			return i;
 		}
@@ -1872,7 +1877,7 @@ void G2_LoadGhoul2Model(CGhoul2Info_v &ghoul2, char *buffer)
 	}
 
 	// this one isn't a define since I couldn't work out how to figure it out at compile time
-	const int ghoul2BlockSize = (int)&ghoul2[0].mTransformedVertsArray - (int)&ghoul2[0].mModelindex;
+	const int ghoul2BlockSize = (size_t)&ghoul2[0].mTransformedVertsArray - (size_t)&ghoul2[0].mModelindex;
 
 	// now we have enough instances, lets go through each one and load up the relevant details
 	for (int i=0; i<ghoul2.size(); i++)
@@ -1896,7 +1901,8 @@ void G2_LoadGhoul2Model(CGhoul2Info_v &ghoul2, char *buffer)
 		buffer +=4;
 
 		// now load all the surfaces
-		for (int x=0; x<ghoul2[i].mSlist.size(); x++)
+		int x;
+		for (x=0; x<ghoul2[i].mSlist.size(); x++)
 		{
 			memcpy(&ghoul2[i].mSlist[x], buffer, SURFACE_SAVE_BLOCK_SIZE);
 			buffer += SURFACE_SAVE_BLOCK_SIZE;

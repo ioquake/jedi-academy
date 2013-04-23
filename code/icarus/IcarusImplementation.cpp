@@ -1,12 +1,14 @@
 // IcarusImplementation.cpp
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "IcarusImplementation.h"
 
 #include "BlockStream.h"
 #include "Sequence.h"
 #include "TaskManager.h"
 #include "Sequencer.h"
+
+#include "../game/q_shared.h"
 
 #define STL_ITERATE( a, b )		for ( a = b.begin(); a != b.end(); a++ )
 #define STL_INSERT( a, b )		a.insert( a.end(), b );
@@ -362,7 +364,7 @@ void CIcarus::Precache(char* buffer, long length)
 			
 			sVal1 = (const char *) block.GetMemberData( 0 );
 
-			if (!stricmp(sVal1,"PLAY_ROFF"))
+			if (!Q_stricmp(sVal1,"PLAY_ROFF"))
 			{
 				sVal1 = (const char *) block.GetMemberData( 1 );
 

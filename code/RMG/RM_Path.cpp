@@ -7,7 +7,7 @@
  ************************************************************************************************/
 #include "../server/exe_headers.h"
 
-#include "rm_headers.h"
+#include "RM_Headers.h"
 
 #define max(a,b)    (((a) > (b)) ? (a) : (b))
 
@@ -95,7 +95,7 @@ void CRMPathManager::CreateLocation ( const char* name, const int min_depth, int
 	}
 
 	for (i = mLocations.size()-1; i>=0; --i)
-		if ( !stricmp ( name, mLocations[i]->GetName ( ) ) )
+		if ( !Q_stricmp ( name, mLocations[i]->GetName ( ) ) )
 		{
 			mLocations[i]->SetMinDepth(min_depth);
 			mLocations[i]->SetMaxDepth(max_depth);
@@ -449,7 +449,7 @@ CRMNode* CRMPathManager::FindNodeByName ( const char* name )
 
 	for ( j = mNodes.size() - 1; j >=0; j-- )
 	{
-		if ( !stricmp ( name, mNodes[j]->GetName ( ) ) )
+		if ( !Q_stricmp ( name, mNodes[j]->GetName ( ) ) )
 			return mNodes[j];
 	}
 	return NULL;

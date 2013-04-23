@@ -11,7 +11,7 @@
 //#endif
 
 #if !defined(TEAMS_H_INC)
-	#include "../game/Teams.h"
+	#include "../game/teams.h"
 #endif
 
 //#if !defined(IGINTERFACE_H_INC)
@@ -19,7 +19,7 @@
 //#endif
 
 // More stuff that we "need" on Xbox, as we don't use PCH
-#ifdef _XBOX
+#if defined(_XBOX) || defined(__GNUC__)
 	#include "../game/b_local.h"
 	#include "../game/g_functions.h"
 	#include "../game/g_nav.h"

@@ -535,15 +535,15 @@ void MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up) {
 */
 float Q_rsqrt( float number )
 {
-	long i;
+	floatint_t t;
 	float x2, y;
 	const float threehalfs = 1.5F;
 
 	x2 = number * 0.5F;
-	y  = number;
-	i  = * ( long * ) &y;						// evil floating point bit level hacking
-	i  = 0x5f3759df - ( i >> 1 );               // what the fuck?
-	y  = * ( float * ) &i;
+	t.f = number;
+	t.i = 0x5f3759df - (t.i >> 1);    // what the fuck? 
+	y = t.f;
+
 	y  = y * ( threehalfs - ( x2 * y * y ) );   // 1st iteration
 //	y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
 
@@ -551,9 +551,10 @@ float Q_rsqrt( float number )
 }
 
 float Q_fabs( float f ) {
-	int tmp = * ( int * ) &f;
-	tmp &= 0x7FFFFFFF;
-	return * ( float * ) &tmp;
+	floatint_t fi;
+	fi.f  = f;
+	fi.i &= 0x7FFFFFFF;
+	return fi.f;
 }
 
 //============================================================
@@ -629,8 +630,7 @@ int BoxOnPlaneSide2 (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
 ==================
 */
 
-#if !(defined __linux__ && defined __i386__) || defined __LCC__
-#if !id386
+#ifndef _MSC_VER
 
 int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
 {
@@ -929,8 +929,7 @@ Lerror:
 }
 #pragma warning( default: 4035 )
 
-#endif
-#endif
+#endif // !def _MSC_VER
 
 /*
 =================

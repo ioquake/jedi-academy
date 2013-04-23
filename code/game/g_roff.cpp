@@ -298,7 +298,8 @@ static qboolean G_InitRoff( char *file, unsigned char *data )
 			move_rotate_t *roff_data = ( move_rotate_t *)&header[1];
 
 			// Copy all of the goods into our ROFF cache
-			for ( int i = 0; i < count; i++, roff_data++, mem++ )
+			int i;
+			for ( i = 0; i < count; i++, roff_data++, mem++ )
 			{
 				// Copy just the delta position and orientation which can be applied to anything at a later point
 				VectorCopy( roff_data->origin_delta, mem->origin_delta );
@@ -335,7 +336,8 @@ static qboolean G_InitRoff( char *file, unsigned char *data )
 			roffs[num_roffs].type = 2; //rww - any reason this wasn't being set already?
 
 			// Copy all of the goods into our ROFF cache
-			for ( int i = 0; i < count; i++ )
+			int i;
+			for ( i = 0; i < count; i++ )
 			{
 				VectorCopy( roff_data[i].origin_delta, mem[i].origin_delta );
 				VectorCopy( roff_data[i].rotate_delta, mem[i].rotate_delta );
@@ -403,7 +405,7 @@ int G_LoadRoff( const char *fileName )
 	// See if I'm already precached
 	for ( i = 0; i < num_roffs; i++ )
 	{
-		if ( stricmp( file, roffs[i].fileName ) == 0 )
+		if ( Q_stricmp( file, roffs[i].fileName ) == 0 )
 		{
 			// Good, just return me...avoid zero index
 			return i + 1;

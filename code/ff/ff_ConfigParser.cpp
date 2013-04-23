@@ -64,12 +64,12 @@ qboolean FFConfigParser::Parse( void *file )
 		&&	result // fail if any problem
 		;	token = COM_ParseExt( &pos, qtrue )
 		){
-			if ( !stricmp( token, "ffdefaults" ) )
+			if ( !Q_stricmp( token, "ffdefaults" ) )
 			{
 				result &= ParseDefaults( &pos );
 			}
 			else
-			if ( !stricmp( token, "ffsets" ) )
+			if ( !Q_stricmp( token, "ffsets" ) )
 			{
 				result &= ParseSets( &pos );
 			}
@@ -323,12 +323,12 @@ qboolean FFConfigParser::ParseSet( const char **pos, TData &data )
 			&&	result // fail if any problem
 			;	token = COM_ParseExt( pos, qtrue )
 			){
-				if ( !stricmp( token, "includes" ) )
+				if ( !Q_stricmp( token, "includes" ) )
 				{
 					result &= ParseSetIncludes( pos, data.include );
 				}
 				else
-				if ( !stricmp( token, "devices" ) )
+				if ( !Q_stricmp( token, "devices" ) )
 				{
 					result &= ParseSetDevices( pos, data.device );
 				}

@@ -87,7 +87,7 @@ typedef struct
 	// (note that I've defined it using '>' internally, so it sorts with higher weights being "less", for distance weight-culling
 	//
 	#ifdef __cplusplus
-	bool operator < (const mdxmWeight_t& _X) const {return (boneWeight>_X.boneWeight);}
+	bool operator < (const mdxmWeight_t& _x) const {return (boneWeight>_x.boneWeight);}
 	#endif
 } 
 #ifndef __cplusplus
@@ -107,7 +107,7 @@ typedef struct
 	// I'm defining this '<' operator so this struct can be used as an STL <map> key...
 	//
 	#ifdef __cplusplus
-	bool operator < (const mdxaCompBone_t& _X) const {return (memcmp(Comp,_X.Comp,sizeof(Comp))<0);}
+	bool operator < (const mdxaCompBone_t& _x) const {return (memcmp(Comp,_x.Comp,sizeof(Comp))<0);}
 	#endif
 }
 #ifndef __cplusplus
@@ -126,7 +126,7 @@ typedef struct
 	// I'm defining this '<' operator so this struct can be used as an STL <map> key...
 	//
 	#ifdef __cplusplus
-	bool operator < (const mdxaCompQuatBone_t& _X) const {return (memcmp(Comp,_X.Comp,sizeof(Comp))<0);}
+	bool operator < (const mdxaCompQuatBone_t& _x) const {return (memcmp(Comp,_x.Comp,sizeof(Comp))<0);}
 	#endif
 }
 #ifndef __cplusplus
@@ -192,7 +192,7 @@ typedef struct {
 			int			parentIndex;		// this points to the index in the file of the parent surface. -1 if null/root
 			int			numChildren;		// number of surfaces which are children of this one
 			int			childIndexes[1];	// [mdxmSurfHierarch_t->numChildren] (variable sized)
-		} mdxmSurfHierarchy_t;	// struct size = (int)( &((mdxmSurfHierarch_t *)0)->childIndexes[ mdxmSurfHierarch_t->numChildren ] );
+		} mdxmSurfHierarchy_t;	// struct size = (size_t)( &((mdxmSurfHierarch_t *)0)->childIndexes[ mdxmSurfHierarch_t->numChildren ] );
 // }
 
 
@@ -393,7 +393,7 @@ typedef struct {
 			mdxaBone_t	BasePoseMatInv;		// inverse, to save run-time calc
 			int			numChildren;		// number of children bones
 			int			children[1];		// [mdxaSkel_t->numChildren] (variable sized)
-		} mdxaSkel_t;	// struct size = (int)( &((mdxaSkel_t *)0)->children[ mdxaSkel_t->numChildren ] );
+		} mdxaSkel_t;	// struct size = (size_t)( &((mdxaSkel_t *)0)->children[ mdxaSkel_t->numChildren ] );
 // }
 
 

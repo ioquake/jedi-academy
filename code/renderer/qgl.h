@@ -24,15 +24,10 @@
   
 #include <MesaGL/gl.h>
 
-#elif defined( __linux__ )
+#else
 
 #include <GL/gl.h>
 #include <GL/glx.h>
-#include <GL/fxmesa.h>
-
-#else
-
-#include <gl.h>
 
 #endif
 
@@ -167,6 +162,7 @@ extern PFNGLGETFINALCOMBINERINPUTPARAMETERFVNV	qglGetFinalCombinerInputParameter
 extern PFNGLGETFINALCOMBINERINPUTPARAMETERIVNV	qglGetFinalCombinerInputParameterivNV;
 
 
+#ifdef _WIN32
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Pixel Format extension definitions. - AReis
 /***********************************************************************************************************/
@@ -184,7 +180,6 @@ typedef BOOL (WINAPI * PFNWGLCHOOSEPIXELFORMATARBPROC) (HDC hdc, const int *piAt
 extern PFNWGLGETPIXELFORMATATTRIBIVARBPROC		qwglGetPixelFormatAttribivARB;
 extern PFNWGLGETPIXELFORMATATTRIBFVARBPROC		qwglGetPixelFormatAttribfvARB;
 extern PFNWGLCHOOSEPIXELFORMATARBPROC			qwglChoosePixelFormatARB;
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Pixel Buffer extension definitions. - AReis
@@ -236,6 +231,7 @@ extern PFNWGLBINDTEXIMAGEARBPROC			qwglBindTexImageARB;
 extern PFNWGLRELEASETEXIMAGEARBPROC			qwglReleaseTexImageARB;
 extern PFNWGLSETPBUFFERATTRIBARBPROC		qwglSetPbufferAttribARB;
 
+#endif	// _WIN32
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Vertex and Fragment Program extension definitions. - AReis
@@ -333,13 +329,6 @@ extern	void ( APIENTRY * qglPointParameteriNV)( GLenum, GLint);
 extern	void ( APIENTRY * qglPointParameterivNV)( GLenum, const GLint *);
 
 //===========================================================================
-
-// non-windows systems will just redefine qgl* to gl*
-#if !defined( _WIN32 ) && !defined( __linux__ )
-
-#include "qgl_linked.h"
-
-#else
 
 // windows systems use a function pointer for each call so we can load minidrivers
 
@@ -707,17 +696,7 @@ extern BOOL ( WINAPI * qwglSwapLayerBuffers)(HDC, UINT);
 
 extern BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
 
-#endif	// _WIN32
-
-#if defined( __linux__ )
-
-//FX Mesa Functions
-extern fxMesaContext (*qfxMesaCreateContext)(GLuint win, GrScreenResolution_t, GrScreenRefresh_t, const GLint attribList[]);
-extern fxMesaContext (*qfxMesaCreateBestContext)(GLuint win, GLint width, GLint height, const GLint attribList[]);
-extern void (*qfxMesaDestroyContext)(fxMesaContext ctx);
-extern void (*qfxMesaMakeCurrent)(fxMesaContext ctx);
-extern fxMesaContext (*qfxMesaGetCurrentContext)(void);
-extern void (*qfxMesaSwapBuffers)(void);
+#else
 
 //GLX Functions
 extern XVisualInfo * (*qglXChooseVisual)( Display *dpy, int screen, int *attribList );
@@ -727,8 +706,6 @@ extern Bool (*qglXMakeCurrent)( Display *dpy, GLXDrawable drawable, GLXContext c
 extern void (*qglXCopyContext)( Display *dpy, GLXContext src, GLXContext dst, GLuint mask );
 extern void (*qglXSwapBuffers)( Display *dpy, GLXDrawable drawable );
 
-#endif // __linux__
-
-#endif	// _WIN32 && __linux__
+#endif	// _WIN32
 
 #endif

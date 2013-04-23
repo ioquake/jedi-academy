@@ -9,7 +9,7 @@
 #if !defined(CL_LIGHT_H_INC)
 	#include "cg_lights.h"
 #endif
-#include "..\ghoul2\g2.h"
+#include "../ghoul2/g2.h"
 #include "../ui/ui_public.h"
 
 /*

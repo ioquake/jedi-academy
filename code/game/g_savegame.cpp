@@ -4,7 +4,7 @@
 #include "g_headers.h"
 
 
-#include "IcarusInterface.h"
+#include "../icarus/IcarusInterface.h"
 #include "Q3_Interface.h"
 #include "g_local.h"
 #include "fields.h"
@@ -481,7 +481,7 @@ static void EnumerateField(const save_field_t *pField, const byte *pbBase)
 	}
 }
 
-static void EnumerateFields(const save_field_t *pFields, const byte *pbData, unsigned long ulChid, int iLen)
+static void EnumerateFields(const save_field_t *pFields, const byte *pbData, unsigned int ulChid, int iLen)
 {
 	strList = new list<sstring_t>;
 
@@ -622,11 +622,11 @@ static void EvaluateField(const save_field_t *pField, byte *pbBase, byte *pbOrig
 
 
 // copy of function in sv_savegame
-static LPCSTR SG_GetChidText(unsigned long chid)
+static LPCSTR SG_GetChidText(unsigned int chid)
 {
 	static char	chidtext[5];
 
-	*(unsigned long *)chidtext = BigLong(chid);
+	*(unsigned int *)chidtext = BigLong(chid);
 	chidtext[4] = 0;
 
 	return chidtext;
@@ -705,7 +705,7 @@ static void SG_ConvertRetailSaberinfoToNewSaberinfo( void *sabData, saberInfo_t 
 	}
 } 
 
-static void EvaluateFields(const save_field_t *pFields, byte *pbData, byte *pbOriginalRefData, unsigned long ulChid, int iSize, qboolean bOkToSizeMisMatch)
+static void EvaluateFields(const save_field_t *pFields, byte *pbData, byte *pbOriginalRefData, unsigned int ulChid, int iSize, qboolean bOkToSizeMisMatch)
 {	
 	int iReadSize = gi.ReadFromSaveGame(ulChid, pbData, bOkToSizeMisMatch?0:iSize);
 
@@ -722,7 +722,7 @@ static void EvaluateFields(const save_field_t *pFields, byte *pbData, byte *pbOr
 				if ( iSize == (int)(iReadSize+((sizeof(saberInfo_t)-sizeof(saberInfoRetail_t))*2)) )
 				{
 					gclient_t newClient;
-					const int	preSaberDataSize = ((int)&newClient.ps.saber[0]-(int)&newClient);
+					const int	preSaberDataSize = ((size_t)&newClient.ps.saber[0]-(size_t)&newClient);
 					memcpy( &newClient, pbData, preSaberDataSize );
 					SG_ConvertRetailSaberinfoToNewSaberinfo( ((void *)(&((gclient_t *)(pbData))->ps.saber[0])), &newClient.ps.saber[0] ); 
 					memcpy( &newClient.ps.dualSabers, pbData+preSaberDataSize+(sizeof(saberInfoRetail_t)*2), sizeof(newClient)-(preSaberDataSize+(sizeof(saberInfo_t)*2)) );
@@ -793,7 +793,8 @@ static void WriteGEntities(qboolean qbAutosave)
 {
 	int iCount = 0;
 
-	for (int i=0; i<(qbAutosave?1:globals.num_entities); i++)
+	int i;
+	for (i=0; i<(qbAutosave?1:globals.num_entities); i++)
 	{
 		gentity_t* ent = &g_entities[i];
 
@@ -886,7 +887,8 @@ static void ReadGEntities(qboolean qbAutosave)
 	gi.ReadFromSaveGame('NMED', (void *)&iCount, sizeof(iCount));
 
 	int iPreviousEntRead = -1;
-	for (int i=0; i<iCount; i++)
+	int i;
+	for (i=0; i<iCount; i++)
 	{
 		int iEntIndex;
 		gi.ReadFromSaveGame('EDNM', (void *)&iEntIndex, sizeof(iEntIndex));

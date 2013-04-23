@@ -70,7 +70,7 @@ int _buildFileList(const char* path, bool insert, bool buildList)
 			if(insert || buildList)
 			{
 				// Regular file -- add it to the table
-				strlwr(full);
+				Q_strlwr(full);
 				unsigned int code = crc32(0, (const byte *)full, strlen(full));
 
 				FileInfo info;
@@ -286,7 +286,7 @@ int Sys_GetFileCode(const char* name)
 	char* osname = FS_BuildOSPath(name);
 	
 	// Generate hash for file name
-	strlwr(osname);
+	Q_strlwr(osname);
 	unsigned int code = crc32(0, (const byte *)osname, strlen(osname));
 	
 	// Check if the file exists

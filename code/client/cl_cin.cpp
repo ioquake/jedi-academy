@@ -60,7 +60,7 @@ typedef struct {
 	byte				file[65536];
 	short				sqrTable[256];
 
-	unsigned int		mcomp[256];
+	int			mcomp[256];
 	unsigned short		vq2[256*16*4];
 	unsigned short		vq4[256*64*4];
 	unsigned short		vq8[256*256*4];
@@ -893,8 +893,8 @@ static void readQuadInfo( byte *qData )
 	cinTable[currentHandle].VQ0 = cinTable[currentHandle].VQNormal;
 	cinTable[currentHandle].VQ1 = cinTable[currentHandle].VQBuffer;
 
-	cinTable[currentHandle].t[0] = (0 - (unsigned int)cin.linbuf)+(unsigned int)cin.linbuf+cinTable[currentHandle].screenDelta;
-	cinTable[currentHandle].t[1] = (0 - ((unsigned int)cin.linbuf + cinTable[currentHandle].screenDelta))+(unsigned int)cin.linbuf;
+	cinTable[currentHandle].t[0] = cinTable[currentHandle].screenDelta;
+	cinTable[currentHandle].t[1] = -cinTable[currentHandle].screenDelta; 
 
 	cinTable[currentHandle].drawX = cinTable[currentHandle].CIN_WIDTH;
 	cinTable[currentHandle].drawY = cinTable[currentHandle].CIN_HEIGHT;
@@ -1323,7 +1323,7 @@ e_status CIN_RunCinematic (int handle)
 	}
 
 	thisTime = Sys_Milliseconds()*com_timescale->value;
-	if (cinTable[currentHandle].shader && (abs(thisTime - cinTable[currentHandle].lastTime))>100) {
+	if (cinTable[currentHandle].shader && (abs((long)(thisTime - cinTable[currentHandle].lastTime)))>100) {
 		cinTable[currentHandle].startTime += thisTime - cinTable[currentHandle].lastTime;
 	}
 	cinTable[currentHandle].tfps = ((((Sys_Milliseconds()*com_timescale->value) - cinTable[currentHandle].startTime)*cinTable[currentHandle].roqFPS)/1000);
@@ -1710,10 +1710,10 @@ static void PlayCinematic(const char *arg, const char *s, qboolean qbInGame)
 		// work out associated audio-overlay file, if any...
 		//
 		extern cvar_t *s_language;
-		qboolean	bIsForeign	= s_language && stricmp(s_language->string,"english") && stricmp(s_language->string,"");
+		qboolean	bIsForeign	= s_language && Q_stricmp(s_language->string,"english") && Q_stricmp(s_language->string,"");
 		LPCSTR		psAudioFile	= NULL;
 		qhandle_t	hCrawl = 0;
-		if (!stricmp(arg,"video/jk0101_sw.roq"))
+		if (!Q_stricmp(arg,"video/jk0101_sw.roq"))
 		{
 			psAudioFile = "music/cinematic_1";
 			if ( Cvar_VariableIntegerValue("com_demo") )
@@ -1733,13 +1733,13 @@ static void PlayCinematic(const char *arg, const char *s, qboolean qbInGame)
 		else
 		if (bIsForeign)
 		{
-			if (!stricmp(arg,"video/jk05.roq"))
+			if (!Q_stricmp(arg,"video/jk05.roq"))
 			{
 				psAudioFile = "sound/chars/video/cinematic_5";
 				bits |= CIN_silent;	// knock out existing english track
 			}
 			else
-			if (!stricmp(arg,"video/jk06.roq"))
+			if (!Q_stricmp(arg,"video/jk06.roq"))
 			{
 				psAudioFile = "sound/chars/video/cinematic_6";
 				bits |= CIN_silent;	// knock out existing english track
@@ -1855,9 +1855,9 @@ void SCR_RunCinematic (void)
 	CL_CheckPendingCinematic();
 
 	if (CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES) {
-		e_status Status = CIN_RunCinematic(CL_handle);
+		e_status status = CIN_RunCinematic(CL_handle);
 		
-		if (CL_IsRunningInGameCinematic() && Status == FMV_IDLE  && !cinTable[CL_handle].holdAtEnd)
+		if (CL_IsRunningInGameCinematic() && status == FMV_IDLE  && !cinTable[CL_handle].holdAtEnd)
 		{
 			SCR_StopCinematic();	// change ROQ from FMV_IDLE to FMV_EOF, and clear some other vars
 		}

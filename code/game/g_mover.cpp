@@ -4,7 +4,7 @@
 #include "g_functions.h"
 #include "objectives.h"
 
-#include "../Icarus/IcarusInterface.h"
+#include "../icarus/IcarusInterface.h"
 
 
 int	BMS_START = 0;

@@ -5,7 +5,7 @@
 #include "client.h"
 
 #include <windows.h>
-#include "..\smartheap\smrtheap.h"
+#include "../smartheap/smrtheap.h"
 #if !defined(__Q_SHARED_H)
 	#include "../game/q_shared.h"
 #endif
@@ -18,7 +18,7 @@
 using namespace std;
 
 #if MEM_DEBUG
-#include "..\smartheap\heapagnt.h"
+#include "../smartheap/heapagnt.h"
 
 static const int maxStack=2048;
 static int TotalMem;

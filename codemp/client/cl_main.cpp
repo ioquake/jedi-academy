@@ -15,11 +15,11 @@
 #endif
 
 //rwwRMG - added:
-#include "..\qcommon\cm_local.h"
-#include "..\qcommon\cm_landscape.h"
+#include "../qcommon/cm_local.h"
+#include "../qcommon/cm_landscape.h"
 
 #if !defined(G2_H_INC)
-	#include "..\ghoul2\G2_local.h"
+	#include "../ghoul2/G2_local.h"
 #endif
 
 #if !defined (MINIHEAP_H_INC)

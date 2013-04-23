@@ -30,7 +30,7 @@ void CG_ParseServerinfo( void ) {
 	Com_sprintf( cgs.mapname, sizeof( cgs.mapname ), "maps/%s.bsp", mapname );
 	char *p = strrchr(mapname,'/');
 	strcpy( cgs.stripLevelName[0], p?p+1:mapname );
-	strupr( cgs.stripLevelName[0] );
+	Q_strupr( cgs.stripLevelName[0] );
 	for (int i=1; i<STRIPED_LEVELNAME_VARIATIONS; i++)	// clear retry-array
 	{
 		cgs.stripLevelName[i][0]='\0';
@@ -45,35 +45,35 @@ void CG_ParseServerinfo( void ) {
 	// additional String files needed for some levels...
 	//
 	// JKA...
-	if (!stricmp(cgs.stripLevelName[0],"YAVIN1B"))
+	if (!Q_stricmp(cgs.stripLevelName[0],"YAVIN1B"))
 	{
 		strcpy( cgs.stripLevelName[1], "YAVIN1");
 	}
 
 /*	// JK2...
-	if (!stricmp(cgs.stripLevelName[0],"KEJIM_BASE") ||
-		!stricmp(cgs.stripLevelName[0],"KEJIM_POST")
+	if (!Q_stricmp(cgs.stripLevelName[0],"KEJIM_BASE") ||
+		!Q_stricmp(cgs.stripLevelName[0],"KEJIM_POST")
 		)
 	{
 		strcpy( cgs.stripLevelName[1], "ARTUS_MINE" );
 	}
-	if (!stricmp(cgs.stripLevelName[0],"DOOM_DETENTION") ||
-		!stricmp(cgs.stripLevelName[0],"DOOM_SHIELDS")
+	if (!Q_stricmp(cgs.stripLevelName[0],"DOOM_DETENTION") ||
+		!Q_stricmp(cgs.stripLevelName[0],"DOOM_SHIELDS")
 		)
 	{
 		strcpy( cgs.stripLevelName[1], "DOOM_COMM" );
 	}
-	if (!stricmp(cgs.stripLevelName[0],"DOOM_COMM"))
+	if (!Q_stricmp(cgs.stripLevelName[0],"DOOM_COMM"))
 	{
 		strcpy( cgs.stripLevelName[1], "CAIRN_BAY" );
 	}
-	if (!stricmp(cgs.stripLevelName[0],"NS_STARPAD"))
+	if (!Q_stricmp(cgs.stripLevelName[0],"NS_STARPAD"))
 	{
 		strcpy( cgs.stripLevelName[1], "ARTUS_TOPSIDE" );	// for dream sequence...
 
 		strcpy( cgs.stripLevelName[2], "BESPIN_UNDERCITY" );	// for dream sequence...
 	}
-	if (!stricmp(cgs.stripLevelName[0],"BESPIN_PLATFORM"))
+	if (!Q_stricmp(cgs.stripLevelName[0],"BESPIN_PLATFORM"))
 	{
 		strcpy( cgs.stripLevelName[1], "BESPIN_UNDERCITY" );
 	}

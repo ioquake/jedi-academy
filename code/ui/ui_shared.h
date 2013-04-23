@@ -214,23 +214,33 @@ typedef struct {
 	qhandle_t	(*registerSkin)( const char *name );
 
 	//rww - ghoul2 stuff. Add whatever you need here, remember to set it in _UI_Init or it will crash when you try to use it.
-#ifdef _XBOX	// No default arguments on function pointers
+#if defined(_XBOX) || defined(__GNUC__) 	// No default arguments on function pointers
+	qboolean	(*_g2_SetSkin)(CGhoul2Info *ghlInfo, qhandle_t customSkin, qhandle_t);
+	qboolean	(*_g2_SetBoneAnim)(CGhoul2Info *ghlInfo, const char *boneName, const int startFrame, const int endFrame,
+					  const int flags, const float animSpeed, const int currentTime, const float, const int);
+	int		(*_g2_InitGhoul2Model)(CGhoul2Info_v &ghoul2, const char *fileName, int, qhandle_t customSkin, qhandle_t customShader, int modelFlags, int);
+
 	qboolean	g2_SetSkin(CGhoul2Info *ghlInfo, qhandle_t customSkin, qhandle_t renderSkin = 0)
 	{
-		return G2API_SetSkin(ghlInfo, customSkin, renderSkin);
+		return (*_g2_SetSkin)(ghlInfo, customSkin, renderSkin);
 	}
 	qboolean	g2_SetBoneAnim(CGhoul2Info *ghlInfo, const char *boneName, const int startFrame, const int endFrame,
 					  const int flags, const float animSpeed, const int currentTime, const float setFrame = -1, const int blendTime = -1)
 	{
-		return G2API_SetBoneAnim(ghlInfo, boneName, startFrame, endFrame, flags, animSpeed, currentTime, setFrame, blendTime);
+		return (*_g2_SetBoneAnim)(ghlInfo, boneName, startFrame, endFrame, flags, animSpeed, currentTime, setFrame, blendTime);
+	}
+
+	int		g2_InitGhoul2Model(CGhoul2Info_v &ghoul2, const char *fileName, int modelIndex, qhandle_t customSkin = NULL, qhandle_t customShader = NULL, int modelFlags = 0, int lodBias = 0)
+	{
+		return (*_g2_InitGhoul2Model)(ghoul2, fileName, modelIndex, customSkin, customShader, modelFlags, lodBias);
 	}
 #else
 	qboolean	(*g2_SetSkin)(CGhoul2Info *ghlInfo, qhandle_t customSkin, qhandle_t renderSkin = 0);
 	qboolean	(*g2_SetBoneAnim)(CGhoul2Info *ghlInfo, const char *boneName, const int startFrame, const int endFrame,
 					  const int flags, const float animSpeed, const int currentTime, const float setFrame = -1, const int blendTime = -1);
+	int		(*g2_InitGhoul2Model)(CGhoul2Info_v &ghoul2, const char *fileName, int, qhandle_t customSkin = NULL, qhandle_t customShader = NULL, int modelFlags = 0, int lodBias = 0);
 #endif
 	qboolean	(*g2_RemoveGhoul2Model)(CGhoul2Info_v &ghlInfo, const int modelIndex);
-	int			(*g2_InitGhoul2Model)(CGhoul2Info_v &ghoul2, const char *fileName, int, qhandle_t customSkin, qhandle_t customShader, int modelFlags, int lodBias);
 	void		(*g2_CleanGhoul2Models)(CGhoul2Info_v &ghoul2);
 	int			(*g2_AddBolt)(CGhoul2Info *ghlInfo, const char *boneName);
 	qboolean	(*g2_GetBoltMatrix)(CGhoul2Info_v &ghoul2, const int modelIndex, const int boltIndex, mdxaBone_t *matrix,
@@ -339,7 +349,7 @@ typedef struct {
 	qhandle_t	background;					// background asset  
 } windowDef_t;
 
-typedef windowDef_t Window;
+typedef windowDef_t qWindow;
 
 typedef struct {
 	vec4_t		color;						//
@@ -372,7 +382,7 @@ typedef struct modelDef_s {
 #define ITF_ISANYSABER		(ITF_ISSABER|ITF_ISSABER2)	//either saber
 
 typedef struct itemDef_s {
-	Window		window;						// common positional, border, style, layout info
+	qWindow		window;						// common positional, border, style, layout info
 	UIRectangle	textRect;					// rectangle the text ( if any ) consumes     
 	int			type;						// text, button, radiobutton, checkbox, textfield, listbox, combo
 	int			alignment;					// left center right
@@ -425,7 +435,7 @@ typedef struct itemDef_s {
 } itemDef_t;
 
 typedef struct {
-	Window window;
+	qWindow window;
 	const char  *font;						// font
 	qboolean	fullScreen;					// covers entire screen 
 	int			itemCount;					// number of items;

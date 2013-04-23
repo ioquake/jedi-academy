@@ -1171,7 +1171,7 @@ int CM_LoadSubBSP(const char *name, qboolean clientload)
 	count = cmg.numSubModels;
 	for(i = 0; i < NumSubBSP; i++)
 	{
-		if (!stricmp(name, SubBSP[i].name))
+		if (!Q_stricmp(name, SubBSP[i].name))
 		{
 			return count;
 		}
@@ -1274,8 +1274,8 @@ Writes the portal state to a savegame file
 ===================
 */
 //
-qboolean SG_Append(unsigned long chid, const void *data, int length);
-int SG_Read(unsigned long chid, void *pvAddress, int iLength, void **ppvAddressPtr = NULL);
+qboolean SG_Append(unsigned int chid, const void *data, int length);
+int SG_Read(unsigned int chid, void *pvAddress, int iLength, void **ppvAddressPtr = NULL);
 
 void CM_WritePortalState ()
 {	

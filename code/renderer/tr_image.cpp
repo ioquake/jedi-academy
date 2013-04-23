@@ -748,7 +748,7 @@ static void Upload32( unsigned *data,
 						  qboolean isLightmap, 
 						  qboolean allowTC, 
 						  int *pformat, 
-						  USHORT *pUploadWidth, USHORT *pUploadHeight )
+						  unsigned short *pUploadWidth, unsigned short *pUploadHeight )
 {
 	if (format == GL_RGBA)
 	{
@@ -949,7 +949,7 @@ typedef tmap (int, image_t *)	AllocatedImages_t;
 class CStringComparator
 {
 public:
-	bool operator()(const char *s1, const char *s2) const { return(stricmp(s1, s2) < 0); } 
+	bool operator()(const char *s1, const char *s2) const { return(Q_stricmp(s1, s2) < 0); } 
 };
 
 typedef map <LPCSTR, image_t *, CStringComparator>	AllocatedImages_t;
@@ -1071,8 +1071,8 @@ void R_Images_DeleteLightMaps(void)
 		if (pImage->imgName[0] == '$' /*&& strstr(pImage->imgName,"lightmap")*/)	// loose check, but should be ok
 		{
 			R_Images_DeleteImageContents(pImage);
-			itImage = AllocatedImages.erase(itImage);
 
+			AllocatedImages.erase(itImage++);
 			bEraseOccured = qtrue;
 		}
 	}
@@ -1221,7 +1221,8 @@ qboolean RE_RegisterImages_LevelLoadEnd(void)
 			{	// nope, so dump it...
 				//VID_Printf( PRINT_DEVELOPER, "Dumping image \"%s\"\n",pImage->imgName);
 				R_Images_DeleteImageContents(pImage);
-				itImage = AllocatedImages.erase(itImage);
+
+				AllocatedImages.erase(itImage++);
 				bEraseOccured = qtrue;
 			}
 		}
@@ -3016,7 +3017,7 @@ static char *CommaParse( char **data_p ) {
 class CStringComparator
 {
 public:
-	bool operator()(const char *s1, const char *s2) const { return(stricmp(s1, s2) < 0); } 
+	bool operator()(const char *s1, const char *s2) const { return(Q_stricmp(s1, s2) < 0); } 
 };
 */
 typedef map<sstring_t,char * /*, CStringComparator*/ >	AnimationCFGs_t;

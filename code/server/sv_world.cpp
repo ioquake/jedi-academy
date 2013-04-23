@@ -11,13 +11,13 @@ Ghoul2 Insert Start
 */
 
 #if !defined(GHOUL2_SHARED_H_INC)
-	#include "..\game\ghoul2_shared.h"	//for CGhoul2Info_v
+	#include "../game/ghoul2_shared.h"	//for CGhoul2Info_v
 #endif
 #if !defined(G2_H_INC)
-	#include "..\ghoul2\G2.h"
+	#include "../ghoul2/G2.h"
 #endif
 #if !defined (MINIHEAP_H_INC)
-	#include "../qcommon/miniheap.h"
+	#include "../qcommon/MiniHeap.h"
 #endif
 
 #ifdef _DEBUG
@@ -27,7 +27,7 @@ Ghoul2 Insert Start
 Ghoul2 Insert End
 */
 #if MEM_DEBUG
-#include "..\smartheap\heapagnt.h"
+#include "../smartheap/heapagnt.h"
 #define SV_TRACE_PROFILE (0)
 #endif
 
@@ -834,7 +834,7 @@ void SV_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const ve
 Ghoul2 Insert End
 */
 #ifdef _DEBUG
-	assert( !_isnan(start[0])&&!_isnan(start[1])&&!_isnan(start[2])&&!_isnan(end[0])&&!_isnan(end[1])&&!_isnan(end[2]));
+	assert( !Q_isnan(start[0])&&!Q_isnan(start[1])&&!Q_isnan(start[2])&&!Q_isnan(end[0])&&!Q_isnan(end[1])&&!Q_isnan(end[2]));
 #endif// _DEBUG
 
 #if SV_TRACE_PROFILE

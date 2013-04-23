@@ -6,10 +6,10 @@
 
 #define MANY					1440
 
-// maximum bit length of any code (if BMAX needs to be larger than 16, then h and x[] should be ulong.)
+// maximum bit length of any code (if BMAX needs to be larger than 16, then h and x[] should be uint32_t.)
 #define BMAX					15
 
-typedef ulong (*check_func) (ulong check, const byte *buf, ulong len);
+typedef uint32_t (*check_func) (uint32_t check, const byte *buf, uint32_t len);
 
 typedef enum 
 {
@@ -57,7 +57,7 @@ typedef struct inflate_huft_s
 {
 	byte	Exop;							// number of extra bits or operation
 	byte	Bits;							// number of bits in this code or subcode
-	ulong	base;							// literal, length base, distance base, or table offset
+	uint32_t	base;							// literal, length base, distance base, or table offset
 } inflate_huft_t;
 
 // inflate codes private state
@@ -66,19 +66,19 @@ typedef struct inflate_codes_state_s
 	inflate_codes_mode	mode;				// current inflate_codes mode
 											
 	// mode dependent information			
-	ulong len;								
+	uint32_t len;								
 	union									
 	{										
 		struct								
 		{									
 			inflate_huft_t	*tree;			// pointer into tree
-			ulong			need;			// bits needed
+			uint32_t			need;			// bits needed
 		} code;								// if LEN or DIST, where in tree
-		ulong			lit;				// if LIT, literal
+		uint32_t			lit;				// if LIT, literal
 		struct								
 		{									
-			ulong			get;			// bits to get for extra
-			ulong			dist;			// distance back to copy from
+			uint32_t			get;			// bits to get for extra
+			uint32_t			dist;			// distance back to copy from
 		} copy;								// if EXT or COPY, where and how much
 	};										// submode
 											
@@ -98,13 +98,13 @@ typedef struct inflate_blocks_state_s
 	// mode dependent information
 	union
 	{
-		ulong		left;					// if STORED, bytes left to copy
+		uint32_t		left;					// if STORED, bytes left to copy
 		struct								
 		{									
-			ulong			table;			// table lengths (14 bits)
-			ulong			index;			// index into blens (or border)
-			ulong			*blens;			// bit lengths of codes
-			ulong			bb;				// bit length tree depth
+			uint32_t			table;			// table lengths (14 bits)
+			uint32_t			index;			// index into blens (or border)
+			uint32_t			*blens;			// bit lengths of codes
+			uint32_t			bb;				// bit length tree depth
 			inflate_huft_t	*tb;			// bit length decoding tree
 		} trees;							// if DTREE, decoding info for trees
 		struct 
@@ -115,14 +115,14 @@ typedef struct inflate_blocks_state_s
 	bool			last;					// true if this block is the last block
 											
 	// mode independent information			
-	ulong			bitk;					// bits in bit buffer
-	ulong			bitb;					// bit buffer
+	uint32_t			bitk;					// bits in bit buffer
+	uint32_t			bitb;					// bit buffer
 	inflate_huft_t	*hufts;					// single malloc for tree space
 	byte			window[WINDOW_SIZE];	// sliding window
 	byte			*end;					// one byte after sliding window
 	byte			*read;					// window read pointer
 	byte			*write;					// window write pointer
-	ulong			check;					// check on output
+	uint32_t			check;					// check on output
 } inflate_blocks_state_t;
 
 // inflate private state
@@ -130,15 +130,15 @@ typedef struct inflate_state_s
 {
 	inflate_mode			mode;	  		// current inflate mode
 											
-	ulong					method;			// if FLAGS, method byte
+	uint32_t					method;			// if FLAGS, method byte
 											
 	// mode independent information			
 	int						nowrap;			// flag for no wrapper
-	ulong					wbits;			// log2(window size)  (8..15, defaults to 15)
+	uint32_t					wbits;			// log2(window size)  (8..15, defaults to 15)
 	inflate_blocks_state_t	*blocks;		// current inflate_blocks state
 
-	ulong					adler;
-	ulong					calcadler;
+	uint32_t					adler;
+	uint32_t					calcadler;
 } inflate_state;
 
 

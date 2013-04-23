@@ -17,9 +17,9 @@ extern byte *Compress_JPG(int *pOutputSize, int quality, int image_width, int im
 										//	(EF1 behaviour). I should maybe time/date check them though?
 
 #include "server.h"
-#include "..\game\statindex.h"
-#include "..\game\weapons.h"
-#include "..\game\g_items.h"
+#include "../game/statindex.h"
+#include "../game/weapons.h"
+#include "../game/g_items.h"
 
 #ifdef _XBOX
 #include <stdlib.h>
@@ -116,15 +116,15 @@ public:
 	}
 };
 
-typedef map<unsigned long, CChid> CChidInfo_t;
+typedef map<unsigned int, CChid> CChidInfo_t;
 CChidInfo_t	save_info;
 #endif
 
-LPCSTR SG_GetChidText(unsigned long chid)
+LPCSTR SG_GetChidText(unsigned int chid)
 {
 	static char	chidtext[5];
 
-	*(unsigned long *)chidtext = BigLong(chid);
+	*(unsigned int *)chidtext = BigLong(chid);
 	chidtext[4] = 0;
 
 	return chidtext;
@@ -495,7 +495,7 @@ void SV_WipeGame_f(void)
 		Com_Printf (S_COLOR_RED "USAGE: wipe <name>\n");
 		return;
 	}
-	if (!stricmp (Cmd_Argv(1), "auto") )
+	if (!Q_stricmp (Cmd_Argv(1), "auto") )
 	{
 		Com_Printf (S_COLOR_RED "Can't wipe 'auto'\n");
 		return;
@@ -560,7 +560,7 @@ void SV_LoadGame_f(void)
 	}
 
 #ifndef _XBOX	// VVFIXME : Part of super-bootleg SG hackery
-	if (!stricmp (psFilename, "current"))
+	if (!Q_stricmp (psFilename, "current"))
 	{
 		Com_Printf (S_COLOR_RED "Can't load from \"current\"\n");
 		return;
@@ -570,7 +570,7 @@ void SV_LoadGame_f(void)
 	// special case, if doing a respawn then check that the available auto-save (if any) is from the same map
 	//	as we're currently on (if in a map at all), if so, load that "auto", else re-load the last-loaded file...
 	//
-	if (!stricmp(psFilename, "*respawn"))
+	if (!Q_stricmp(psFilename, "*respawn"))
 	{
 		psFilename = "auto";	// default to standard respawn behaviour
 
@@ -672,7 +672,7 @@ void SV_SaveGame_f(void)
 
 	char *psFilename = Cmd_Argv(1);
 
-	if (!stricmp (psFilename, "current"))
+	if (!Q_stricmp (psFilename, "current"))
 	{
 		Com_Printf (S_COLOR_RED "Can't save to 'current'\n");
 		return;
@@ -687,7 +687,7 @@ void SV_SaveGame_f(void)
 	if (!SG_GameAllowedToSaveHere(qfalse))	//full check
 		return;	// this prevents people saving via quick-save now during cinematics.
 
-	if ( !stricmp (psFilename, "auto") )
+	if ( !Q_stricmp (psFilename, "auto") )
 	{
 		
 #ifdef _XBOX
@@ -888,7 +888,8 @@ void SG_ReadServerConfigStrings( void )
 {
 	// trash the whole table...
 	//
-	for (int i=0; i<MAX_CONFIGSTRINGS; i++)
+	int i;
+	for (i=0; i<MAX_CONFIGSTRINGS; i++)
 	{
 		if (i!=CS_SYSTEMINFO)
 		{
@@ -1572,16 +1573,16 @@ int SG_Write(const void * chid, const int bytesize, fileHandle_t fhSaveGame)
 
 
 
-qboolean SG_Append(unsigned long chid, const void *pvData, int iLength)
+qboolean SG_Append(unsigned int chid, const void *pvData, int iLength)
 {	
 	unsigned int	uiCksum;
 	unsigned int	uiSaved;
 	
 #ifdef _DEBUG
 	int				i;
-	unsigned long	*pTest;
+	unsigned int	*pTest;
 
-	pTest = (unsigned long *) pvData;
+	pTest = (unsigned int *) pvData;
 	for (i=0; i<iLength/4; i++, pTest++)
 	{
 		assert(*pTest != 0xfeeefeee);
@@ -1822,11 +1823,11 @@ int SG_Seek( fileHandle_t fhSaveGame, long offset, int origin )
 //
 // function doesn't return if error (uses ERR_DROP), unless "qbSGReadIsTestOnly == qtrue", then NZ return = success
 //
-static int SG_Read_Actual(unsigned long chid, void *pvAddress, int iLength, void **ppvAddressPtr, qboolean bChunkIsOptional)
+static int SG_Read_Actual(unsigned int chid, void *pvAddress, int iLength, void **ppvAddressPtr, qboolean bChunkIsOptional)
 {
 	unsigned int	uiLoadedCksum, uiCksum;
 	unsigned int	uiLoadedLength;
-	unsigned long	ulLoadedChid;
+	unsigned int	ulLoadedChid;
 	unsigned int	uiLoaded;
 	char			sChidText1[MAX_QPATH];
 	char			sChidText2[MAX_QPATH];
@@ -1978,12 +1979,12 @@ static int SG_Read_Actual(unsigned long chid, void *pvAddress, int iLength, void
 	return iLength;
 }
 
-int SG_Read(unsigned long chid, void *pvAddress, int iLength, void **ppvAddressPtr /* = NULL */)
+int SG_Read(unsigned int chid, void *pvAddress, int iLength, void **ppvAddressPtr /* = NULL */)
 {
 	return SG_Read_Actual(chid, pvAddress, iLength, ppvAddressPtr, qfalse );	// qboolean bChunkIsOptional
 }
 
-int SG_ReadOptional(unsigned long chid, void *pvAddress, int iLength, void **ppvAddressPtr /* = NULL */)
+int SG_ReadOptional(unsigned int chid, void *pvAddress, int iLength, void **ppvAddressPtr /* = NULL */)
 {
 	return SG_Read_Actual(chid, pvAddress, iLength, ppvAddressPtr, qtrue);		// qboolean bChunkIsOptional
 }

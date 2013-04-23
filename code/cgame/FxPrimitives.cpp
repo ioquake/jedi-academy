@@ -7,6 +7,7 @@
 
 #include "cg_media.h"
 
+#ifdef _MSC_VER
 #pragma warning(disable: 4035)
 static long myftol( float f ) 
 {
@@ -16,6 +17,9 @@ static long myftol( float f )
 	__asm mov eax, tmp
 }
 #pragma warning(default: 4035)
+#else
+#define myftol(x)	((int)(x))
+#endif
 
 extern int drawnFx;
 extern int mParticles;

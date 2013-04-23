@@ -15,10 +15,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 #include "hfile.h"
 #if !defined(RATL_HANDLE_POOL_VS_INC)
-	#include "..\Ratl\handle_pool_vs.h"
+	#include "../Ratl/handle_pool_vs.h"
 #endif
 #if !defined(RATL_VECTOR_VS_INC)
-	#include "..\Ratl\vector_vs.h"
+	#include "../Ratl/vector_vs.h"
 #endif
 #if !defined(RUFL_HSTRING_INC)
 	#include "hstring.h"
@@ -60,7 +60,7 @@ struct SOpenFile
 };
 typedef	ratl::handle_pool_vs<SOpenFile, MAX_OPEN_FILES>		TFilePool;
 
-TFilePool&	Pool()
+static TFilePool&	Pool()
 {
 	static TFilePool TFP;
 	return TFP;
