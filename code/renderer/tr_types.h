@@ -228,7 +228,11 @@ typedef struct {
 
 #if !defined _WIN32
 
+#ifdef __linux__
+#define OPENGL_DRIVER_NAME	"libGL.so.1"
+#else
 #define OPENGL_DRIVER_NAME	"libGL.so"
+#endif
 
 #else
 
