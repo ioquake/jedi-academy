@@ -280,7 +280,7 @@ void CRMManager::UpdateStatisticCvars ( void )
 		// show difficulty
 		char difficulty[MAX_QPATH];
 		gi.Cvar_VariableStringBuffer("g_skill", difficulty, MAX_QPATH);
-		strupr(difficulty);
+		Q_strupr(difficulty);
 		gi.Cvar_Set ( "ar_diff", va("&GENERIC_%s&",difficulty) );
 
 		// compute rank
