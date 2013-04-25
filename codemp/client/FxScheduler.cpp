@@ -904,7 +904,7 @@ void CFxScheduler::PlayEffect( int id, vec3_t origin, vec3_t axis[3], const int 
 
 		if ( prim->mSpawnFlags & FX_EVEN_DISTRIBUTION )
 		{
-			factor = abs(prim->mSpawnDelay.GetMax() - prim->mSpawnDelay.GetMin()) / (float)count;
+			factor = abs((long)(prim->mSpawnDelay.GetMax() - prim->mSpawnDelay.GetMin())) / (float)count;
 		}
 
 		// Schedule the random number of bits
