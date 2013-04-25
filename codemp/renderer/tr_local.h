@@ -117,7 +117,7 @@ typedef struct {
 #ifdef _XBOX
 typedef struct image_s {
 	int			imgCode;
-	USHORT		width, height;				// source image
+	unsigned short width, height;				// source image
 
 	GLuint		texnum;					// gl texture binding
 	int			internalFormat;
@@ -135,7 +135,7 @@ typedef struct image_s {
 
 typedef struct image_s {
 	char		imgName[MAX_QPATH];		// game path, including extension
-	USHORT		width, height;	// after power of two and picmip but not including clamp to MAX_TEXTURE_SIZE
+	unsigned short width, height;	// after power of two and picmip but not including clamp to MAX_TEXTURE_SIZE
 	GLuint		texnum;					// gl texture binding
 
 	int			frameUsed;			// for texture usage in frame statistics

@@ -590,7 +590,7 @@ static void Upload32( unsigned *data,
 						 qboolean isLightmap,
 						 qboolean allowTC,
 						 int *pformat, 
-						 USHORT *pUploadWidth, USHORT *pUploadHeight, bool bRectangle = false )
+						 unsigned short *pUploadWidth, unsigned short *pUploadHeight, bool bRectangle = false )
 {
 	GLuint uiTarget = GL_TEXTURE_2D;
 	if ( bRectangle )
@@ -796,7 +796,7 @@ static void Upload32_3D( unsigned *data,
 						 qboolean isLightmap,
 						 qboolean allowTC,
 						 int *pformat, 
-						 USHORT *pUploadWidth, USHORT *pUploadHeight )
+						 unsigned short *pUploadWidth, unsigned short *pUploadHeight )
 {
 	int			samples;
 	int			i, c;
