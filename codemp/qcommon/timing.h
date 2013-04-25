@@ -12,6 +12,7 @@ public:
 	}
 	void Start()
 	{
+#ifdef _MSVC_VER
 		const int64_t *s = &start;
 		__asm
 		{
@@ -28,12 +29,15 @@ public:
 			pop ebx
 			pop eax
 		}
+#else
+		asm("rdtsc" : "=A"(start));
+#endif
 	}
 	int End()
 	{
-		const int64_t *e = &end;
 		int64_t	time;
-#ifndef __linux__
+#ifdef _MSVC_VER
+		const int64_t *e = &end;
 		__asm
 		{
 			push eax
@@ -49,6 +53,8 @@ public:
 			pop ebx
 			pop eax
 		}
+#else
+		asm("rdtsc" : "=A"(time));
 #endif 
 		time = end - start;
 		if (time < 0)
