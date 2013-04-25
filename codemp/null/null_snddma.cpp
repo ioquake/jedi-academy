@@ -4,8 +4,6 @@
 
 #include "../client/client.h"
 
-qboolean gbInsideLoadSound = qfalse; // important to default to this!!!
-
 qboolean SNDDMA_Init(void)
 {
 	return qfalse;
@@ -28,6 +26,9 @@ void SNDDMA_Submit(void)
 {
 }
 
+#ifdef DEDICATED
+qboolean gbInsideLoadSound = qfalse; // important to default to this!!!
+
 sfxHandle_t S_RegisterSound( const char *name ) {
 	return 0;
 }
@@ -47,3 +48,4 @@ int SND_FreeOldestSound(void)
 {
 	return 0;
 }
+#endif
