@@ -445,7 +445,7 @@ void CTRLandScape::CalculateLighting(void)
 
 			// Both normalised, so -1.0 < dp < 1.0
 			dp = Com_Clampi(0.0f, 1.0f, DotProduct(direction, total));
-			dp = powf(dp, 3);
+			dp = Q_powf(dp, 3);
 			VectorScale(ambient, (1.0 - dp) * 0.5, ambient);
 			VectorMA(ambient, dp, directed, tint);
 
