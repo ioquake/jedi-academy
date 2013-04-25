@@ -1017,15 +1017,8 @@ void R_Images_DeleteLightMaps(void)
 		if (pImage->imgName[0] == '*' && strstr(pImage->imgName,"lightmap"))	// loose check, but should be ok
 		{
 			R_Images_DeleteImageContents(pImage);
-#ifndef __linux__
-			itImage = AllocatedImages.erase(itImage);
+			AllocatedImages.erase(itImage++);
 			bEraseOccured = qtrue;
-#else
-			// MS & Dinkimware got the map::erase return wrong (it's null)
-			AllocatedImages_t::iterator itTemp = itImage;
-			itImage++;
-			AllocatedImages.erase(itTemp);
-#endif
 		}
 	}
 
@@ -1121,14 +1114,8 @@ qboolean RE_RegisterImages_LevelLoadEnd(void)
 				Com_DPrintf (S_COLOR_RED "Dumping image \"%s\"\n",pImage->imgName);
 
 				R_Images_DeleteImageContents(pImage);
-#ifndef __linux__
-				itImage = AllocatedImages.erase(itImage);
+				AllocatedImages.erase(itImage++);
 				bEraseOccured = qtrue;
-#else
-				AllocatedImages_t::iterator itTemp = itImage;
-				itImage++;
-				AllocatedImages.erase(itTemp);	
-#endif
 			}
 		}
 	}

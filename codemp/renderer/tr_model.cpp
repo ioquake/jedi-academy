@@ -386,18 +386,8 @@ qboolean RE_RegisterModels_LevelLoadEnd(qboolean bDeleteEverythingNotUsedThisLev
 					//CachedModel.pModelDiskImage = NULL;	// REM for reference, erase() call below negates the need for it.
 					bAtLeastoneModelFreed = qtrue;
 				}
-#ifndef __linux__
-				itModel = CachedModels->erase(itModel);
+				CachedModels->erase(itModel++);
 				bEraseOccured = qtrue;
-#else
-				// Both MS and Dinkumware got the map::erase wrong
-				// The STL has the return type as a void
-				CachedModels_t::iterator itTemp;
-				itTemp = itModel;
-				itModel++;
-				CachedModels->erase(itTemp);
-				
-#endif
 
 				iLoadedModelBytes = GetModelDataAllocSize();				
 			}
@@ -446,18 +436,8 @@ static void RE_RegisterModels_DumpNonPure(void)
 					Z_Free(CachedModel.pModelDiskImage);	
 					//CachedModel.pModelDiskImage = NULL;	// REM for reference, erase() call below negates the need for it.
 				}
-#ifndef __linux__
-				itModel = CachedModels->erase(itModel);
+				CachedModels->erase(itModel++);
 				bEraseOccured = qtrue;
-#else
-				// Both MS and Dinkumware got the map::erase wrong
-				// The STL has the return type as a void
-				CachedModels_t::iterator itTemp;
-				itTemp = itModel;
-				itModel++;
-				CachedModels->erase(itTemp);
-
-#endif
 			}
 		}
 	}
@@ -500,7 +480,6 @@ static void RE_RegisterModels_DeleteAll(void)
 		return;	//argh!
 	}
 
-#ifndef __linux__
 	for (CachedModels_t::iterator itModel = CachedModels->begin(); itModel != CachedModels->end(); )
 	{
 		CachedEndianedModelBinary_t &CachedModel = (*itModel).second;
@@ -509,11 +488,8 @@ static void RE_RegisterModels_DeleteAll(void)
 			Z_Free(CachedModel.pModelDiskImage);					
 		}
 
-		itModel = CachedModels->erase(itModel);			
+		CachedModels->erase(itModel++);
 	}
-#else
-	CachedModels->erase(CachedModels->begin(),CachedModels->end());
-#endif
 }
 
 
