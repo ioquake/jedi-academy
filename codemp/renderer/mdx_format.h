@@ -87,7 +87,7 @@ typedef struct
 	// (note that I've defined it using '>' internally, so it sorts with higher weights being "less", for distance weight-culling
 	//
 	#ifdef __cplusplus
-	bool operator < (const mdxmWeight_t& _X) const {return (boneWeight>_X.boneWeight);}
+	bool operator < (const mdxmWeight_t& _x) const {return (boneWeight>_x.boneWeight);}
 	#endif
 } 
 #ifndef __cplusplus
@@ -107,7 +107,7 @@ typedef struct
 	// I'm defining this '<' operator so this struct can be used as an STL <map> key...
 	//
 	#ifdef __cplusplus
-	bool operator < (const mdxaCompBone_t& _X) const {return (memcmp(Comp,_X.Comp,sizeof(Comp))<0);}
+	bool operator < (const mdxaCompBone_t& _x) const {return (memcmp(Comp,_x.Comp,sizeof(Comp))<0);}
 	#endif
 }
 #ifndef __cplusplus
@@ -126,7 +126,7 @@ typedef struct
 	// I'm defining this '<' operator so this struct can be used as an STL <map> key...
 	//
 	#ifdef __cplusplus
-	bool operator < (const mdxaCompQuatBone_t& _X) const {return (memcmp(Comp,_X.Comp,sizeof(Comp))<0);}
+	bool operator < (const mdxaCompQuatBone_t& _x) const {return (memcmp(Comp,_x.Comp,sizeof(Comp))<0);}
 	#endif
 }
 #ifndef __cplusplus
