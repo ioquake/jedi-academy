@@ -262,7 +262,7 @@ int CFxScheduler::RegisterEffect( const char *file, bool bHasCorrectPath /*= fal
 	char sfile[MAX_QPATH];
 
 	COM_StripExtension( file, sfile );
-	strlwr(sfile);
+	Q_strlwr(sfile);
 
 	Com_DPrintf("Registering effect : %s\n", sfile);
 

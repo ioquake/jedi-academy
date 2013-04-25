@@ -896,7 +896,7 @@ static LPCSTR SE_GetFoundFile( string &strResult )
 		strResult.erase();
 	}
 
-//	strlwr(sTemp);	// just for consistancy and set<> -> set<> erasure checking etc
+//	Q_strlwr(sTemp);	// just for consistancy and set<> -> set<> erasure checking etc
 
 	return sTemp;
 }

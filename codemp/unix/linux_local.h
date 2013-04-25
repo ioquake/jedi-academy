@@ -25,5 +25,3 @@ void QGL_Shutdown( void );
 
 // bk001130 - win32
 // void IN_JoystickCommands (void);
-
-char *strlwr (char *s);

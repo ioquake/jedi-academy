@@ -86,18 +86,6 @@ void	Sys_Mkdir( const char *path )
     mkdir (path, 0777);
 }
 
-char *strlwr (char *s) {
-  if ( s==NULL ) { // bk001204 - paranoia
-    assert(0);
-    return s;
-  }
-  while (*s) {
-    *s = tolower(*s);
-    s++;
-  }
-  return s; // bk001204 - duh
-}
-
 //============================================
 
 #define	MAX_FOUND_FILES	0x1000
