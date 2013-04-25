@@ -1751,6 +1751,13 @@ char	*Q_strlwr( char *s1 );
 char	*Q_strupr( char *s1 );
 char	*Q_strrchr( const char* string, int c );
 
+// NON-portable (but faster) versions
+#ifdef _WIN32
+inline int	Q_strnicmp (const char *s1, const char *s2, int n) { return strnicmp(s1, s2, n); }
+#else
+inline int	Q_strnicmp (const char *s1, const char *s2, int n) { return strncasecmp(s1, s2, n); }
+#endif
+
 // buffer size safe library replacements
 void	Q_strncpyz( char *dest, const char *src, int destsize );
 void	Q_strcat( char *dest, int size, const char *src );

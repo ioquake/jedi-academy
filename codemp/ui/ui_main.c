@@ -10589,7 +10589,7 @@ static void UI_BuildPlayerModel_List( qboolean inGameLoad )
 
 				if (bIsImageFile(dirptr, skinname))
 				{ //if it exists
-					if (strnicmp(skinname,"head_",5) == 0)
+					if (Q_strnicmp(skinname,"head_",5) == 0)
 					{
 						if (uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinHeadCount < MAX_PLAYERMODELS) 
 						{
@@ -10601,7 +10601,7 @@ static void UI_BuildPlayerModel_List( qboolean inGameLoad )
 							iSkinParts |= 1<<0;
 						}
 					} else
-					if (strnicmp(skinname,"torso_",6) == 0)
+					if (Q_strnicmp(skinname,"torso_",6) == 0)
 					{
 						if (uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinTorsoCount < MAX_PLAYERMODELS) 
 						{
@@ -10612,7 +10612,7 @@ static void UI_BuildPlayerModel_List( qboolean inGameLoad )
 							iSkinParts |= 1<<1;
 						}
 					} else
-					if (strnicmp(skinname,"lower_",6) == 0)
+					if (Q_strnicmp(skinname,"lower_",6) == 0)
 					{
 						if (uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinLegCount < MAX_PLAYERMODELS) 
 						{
