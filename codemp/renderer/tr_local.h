@@ -1156,6 +1156,7 @@ void		R_Modellist_f (void);
 class CPBUFFER
 {
 private:
+#ifdef _WIN32
 	// Pixel Buffer Rendering and Device Contexts.
 	HGLRC m_hRC;
 	HDC m_hDC;
@@ -1166,6 +1167,7 @@ private:
 
 	// Buffer handle.
 	HPBUFFERARB m_hBuffer;
+#endif
 
 	// Buffer Dimensions.
 	int m_iWidth, m_iHeight;
