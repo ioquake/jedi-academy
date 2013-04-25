@@ -798,7 +798,7 @@ void CTRLandScape::CalculateShaders(void)
 	// Cleanup our temporary array
 	delete[] shaders;
 
-	qsort(mSortedPatches, mSortedCount, sizeof(*mSortedPatches), (int (__cdecl *)(const void *,const void *))ComparePatchInfo);
+	qsort(mSortedPatches, mSortedCount, sizeof(*mSortedPatches), (int (QDECL *)(const void *,const void *))ComparePatchInfo);
 
 #endif // PRE_RELEASE_DEMO
 }
