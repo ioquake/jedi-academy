@@ -5,6 +5,8 @@
 #include "../ghoul2/G2.h"
 #include "../game/bg_saga.h"
 
+#define max(x,y) ((x)>(y)?(x):(y))
+
 extern vmCvar_t	cg_thirdPersonAlpha;
 
 extern int			cgSiegeTeam1PlShader;

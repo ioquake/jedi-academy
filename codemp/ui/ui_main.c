@@ -21,6 +21,10 @@ USER INTERFACE MAIN
 
 #include "../cgame/holocronicons.h"
 
+#ifndef min
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#endif
+
 extern void UI_SaberAttachToChar( itemDef_t *item );
 
 char *forcepowerDesc[NUM_FORCE_POWERS] = 
