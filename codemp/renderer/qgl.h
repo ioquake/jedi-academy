@@ -24,7 +24,7 @@
 
 #include "macosx_glimp.h"
 
-#elif defined( __linux__ )
+#else
 
 #include <GL/gl.h>
 #include <GL/glx.h>
@@ -32,18 +32,6 @@
 #if defined(__FX__)
 #include <GL/fxmesa.h>
 #endif
-
-#elif defined( __FreeBSD__ ) // rb010123
-
-#include <GL/gl.h>
-#include <GL/glx.h>
-#if defined(__FX__)
-#include <GL/fxmesa.h>
-#endif
-
-#else
-
-#include <gl.h>
 
 #endif
 
@@ -351,12 +339,7 @@ extern	void ( APIENTRY * qglTexSubImage3DEXT) (GLenum, GLint, GLint, GLint, GLin
 
 //===========================================================================
 
-// non-windows systems will just redefine qgl* to gl*
-#if !defined( _WIN32 ) && !defined(MACOS_X) && !defined( __linux__ ) && !defined( __FreeBSD__ ) // rb010123
-
-#include "qgl_linked.h"
-
-#elif defined(MACOS_X)
+#if defined(MACOS_X)
 // This includes #ifdefs for optional logging and GL error checking after every GL call as well as #defines to prevent incorrect usage of the non-'qgl' versions of the GL API.
 #include "macosx_qgl.h"
 
@@ -728,9 +711,7 @@ extern BOOL ( WINAPI * qwglSwapLayerBuffers)(HDC, UINT);
 
 extern BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
 
-#endif	// _WIN32
-
-#if ( (defined __linux__ )  || (defined __FreeBSD__ ) ) // rb010123
+#elif !defined(MACOS_X)
 
 //FX Mesa Functions
 // bk001129 - from cvs1.17 (mkv)
