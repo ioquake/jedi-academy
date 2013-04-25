@@ -2071,7 +2071,7 @@ CToken* CTokenizer::TokenFromName(LPCTSTR name)
 		{
 			while (m_keywords[i].m_tokenvalue != TK_EOF)
 			{
-				if (stricmp(m_keywords[i].m_keyword, name) == 0)
+				if (Q_stricmp(m_keywords[i].m_keyword, name) == 0)
 				{
 					return CUserToken::Create(m_keywords[i].m_tokenvalue, name);
 				}

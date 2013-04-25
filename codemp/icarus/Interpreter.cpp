@@ -480,7 +480,7 @@ int CInterpreter::FindSymbol( const char *name,  keywordArray_t *table)
 
 	for (ids = table; (strcmp(ids->m_keyword, "")); ids++)
 	{
-		if (!stricmp(name, ids->m_keyword))
+		if (!Q_stricmp(name, ids->m_keyword))
 			return ids->m_tokenvalue;
 	}
 
