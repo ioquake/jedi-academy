@@ -4,7 +4,7 @@
 // for a 3D rendering
 #include "cg_local.h"
 
-#include "bg_saga.h"
+#include "../game/bg_saga.h"
 
 #if !defined(CL_LIGHT_H_INC)
 	#include "cg_lights.h"

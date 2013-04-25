@@ -12,6 +12,7 @@
 #include "snd_mp3.h"
 #include "snd_music.h"
 #include "client.h"
+#include "../qcommon/platform.h"
 
 qboolean s_shutUp = qfalse;
 

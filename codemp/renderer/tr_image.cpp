@@ -7,6 +7,8 @@
 #include "glext.h"
 #endif
 
+#include "../qcommon/platform.h"
+
 #pragma warning (push, 3)	//go back down to 3 for the stl include
 #include <map>
 #pragma warning (pop)

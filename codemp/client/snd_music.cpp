@@ -8,6 +8,7 @@
 
 #include "../game/q_shared.h"
 #include "../qcommon/sstring.h"
+#include "../qcommon/platform.h"
 
 #pragma warning ( disable : 4663 )	//spcialize class
 #pragma warning( push, 3 )
@@ -21,6 +22,8 @@
 #include "snd_local.h"
 //#include "snd_mp3.h"
 #endif
+
+#include <string>
 
 //
 #include "snd_music.h"

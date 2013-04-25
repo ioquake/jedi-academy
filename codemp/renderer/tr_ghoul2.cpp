@@ -7,7 +7,7 @@
 #include "../client/client.h"	//FIXME!! EVIL - just include the definitions needed 
 
 #ifdef _XBOX
-#include "../qcommon/miniheap.h"
+#include "../qcommon/MiniHeap.h"
 #endif
 						  
 #if !defined(TR_LOCAL_H)
