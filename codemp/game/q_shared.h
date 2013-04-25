@@ -304,6 +304,56 @@ inline static float LittleFloat (const float *l) { return FloatSwap(l); }
 
 #endif
 
+//======================= OPENBSD DEFINES =================================
+
+// the mac compiler can't handle >32k of locals, so we
+// just waste space and make big arrays static...
+#ifdef __OpenBSD__
+
+// bk001205 - from Makefile
+#define stricmp strcasecmp
+
+#define	MAC_STATIC // bk: FIXME
+#define ID_INLINE inline 
+
+#ifdef __i386__
+#define	CPUSTRING	"openbsd-i386"
+#elif defined(__amd64__) || defined(__x86_64__)
+#define	CPUSTRING	"openbsd-amd64"
+#elif defined __axp__
+#define	CPUSTRING	"openbsd-alpha"
+#else
+#define	CPUSTRING	"openbsd-other"
+#endif
+
+#define	PATH_SEP '/'
+
+// bk001205 - try
+#ifdef Q3_STATIC
+#define	GAME_HARD_LINKED
+#define	CGAME_HARD_LINKED
+#define	UI_HARD_LINKED
+#define	BOTLIB_HARD_LINKED
+#endif
+
+#if !idppc
+inline static short BigShort( short l) { return ShortSwap(l); }
+#define LittleShort
+inline static int BigLong(int l) { return LongSwap(l); }
+#define LittleLong
+inline static float BigFloat(const float *l) { return FloatSwap(l); }
+#define LittleFloat
+#else
+#define BigShort
+inline static short LittleShort(short l) { return ShortSwap(l); }
+#define BigLong
+inline static int LittleLong (int l) { return LongSwap(l); }
+#define BigFloat
+inline static float LittleFloat (const float *l) { return FloatSwap(l); }
+#endif
+
+#endif
+
 //======================= FreeBSD DEFINES =====================
 #ifdef __FreeBSD__ // rb010123
 
