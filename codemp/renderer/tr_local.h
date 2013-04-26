@@ -28,7 +28,7 @@ typedef unsigned int glIndex_t;
 #endif
 
 // fast float to int conversion
-#if id386 && !( (defined __linux__ || defined __FreeBSD__ ) && (defined __i386__ ) ) // rb010123
+#if (defined(_MSVC_VER) && defined(id386))
 inline long myftol( float f );
 #else
 #define	myftol(x) ((int)(x))
