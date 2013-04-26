@@ -5,6 +5,9 @@
 #ifndef	__ICARUS__
 #define __ICARUS__
 
+extern void *ICARUS_Malloc(int iSize);
+extern void  ICARUS_Free(void *pMem);
+
 #include "../game/g_public.h"
 
 #pragma warning( disable : 4786 )  // identifier was truncated 
@@ -24,9 +27,5 @@
 #include "instance.h"
 
 #pragma warning( pop )	//restore
-
-
-extern void *ICARUS_Malloc(int iSize);
-extern void  ICARUS_Free(void *pMem);
 
 #endif	//__ICARUS__

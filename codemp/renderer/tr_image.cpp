@@ -2942,9 +2942,6 @@ SKINS
 ============================================================================
 */
 
-static char *CommaParse( char **data_p );
-//can't be dec'd here since we need it for non-dedicated builds now as well.
-
 /*
 ===============
 RE_RegisterSkin
@@ -2955,9 +2952,10 @@ RE_RegisterSkin
 #endif // !DEDICATED
 bool gServerSkinHack = false;
 
+static char *CommaParse( char **data_p );
+//can't be dec'd here since we need it for non-dedicated builds now as well.
 
 shader_t *R_FindServerShader( const char *name, const int *lightmapIndex, const byte *styles, qboolean mipRawImage );
-char *CommaParse( char **data_p );
 /*
 ===============
 RE_SplitSkins
