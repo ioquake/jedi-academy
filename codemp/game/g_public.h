@@ -6,6 +6,8 @@
 
 #define G_PUBLIC_H
 
+#include "../game/bg_vehicles.h"
+
 #define Q3_INFINITE			16777216 
 
 #define	GAME_API_VERSION	8
@@ -671,8 +673,6 @@ typedef struct
 } parms_t;
 
 #define MAX_FAILED_NODES 8
-
-typedef struct Vehicle_s Vehicle_t;
 
 // the server looks at a sharedEntity, which is the start of the game's gentity_t structure
 //mod authors should not touch this struct

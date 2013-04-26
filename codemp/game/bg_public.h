@@ -420,7 +420,7 @@ extern int bgForcePowerCost[NUM_FORCE_POWERS][NUM_FORCE_POWER_LEVELS];
 
 #define	MAXTOUCH	32
 
-typedef struct bgEntity_s
+struct bgEntity_s
 {
 	entityState_t	s;
 	playerState_t	*playerState;
@@ -430,7 +430,7 @@ typedef struct bgEntity_s
 	vec3_t			modelScale; //needed for g2 collision
 
 	//Data type(s) must directly correspond to the head of the gentity and centity structures
-} bgEntity_t;
+};
 
 typedef struct {
 	// state (in / out)
