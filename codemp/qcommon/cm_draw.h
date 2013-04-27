@@ -36,6 +36,13 @@
 #define CEILING(a) \
 ((a)==(int)(a) ? (a) : (a)>0 ? 1+(int)(a) : -(1+(int)(-a)))
 
+#ifndef WIN32
+typedef struct {
+	int x;
+	int y;
+} POINT;
+#endif
+
 #include <stdlib.h>
 #endif
 

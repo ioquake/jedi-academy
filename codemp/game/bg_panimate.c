@@ -1900,27 +1900,27 @@ void ParseAnimationEvtBlock(const char *aeb_filename, animevent_t *animEvents, a
 			{
 				break;
 			}
-			if ( stricmp( token, "CHAN_VOICE_ATTEN" ) == 0 )
+			if ( Q_stricmp( token, "CHAN_VOICE_ATTEN" ) == 0 )
 			{
 				animEvents[curAnimEvent].eventData[AED_SOUNDCHANNEL] = CHAN_VOICE_ATTEN;
 			}
-			else if ( stricmp( token, "CHAN_VOICE_GLOBAL" ) == 0 )
+			else if ( Q_stricmp( token, "CHAN_VOICE_GLOBAL" ) == 0 )
 			{
 				animEvents[curAnimEvent].eventData[AED_SOUNDCHANNEL] = CHAN_VOICE_GLOBAL;
 			}
-			else if ( stricmp( token, "CHAN_ANNOUNCER" ) == 0 )
+			else if ( Q_stricmp( token, "CHAN_ANNOUNCER" ) == 0 )
 			{
 				animEvents[curAnimEvent].eventData[AED_SOUNDCHANNEL] = CHAN_ANNOUNCER;
 			}
-			else if ( stricmp( token, "CHAN_BODY" ) == 0 )
+			else if ( Q_stricmp( token, "CHAN_BODY" ) == 0 )
 			{
 				animEvents[curAnimEvent].eventData[AED_SOUNDCHANNEL] = CHAN_BODY;
 			}
-			else if ( stricmp( token, "CHAN_WEAPON" ) == 0 )
+			else if ( Q_stricmp( token, "CHAN_WEAPON" ) == 0 )
 			{
 				animEvents[curAnimEvent].eventData[AED_SOUNDCHANNEL] = CHAN_WEAPON;
 			}
-			else if ( stricmp( token, "CHAN_VOICE" ) == 0 )
+			else if ( Q_stricmp( token, "CHAN_VOICE" ) == 0 )
 			{
 				animEvents[curAnimEvent].eventData[AED_SOUNDCHANNEL] = CHAN_VOICE;
 			} 

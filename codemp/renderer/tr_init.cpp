@@ -251,6 +251,7 @@ PFNGLGETCOMBINEROUTPUTPARAMETERIVNV		qglGetCombinerOutputParameterivNV = NULL;
 PFNGLGETFINALCOMBINERINPUTPARAMETERFVNV	qglGetFinalCombinerInputParameterfvNV = NULL;
 PFNGLGETFINALCOMBINERINPUTPARAMETERIVNV	qglGetFinalCombinerInputParameterivNV = NULL;
 
+#ifdef _WIN32
 // Declare Pixel Format function pointers.
 PFNWGLGETPIXELFORMATATTRIBIVARBPROC		qwglGetPixelFormatAttribivARB = NULL;
 PFNWGLGETPIXELFORMATATTRIBFVARBPROC		qwglGetPixelFormatAttribfvARB = NULL;
@@ -267,6 +268,7 @@ PFNWGLQUERYPBUFFERARBPROC				qwglQueryPbufferARB = NULL;
 PFNWGLBINDTEXIMAGEARBPROC				qwglBindTexImageARB = NULL;
 PFNWGLRELEASETEXIMAGEARBPROC			qwglReleaseTexImageARB = NULL;
 PFNWGLSETPBUFFERATTRIBARBPROC			qwglSetPbufferAttribARB = NULL;
+#endif // _WIN32
 
 // Declare Vertex and Fragment Program function pointers.
 PFNGLPROGRAMSTRINGARBPROC qglProgramStringARB = NULL;
@@ -327,7 +329,7 @@ void R_Splash()
 #ifndef _XBOX
 	image_t *pImage;
 /*	const char* s = Cvar_VariableString("se_language");
-	if (stricmp(s,"english"))
+	if (Q_stricmp(s,"english"))
 	{
 		pImage = R_FindImageFile( "menu/splash_eur", qfalse, qfalse, qfalse, GL_CLAMP);
 	}
@@ -864,6 +866,27 @@ void GL_SetDefaultState( void )
 #endif
 }
 
+/*
+================
+R_PrintLongString
+
+Workaround for VID_Printf's 4096 characters buffer limit.
+================
+*/
+void R_PrintLongString(const char *string) {
+	char buffer[4096];
+	const char *p;
+	int size = strlen(string);
+
+	p = string;
+	while(size > 0)
+	{
+		Q_strncpyz(buffer, p, sizeof (buffer) );
+		Com_Printf( "%s", buffer );
+		p += 4095;
+		size -= 4095;
+	}
+}
 
 /*
 ================
@@ -896,7 +919,9 @@ void GfxInfo_f( void )
 	Com_Printf ("\nGL_VENDOR: %s\n", glConfig.vendor_string );
 	Com_Printf ("GL_RENDERER: %s\n", glConfig.renderer_string );
 	Com_Printf ("GL_VERSION: %s\n", glConfig.version_string );
-	Com_Printf ("GL_EXTENSIONS: %s\n", glConfig.extensions_string );
+	Com_Printf ("GL_EXTENSIONS: " );
+	R_PrintLongString( glConfig.extensions_string );
+	Com_Printf ("\n");
 	Com_Printf ("GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize );
 	Com_Printf ("GL_MAX_ACTIVE_TEXTURES_ARB: %d\n", glConfig.maxActiveTextures );
 	Com_Printf ("\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits );

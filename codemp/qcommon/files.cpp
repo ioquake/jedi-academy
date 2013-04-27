@@ -1038,7 +1038,7 @@ static bool Sys_FileOutOfDate( LPCSTR psFinalFileName /* dest */, LPCSTR psDataF
 					
 static bool FS_FileCacheable(const char* const filename) 
 {
-	return( strchr(filename, '/') && strnicmp(filename, "ext_data/", 9) );
+	return( strchr(filename, '/') && Q_strnicmp(filename, "ext_data/", 9) );
 }
 
 /*

@@ -977,7 +977,7 @@ void	Sys_Log( const char *file, const void *buffer, int size, bool flush );
 // any game related timing information should come from event timestamps
 int		Sys_Milliseconds (bool baseTime = false);
 
-#if __linux__
+#ifndef _MSVC_VER
 extern "C" void	Sys_SnapVector( float *v );
 
 #else

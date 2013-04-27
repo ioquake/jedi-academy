@@ -8,9 +8,7 @@
 
 #if defined(_WINDOWS)
 #include <windows.h>
-#endif
-
-#if defined (__linux__)
+#else
 typedef const char *LPCTSTR;
 typedef const char *LPCSTR;
 typedef unsigned long DWORD;

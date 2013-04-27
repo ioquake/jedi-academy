@@ -424,6 +424,7 @@ inline int VectorToInt(vec3_t vec)
 {
 	int			tmp, retval;
 
+#ifdef _MSVC_VER
 	_asm
 	{
 		push	edx
@@ -447,6 +448,21 @@ inline int VectorToInt(vec3_t vec)
 		mov		[retval], eax
 		pop		edx
 	}
+#else
+	asm("flds	%1;\n\t"
+	    "flds	%2;\n\t"
+	    "flds	%3;\n\t"
+	    "fistp	%4;\n\t"
+	    "movb	%4, %%al;\n\t"
+	    "shl	$16, %0;\n\t"
+	    "fistp	%4;\n\t"
+	    "movb	%4, %%ah;\n\t"
+	    "fistp	%4;\n\t"
+	    "movb	%4, %%al;\n\t"
+	    : "=a"(retval)
+	    : "m"(vec[0]), "m"(vec[1]), "m"(vec[2]), "m"(tmp), "a"(0xff00)
+	);
+#endif
 	return(retval);
 }
 

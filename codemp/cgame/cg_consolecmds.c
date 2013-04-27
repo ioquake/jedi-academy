@@ -5,7 +5,7 @@
 
 #include "cg_local.h"
 #include "../ui/ui_shared.h"
-#include "bg_saga.h"
+#include "../game/bg_saga.h"
 extern menuDef_t *menuScoreboard;
 
 

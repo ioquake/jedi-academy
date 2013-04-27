@@ -225,7 +225,7 @@ void Sys_Log( const char *file, const void *buffer, int size, bool flush ) {
 	FileInfo* cur = NULL;
 	for (int f = 0; f < num_files; ++f)
 	{
-		if (!stricmp(file, files[f].name))
+		if (!Q_stricmp(file, files[f].name))
 		{
 			cur = &files[f];
 			break;

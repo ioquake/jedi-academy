@@ -5,7 +5,7 @@
 
 #include "cg_local.h"
 
-#include "bg_saga.h"
+#include "../game/bg_saga.h"
 
 #include "../ui/ui_shared.h"
 #include "../ui/ui_public.h"
@@ -6588,35 +6588,35 @@ static void CG_DrawVote(void) {
 	else if (strncmp(cgs.voteString, "g_gametype", 10)==0)
 	{
 		trap_SP_GetStringTextString("MENUS_GAME_TYPE", sCmd, sizeof(sCmd) );
-		if      ( stricmp("Free For All", cgs.voteString+11)==0 ) 
+		if      ( Q_stricmp("Free For All", cgs.voteString+11)==0 ) 
 		{
 			sParm = CG_GetStringEdString("MENUS", "FREE_FOR_ALL");
 		}
-		else if ( stricmp("Duel", cgs.voteString+11)==0 ) 
+		else if ( Q_stricmp("Duel", cgs.voteString+11)==0 ) 
 		{
 			sParm = CG_GetStringEdString("MENUS", "DUEL");
 		}
-		else if ( stricmp("Holocron FFA", cgs.voteString+11)==0  ) 
+		else if ( Q_stricmp("Holocron FFA", cgs.voteString+11)==0  ) 
 		{
 			sParm = CG_GetStringEdString("MENUS", "HOLOCRON_FFA");
 		}
-		else if ( stricmp("Power Duel", cgs.voteString+11)==0  ) 
+		else if ( Q_stricmp("Power Duel", cgs.voteString+11)==0  ) 
 		{
 			sParm = CG_GetStringEdString("MENUS", "POWERDUEL");
 		}
-		else if ( stricmp("Team FFA", cgs.voteString+11)==0  ) 
+		else if ( Q_stricmp("Team FFA", cgs.voteString+11)==0  ) 
 		{
 			sParm = CG_GetStringEdString("MENUS", "TEAM_FFA");
 		}
-		else if ( stricmp("Siege", cgs.voteString+11)==0  ) 
+		else if ( Q_stricmp("Siege", cgs.voteString+11)==0  ) 
 		{
 			sParm = CG_GetStringEdString("MENUS", "SIEGE");
 		}
-		else if ( stricmp("Capture the Flag", cgs.voteString+11)==0  ) 
+		else if ( Q_stricmp("Capture the Flag", cgs.voteString+11)==0  ) 
 		{
 			sParm = CG_GetStringEdString("MENUS", "CAPTURE_THE_FLAG");
 		}
-		else if ( stricmp("Capture the Ysalamiri", cgs.voteString+11)==0  ) 
+		else if ( Q_stricmp("Capture the Ysalamiri", cgs.voteString+11)==0  ) 
 		{
 			sParm = CG_GetStringEdString("MENUS", "CAPTURE_THE_YSALIMARI");
 		} 

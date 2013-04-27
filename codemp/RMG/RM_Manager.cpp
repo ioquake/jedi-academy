@@ -152,7 +152,7 @@ bool CRMManager::LoadMission ( qboolean IsServer )
 		if(Com_ParseTextFile(va("ext_data/rmg/%s.teams", temp), parser))
 		{
 			root = parser.GetBaseParseGroup()->GetSubGroups();
-			if (0 == stricmp(root->GetName(), "teams"))
+			if (0 == Q_stricmp(root->GetName(), "teams"))
 			{
 				/*
 				SV_SetConfigstring( CS_GAMETYPE_REDTEAM, root->FindPairValue ( "red", "marine" ));
@@ -280,7 +280,7 @@ void CRMManager::UpdateStatisticCvars ( void )
 		// show difficulty
 		char difficulty[MAX_QPATH];
 		gi.Cvar_VariableStringBuffer("g_skill", difficulty, MAX_QPATH);
-		strupr(difficulty);
+		Q_strupr(difficulty);
 		gi.Cvar_Set ( "ar_diff", va("&GENERIC_%s&",difficulty) );
 
 		// compute rank

@@ -307,12 +307,12 @@ public:
 		mGhoul2 = iGhoul2; mEntNum = entNum; mModelNum = modelNum; mBoltNum = boltNum; 
 	}
 
-	inline CParticle::CParticle(void)
+	inline CParticle(void)
 	{
 		mRefEnt.reType = RT_SPRITE; mEntNum = -1; mModelNum = -1; mBoltNum = -1;
 	}
 
-	virtual CParticle::~CParticle(void)
+	virtual ~CParticle(void)
 	{
 		mGhoul2.kill();	//remove my model ref without actually deleting
 	}

@@ -12,6 +12,8 @@
 #include <unistd.h>   // AH - for size_t
 #include <string.h>
 
+#include "../game/q_shared.h"
+
 // bk001207 - we need something under Linux, too. Mac?
 #if 1 // defined(C_ONLY) // bk010102 - dedicated?
 void Com_Memcpy (void* dest, const void* src, const size_t count) {

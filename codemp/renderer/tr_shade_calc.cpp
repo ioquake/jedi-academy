@@ -692,7 +692,7 @@ void RB_CalcColorFromOneMinusEntity( unsigned char *dstColors )
 {
 	int	i;
 	int *pColors = ( int * ) dstColors;
-	unsigned char invModulate[3];
+	unsigned char invModulate[4];
 	int c;
 
 	if ( !backEnd.currentEntity )
@@ -1206,7 +1206,7 @@ void RB_CalcRotateTexCoords( float degsPerSecond, float *st )
 
 
 
-#if id386 && !( (defined __linux__ || defined __FreeBSD__ ) && (defined __i386__ ) ) // rb010123
+#if (defined(_MSVC_VER) && defined(id386))
 #pragma warning (disable: 4035)//no return value
 inline long myftol( float f ) {
 	static int tmp;

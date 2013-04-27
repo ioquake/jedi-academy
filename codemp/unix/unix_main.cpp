@@ -16,6 +16,7 @@
 #include <sys/wait.h>
 #include <sys/mman.h>
 #include <errno.h>
+#include <stdbool.h>
 #ifdef __linux__ // rb010123
 #include <mntent.h>
 #endif
@@ -35,7 +36,9 @@
 cvar_t *nostdout;
 
 // Structure containing functions exported from refresh DLL
+#if 0
 refexport_t	re;
+#endif
 
 unsigned	sys_frame_time;
 
@@ -114,11 +117,11 @@ void Sys_ConsoleOutput (char *string)
 void Sys_Printf (char *fmt, ...)
 {
 	va_list		argptr;
-	char		text[1024];
+	char		text[4096];
 	unsigned char		*p;
 
 	va_start (argptr,fmt);
-	vsprintf (text,fmt,argptr);
+	vsnprintf (text,sizeof(text),fmt,argptr);
 	va_end (argptr);
 
 	if (strlen(text) > sizeof(text))
@@ -164,12 +167,24 @@ void Sys_Init(void)
 #if defined __linux__
 #if defined __i386__
 	Cvar_Set( "arch", "linux i386" );
+#elif defined(__amd64__) || defined(__x86_64__)
+	Cvar_Set( "arch", "linux amd64" );
 #elif defined __alpha__
 	Cvar_Set( "arch", "linux alpha" );
 #elif defined __sparc__
 	Cvar_Set( "arch", "linux sparc" );
+#else
+	Cvar_Set( "arch", "linux unknown" );
+#endif
+#elif defined __OpenBSD__
+#if defined __i386__
+	Cvar_Set( "arch", "openbsd i386" );
+#elif defined(__amd64__) || defined(__x86_64__)
+	Cvar_Set( "arch", "openbsd amd64" );
+#else
+	Cvar_Set( "arch", "openbsd unknown" );
+#endif
 #elif defined __FreeBSD__
-
 #if defined __i386__ // FreeBSD
         Cvar_Set( "arch", "freebsd i386" );
 #elif defined __alpha__
@@ -177,10 +192,6 @@ void Sys_Init(void)
 #else
         Cvar_Set( "arch", "freebsd unknown" );
 #endif // FreeBSD
-
-#else
-	Cvar_Set( "arch", "linux unknown" );
-#endif
 #elif defined __sun__
 #if defined __i386__
 	Cvar_Set( "arch", "solaris x86" );
@@ -341,10 +352,12 @@ void *Sys_LoadDll( const char *name,
   getcwd(curpath, sizeof(curpath));
 #if defined __i386__
 #ifndef NDEBUG
-  snprintf (fname, sizeof(fname), "%si386-debug.so", name); // bk010205 - different DLL name
+  snprintf (fname, sizeof(fname), "%sx86-debug.so", name); // bk010205 - different DLL name
 #else
-  snprintf (fname, sizeof(fname), "%si386.so", name);
+  snprintf (fname, sizeof(fname), "%sx86.so", name);
 #endif
+#elif defined(__amd64__) || defined(__x86_64__)
+  snprintf (fname, sizeof(fname), "%samd64.so", name);
 #elif defined __powerpc__   //rcg010207 - PPC support.
   snprintf (fname, sizeof(fname), "%sppc.so", name);
 #elif defined __axp__
@@ -453,7 +466,9 @@ void *Sys_LoadDll( const char *name,
 static void *game_library;
 
 #ifdef __i386__
-	const char *gamename = "qagamei386.so";
+	const char *gamename = "qagamex86.so";
+#elif defined(__amd64__) || defined(__x86_64__)
+	const char *gamename = "qagameamd64.so";
 #elif defined __alpha__
 	const char *gamename = "qagameaxp.so";
 #elif defined __mips__
@@ -556,7 +571,9 @@ void *Sys_GetCGameAPI (void)
 	char	name[MAX_OSPATH];
 	char	curpath[MAX_OSPATH];
 #ifdef __i386__
-	const char *cgamename = "cgamei386.so";
+	const char *cgamename = "cgamex86.so";
+#elif defined(__amd64__) || defined(__x86_64__)
+	const char *cgamename = "cgameamd64.so";
 #elif defined __alpha__
 	const char *cgamename = "cgameaxp.so";
 #elif defined __mips__
@@ -623,7 +640,9 @@ void *Sys_GetUIAPI (void)
 	char	name[MAX_OSPATH];
 	char	curpath[MAX_OSPATH];
 #ifdef __i386__
-	const char *uiname = "uii386.so";
+	const char *uiname = "uix86.so";
+#elif defined(__amd64__) || defined(__x86_64__)
+	const char *uiname = "uiamd64.so";
 #elif defined __alpha__
 	const char *uiname = "uiaxp.so";
 #elif defined __mips__
@@ -682,13 +701,16 @@ Sys_GetGameAPI
 Loads the game dll
 =================
 */
+#if 0
 void *Sys_GetBotLibAPI (void *parms )
 {
 	void	*(*GetBotLibAPI) (void *);
 	char	name[MAX_OSPATH];
 	char	curpath[MAX_OSPATH];
 #ifdef __i386__
-	const char *botlibname = "qaboti386.so";
+	const char *botlibname = "qabotx86.so";
+#elif defined(__amd64__) || defined(__x86_64__)
+	const char *botlibname = "qabotamd64.so";
 #elif defined __alpha__
 	const char *botlibname = "qabotaxp.so";
 #elif defined __mips__
@@ -724,6 +746,7 @@ void *Sys_GetBotLibAPI (void *parms )
 	// bk001129 - this is a signature mismatch
 	return GetBotLibAPI (parms);
 }
+#endif
 
 void *Sys_GetBotAIAPI (void *parms ) {
 	return NULL;
@@ -1103,9 +1126,9 @@ void Sys_PrintBinVersion( const char* name ) {
   char* sep = "==============================================================";
   fprintf( stdout, "\n\n%s\n", sep );
 #ifdef DEDICATED
-  fprintf( stdout, "Linux Quake3 Dedicated Server [%s %s]\n", date, time );  
+  fprintf( stdout, "Jedi Academy Dedicated Server [%s %s]\n", date, time );  
 #else
-  fprintf( stdout, "Linux Quake3 Full Executable  [%s %s]\n", date, time );  
+  fprintf( stdout, "Jedi Academy Full Executable  [%s %s]\n", date, time );  
 #endif
   fprintf( stdout, " local install: %s\n", name );
   fprintf( stdout, "%s\n\n", sep );

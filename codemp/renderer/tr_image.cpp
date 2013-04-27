@@ -7,6 +7,8 @@
 #include "glext.h"
 #endif
 
+#include "../qcommon/platform.h"
+
 #pragma warning (push, 3)	//go back down to 3 for the stl include
 #include <map>
 #pragma warning (pop)
@@ -588,7 +590,7 @@ static void Upload32( unsigned *data,
 						 qboolean isLightmap,
 						 qboolean allowTC,
 						 int *pformat, 
-						 USHORT *pUploadWidth, USHORT *pUploadHeight, bool bRectangle = false )
+						 unsigned short *pUploadWidth, unsigned short *pUploadHeight, bool bRectangle = false )
 {
 	GLuint uiTarget = GL_TEXTURE_2D;
 	if ( bRectangle )
@@ -794,7 +796,7 @@ static void Upload32_3D( unsigned *data,
 						 qboolean isLightmap,
 						 qboolean allowTC,
 						 int *pformat, 
-						 USHORT *pUploadWidth, USHORT *pUploadHeight )
+						 unsigned short *pUploadWidth, unsigned short *pUploadHeight )
 {
 	int			samples;
 	int			i, c;
@@ -1015,15 +1017,8 @@ void R_Images_DeleteLightMaps(void)
 		if (pImage->imgName[0] == '*' && strstr(pImage->imgName,"lightmap"))	// loose check, but should be ok
 		{
 			R_Images_DeleteImageContents(pImage);
-#ifndef __linux__
-			itImage = AllocatedImages.erase(itImage);
+			AllocatedImages.erase(itImage++);
 			bEraseOccured = qtrue;
-#else
-			// MS & Dinkimware got the map::erase return wrong (it's null)
-			AllocatedImages_t::iterator itTemp = itImage;
-			itImage++;
-			AllocatedImages.erase(itTemp);
-#endif
 		}
 	}
 
@@ -1119,14 +1114,8 @@ qboolean RE_RegisterImages_LevelLoadEnd(void)
 				Com_DPrintf (S_COLOR_RED "Dumping image \"%s\"\n",pImage->imgName);
 
 				R_Images_DeleteImageContents(pImage);
-#ifndef __linux__
-				itImage = AllocatedImages.erase(itImage);
+				AllocatedImages.erase(itImage++);
 				bEraseOccured = qtrue;
-#else
-				AllocatedImages_t::iterator itTemp = itImage;
-				itImage++;
-				AllocatedImages.erase(itTemp);	
-#endif
 			}
 		}
 	}
@@ -2953,9 +2942,6 @@ SKINS
 ============================================================================
 */
 
-static char *CommaParse( char **data_p );
-//can't be dec'd here since we need it for non-dedicated builds now as well.
-
 /*
 ===============
 RE_RegisterSkin
@@ -2966,9 +2952,10 @@ RE_RegisterSkin
 #endif // !DEDICATED
 bool gServerSkinHack = false;
 
+static char *CommaParse( char **data_p );
+//can't be dec'd here since we need it for non-dedicated builds now as well.
 
 shader_t *R_FindServerShader( const char *name, const int *lightmapIndex, const byte *styles, qboolean mipRawImage );
-char *CommaParse( char **data_p );
 /*
 ===============
 RE_SplitSkins

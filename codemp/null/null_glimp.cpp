@@ -1,6 +1,6 @@
 #include "../game/q_shared.h"
 #include "../renderer/tr_local.h"
-#ifdef __linux__
+#ifndef _WIN32
 typedef unsigned int GLenum;
 #endif
 

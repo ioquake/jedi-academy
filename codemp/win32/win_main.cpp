@@ -666,7 +666,7 @@ static qboolean Sys_ScanForCD( void ) {
 			Result = GetVolumeInformation(drive,VolumeName,sizeof(VolumeName),&VolumeSerialNumber,
 				&MaximumComponentLength,&FileSystemFlags,FileSystemName,sizeof(FileSystemName));
 			
-			if (Result && (strnicmp(VolumeName,CD_VOLUME,8) == 0 ) )
+			if (Result && (Q_strnicmp(VolumeName,CD_VOLUME,8) == 0 ) )
 			{
 				sprintf (test, "%s%s\\%s",drive, CD_BASEDIR, CD_EXE);
 				f = fopen( test, "r" );

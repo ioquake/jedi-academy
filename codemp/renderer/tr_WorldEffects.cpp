@@ -1608,7 +1608,7 @@ void R_WorldEffectCommand(const char *command)
 
 
 	//Die - clean up the whole weather system -rww
-	if (strcmpi(token, "die") == 0)
+	if (Q_strcmpi(token, "die") == 0)
 	{
 		R_ShutdownWorldEffects();
 		return;
@@ -1616,7 +1616,7 @@ void R_WorldEffectCommand(const char *command)
 
 	// Clear - Removes All Particle Clouds And Wind Zones
 	//----------------------------------------------------
-	else if (strcmpi(token, "clear") == 0)
+	else if (Q_strcmpi(token, "clear") == 0)
 	{
 		for (int p=0; p<mParticleClouds.size(); p++)
 		{
@@ -1628,14 +1628,14 @@ void R_WorldEffectCommand(const char *command)
 
 	// Freeze / UnFreeze - Stops All Particle Motion Updates
 	//--------------------------------------------------------
-	else if (strcmpi(token, "freeze") == 0)
+	else if (Q_strcmpi(token, "freeze") == 0)
 	{
 		mFrozen = !mFrozen;
 	}
 
 	// Add a zone
 	//---------------
-	else if (strcmpi(token, "zone") == 0)
+	else if (Q_strcmpi(token, "zone") == 0)
 	{
 		vec3_t	mins;
 		vec3_t	maxs;
@@ -1647,7 +1647,7 @@ void R_WorldEffectCommand(const char *command)
 
 	// Basic Wind
 	//------------
-	else if (strcmpi(token, "wind") == 0)
+	else if (Q_strcmpi(token, "wind") == 0)
 	{
 		if (mWindZones.full())
 		{
@@ -1659,7 +1659,7 @@ void R_WorldEffectCommand(const char *command)
 
 	// Constant Wind
 	//---------------
-	else if (strcmpi(token, "constantwind") == 0)
+	else if (Q_strcmpi(token, "constantwind") == 0)
 	{
 		if (mWindZones.full())
 		{
@@ -1677,7 +1677,7 @@ void R_WorldEffectCommand(const char *command)
 
 	// Gusting Wind
 	//--------------
-	else if (strcmpi(token, "gustingwind") == 0)
+	else if (Q_strcmpi(token, "gustingwind") == 0)
 	{
 		if (mWindZones.full())
 		{
@@ -1704,7 +1704,7 @@ void R_WorldEffectCommand(const char *command)
 
 	// Create A Rain Storm
 	//---------------------
-	else if (strcmpi(token, "lightrain") == 0)
+	else if (Q_strcmpi(token, "lightrain") == 0)
 	{
 		if (mParticleClouds.full())
 		{
@@ -1725,7 +1725,7 @@ void R_WorldEffectCommand(const char *command)
 
 	// Create A Rain Storm
 	//---------------------
-	else if (strcmpi(token, "rain") == 0)
+	else if (Q_strcmpi(token, "rain") == 0)
 	{
 		if (mParticleClouds.full())
 		{
@@ -1746,7 +1746,7 @@ void R_WorldEffectCommand(const char *command)
 
 	// Create A Rain Storm
 	//---------------------
-	else if (strcmpi(token, "acidrain") == 0)
+	else if (Q_strcmpi(token, "acidrain") == 0)
 	{
 		if (mParticleClouds.full())
 		{
@@ -1774,7 +1774,7 @@ void R_WorldEffectCommand(const char *command)
 
 	// Create A Rain Storm
 	//---------------------
-	else if (strcmpi(token, "heavyrain") == 0)
+	else if (Q_strcmpi(token, "heavyrain") == 0)
 	{
 		if (mParticleClouds.full())
 		{
@@ -1795,7 +1795,7 @@ void R_WorldEffectCommand(const char *command)
 
 	// Create A Snow Storm
 	//---------------------
-	else if (strcmpi(token, "snow") == 0)
+	else if (Q_strcmpi(token, "snow") == 0)
 	{
 		if (mParticleClouds.full())
 		{
@@ -1818,7 +1818,7 @@ void R_WorldEffectCommand(const char *command)
 
 	// Create A Some stuff
 	//---------------------
-	else if (strcmpi(token, "spacedust") == 0)
+	else if (Q_strcmpi(token, "spacedust") == 0)
 	{
 		int count;
 		if (mParticleClouds.full())
@@ -1849,7 +1849,7 @@ void R_WorldEffectCommand(const char *command)
 
 	// Create A Sand Storm
 	//---------------------
-	else if (strcmpi(token, "sand") == 0)
+	else if (Q_strcmpi(token, "sand") == 0)
 	{
 		if (mParticleClouds.full())
 		{
@@ -1876,7 +1876,7 @@ void R_WorldEffectCommand(const char *command)
 
 	// Create Blowing Clouds Of Fog
 	//------------------------------
-	else if (strcmpi(token, "fog") == 0)
+	else if (Q_strcmpi(token, "fog") == 0)
 	{
 		if (mParticleClouds.full())
 		{
@@ -1900,7 +1900,7 @@ void R_WorldEffectCommand(const char *command)
 
 	// Create Heavy Rain Particle Cloud
 	//-----------------------------------
-	else if (strcmpi(token, "heavyrainfog") == 0)
+	else if (Q_strcmpi(token, "heavyrainfog") == 0)
 	{
 		if (mParticleClouds.full())
 		{
@@ -1927,7 +1927,7 @@ void R_WorldEffectCommand(const char *command)
 
 	// Create Blowing Clouds Of Fog
 	//------------------------------
-	else if (strcmpi(token, "light_fog") == 0)
+	else if (Q_strcmpi(token, "light_fog") == 0)
 	{
 		if (mParticleClouds.full())
 		{
@@ -1952,11 +1952,11 @@ void R_WorldEffectCommand(const char *command)
 		nCloud.mRotationChangeNext	= 0;
 	}
 
-	else if (strcmpi(token, "outsideshake") == 0)
+	else if (Q_strcmpi(token, "outsideshake") == 0)
 	{
 		mOutside.mOutsideShake = !mOutside.mOutsideShake;
 	}
-	else if (strcmpi(token, "outsidepain") == 0)
+	else if (Q_strcmpi(token, "outsidepain") == 0)
 	{
 		mOutside.mOutsidePain = !mOutside.mOutsidePain;
 	}

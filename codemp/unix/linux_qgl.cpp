@@ -8,34 +8,21 @@
 ** QGL_Init() - loads libraries, assigns function pointers, etc.
 ** QGL_Shutdown() - unloads libraries, NULLs function pointers
 */
-
-// bk001204
-#include <unistd.h>
-#include <sys/types.h>
-
-
 #include <float.h>
+#include "../game/q_shared.h"
 #include "../renderer/tr_local.h"
 #include "unix_glw.h"
+#include "../client/client.h"
 
-// bk001129 - from cvs1.17 (mkv)
-//#if defined(__FX__)
-//#include <GL/fxmesa.h>
-//#endif
-//#include <GL/glx.h> // bk010216 - FIXME: all of the above redundant? renderer/qgl.h
+#include <GL/glx.h>
 
 #include <dlfcn.h>
 
+#include <sys/types.h>
+#include <unistd.h>
 
-// bk001129 - from cvs1.17 (mkv)
-#if defined(__FX__)
-//FX Mesa Functions
-fxMesaContext (*qfxMesaCreateContext)(GLuint win, GrScreenResolution_t, GrScreenRefresh_t, const GLint attribList[]);
-fxMesaContext (*qfxMesaCreateBestContext)(GLuint win, GLint width, GLint height, const GLint attribList[]);
-void (*qfxMesaDestroyContext)(fxMesaContext ctx);
-void (*qfxMesaMakeCurrent)(fxMesaContext ctx);
-fxMesaContext (*qfxMesaGetCurrentContext)(void);
-void (*qfxMesaSwapBuffers)(void);
+#ifndef __stdcall
+#define __stdcall
 #endif
 
 //GLX Functions
@@ -383,15 +370,6 @@ void ( APIENTRY * qglVertex4sv )(const GLshort *v);
 void ( APIENTRY * qglVertexPointer )(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
 void ( APIENTRY * qglViewport )(GLint x, GLint y, GLsizei width, GLsizei height);
 
-void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
-void ( APIENTRY * qglActiveTextureARB )( GLenum texture );
-void ( APIENTRY * qglClientActiveTextureARB )( GLenum texture );
-
-void ( APIENTRY * qglLockArraysEXT)( int, int);
-void ( APIENTRY * qglUnlockArraysEXT) ( void );
-
-void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
-void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
 void ( APIENTRY * qglColorTableEXT)( int, int, int, int, int, const void * );
 void ( APIENTRY * qgl3DfxSetPaletteEXT)( GLuint * );
 void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
@@ -2973,16 +2951,6 @@ void QGL_Shutdown( void )
 	qglVertexPointer             = NULL;
 	qglViewport                  = NULL;
 
-// bk001129 - from cvs1.17 (mkv)
-#if defined(__FX__)
-	qfxMesaCreateContext         = NULL;
-	qfxMesaCreateBestContext     = NULL;
-	qfxMesaDestroyContext        = NULL;
-	qfxMesaMakeCurrent           = NULL;
-	qfxMesaGetCurrentContext     = NULL;
-	qfxMesaSwapBuffers           = NULL;
-#endif
-
 	qglXChooseVisual             = NULL;
 	qglXCreateContext            = NULL;
 	qglXDestroyContext           = NULL;
@@ -3013,11 +2981,27 @@ void *qwglGetProcAddress(char *symbol)
 
 qboolean QGL_Init( const char *dllname )
 {
-	if ( ( glw_state.OpenGLLib = dlopen( dllname, RTLD_LAZY|RTLD_GLOBAL ) ) == 0 )
+#if 0 //FIXME
+	// update 3Dfx gamma irrespective of underlying DLL
+	{
+		char envbuffer[1024];
+		float g;
+
+		g = 2.00 * ( 0.8 - ( vid_gamma->value - 0.5 ) ) + 1.0F;
+		Com_sprintf( envbuffer, sizeof(envbuffer), "SSTV2_GAMMA=%f", g );
+		putenv( envbuffer );
+		Com_sprintf( envbuffer, sizeof(envbuffer), "SST_GAMMA=%f", g );
+		putenv( envbuffer );
+	}
+#endif
+
+	if ( ( glw_state.OpenGLLib = dlopen( dllname, RTLD_LAZY ) ) == 0 )
 	{
 		char	fn[1024];
-		// FILE *fp; // bk001204 - unused
+		FILE *fp;
 		extern uid_t saved_euid; // unix_main.c
+
+//fprintf(stdout, "uid=%d,euid=%d\n", getuid(), geteuid()); fflush(stdout);
 
 		// if we are not setuid, try current directory
 		if (getuid() == saved_euid) {
@@ -3026,366 +3010,359 @@ qboolean QGL_Init( const char *dllname )
 			Q_strcat(fn, sizeof(fn), dllname);
 
 			if ( ( glw_state.OpenGLLib = dlopen( fn, RTLD_LAZY ) ) == 0 ) {
-				ri.Printf(PRINT_ALL, "QGL_Init: Can't load %s from /etc/ld.so.conf or current dir: %s\n", dllname, dlerror());
+				Com_Printf("QGL_Init: Can't load %s from /etc/ld.so.conf or current dir: %s\n", dllname, dlerror());
 				return qfalse;
 			}
 		} else {
-			ri.Printf(PRINT_ALL, "QGL_Init: Can't load %s from /etc/ld.so.conf: %s\n", dllname, dlerror());
+			Com_Printf("QGL_Init: Can't load %s from /etc/ld.so.conf: %s\n", dllname, dlerror());
 			return qfalse;
 		}
 	}
 
-	qglAccum                     = dllAccum = GPA( "glAccum" );
-	qglAlphaFunc                 = dllAlphaFunc = GPA( "glAlphaFunc" );
-	qglAreTexturesResident       = dllAreTexturesResident = GPA( "glAreTexturesResident" );
-	qglArrayElement              = dllArrayElement = GPA( "glArrayElement" );
-	qglBegin                     = dllBegin = GPA( "glBegin" );
-	qglBindTexture               = dllBindTexture = GPA( "glBindTexture" );
-	qglBitmap                    = dllBitmap = GPA( "glBitmap" );
-	qglBlendFunc                 = dllBlendFunc = GPA( "glBlendFunc" );
-	qglCallList                  = dllCallList = GPA( "glCallList" );
-	qglCallLists                 = dllCallLists = GPA( "glCallLists" );
-	qglClear                     = dllClear = GPA( "glClear" );
-	qglClearAccum                = dllClearAccum = GPA( "glClearAccum" );
-	qglClearColor                = dllClearColor = GPA( "glClearColor" );
-	qglClearDepth                = dllClearDepth = GPA( "glClearDepth" );
-	qglClearIndex                = dllClearIndex = GPA( "glClearIndex" );
-	qglClearStencil              = dllClearStencil = GPA( "glClearStencil" );
-	qglClipPlane                 = dllClipPlane = GPA( "glClipPlane" );
-	qglColor3b                   = dllColor3b = GPA( "glColor3b" );
-	qglColor3bv                  = dllColor3bv = GPA( "glColor3bv" );
-	qglColor3d                   = dllColor3d = GPA( "glColor3d" );
-	qglColor3dv                  = dllColor3dv = GPA( "glColor3dv" );
-	qglColor3f                   = dllColor3f = GPA( "glColor3f" );
-	qglColor3fv                  = dllColor3fv = GPA( "glColor3fv" );
-	qglColor3i                   = dllColor3i = GPA( "glColor3i" );
-	qglColor3iv                  = dllColor3iv = GPA( "glColor3iv" );
-	qglColor3s                   = dllColor3s = GPA( "glColor3s" );
-	qglColor3sv                  = dllColor3sv = GPA( "glColor3sv" );
-	qglColor3ub                  = dllColor3ub = GPA( "glColor3ub" );
-	qglColor3ubv                 = dllColor3ubv = GPA( "glColor3ubv" );
-	qglColor3ui                  = dllColor3ui = GPA( "glColor3ui" );
-	qglColor3uiv                 = dllColor3uiv = GPA( "glColor3uiv" );
-	qglColor3us                  = dllColor3us = GPA( "glColor3us" );
-	qglColor3usv                 = dllColor3usv = GPA( "glColor3usv" );
-	qglColor4b                   = dllColor4b = GPA( "glColor4b" );
-	qglColor4bv                  = dllColor4bv = GPA( "glColor4bv" );
-	qglColor4d                   = dllColor4d = GPA( "glColor4d" );
-	qglColor4dv                  = dllColor4dv = GPA( "glColor4dv" );
-	qglColor4f                   = dllColor4f = GPA( "glColor4f" );
-	qglColor4fv                  = dllColor4fv = GPA( "glColor4fv" );
-	qglColor4i                   = dllColor4i = GPA( "glColor4i" );
-	qglColor4iv                  = dllColor4iv = GPA( "glColor4iv" );
-	qglColor4s                   = dllColor4s = GPA( "glColor4s" );
-	qglColor4sv                  = dllColor4sv = GPA( "glColor4sv" );
-	qglColor4ub                  = dllColor4ub = GPA( "glColor4ub" );
-	qglColor4ubv                 = dllColor4ubv = GPA( "glColor4ubv" );
-	qglColor4ui                  = dllColor4ui = GPA( "glColor4ui" );
-	qglColor4uiv                 = dllColor4uiv = GPA( "glColor4uiv" );
-	qglColor4us                  = dllColor4us = GPA( "glColor4us" );
-	qglColor4usv                 = dllColor4usv = GPA( "glColor4usv" );
-	qglColorMask                 = dllColorMask = GPA( "glColorMask" );
-	qglColorMaterial             = dllColorMaterial = GPA( "glColorMaterial" );
-	qglColorPointer              = dllColorPointer = GPA( "glColorPointer" );
-	qglCopyPixels                = dllCopyPixels = GPA( "glCopyPixels" );
-	qglCopyTexImage1D            = dllCopyTexImage1D = GPA( "glCopyTexImage1D" );
-	qglCopyTexImage2D            = dllCopyTexImage2D = GPA( "glCopyTexImage2D" );
-	qglCopyTexSubImage1D         = dllCopyTexSubImage1D = GPA( "glCopyTexSubImage1D" );
-	qglCopyTexSubImage2D         = dllCopyTexSubImage2D = GPA( "glCopyTexSubImage2D" );
-	qglCullFace                  = dllCullFace = GPA( "glCullFace" );
-	qglDeleteLists               = dllDeleteLists = GPA( "glDeleteLists" );
-	qglDeleteTextures            = dllDeleteTextures = GPA( "glDeleteTextures" );
-	qglDepthFunc                 = dllDepthFunc = GPA( "glDepthFunc" );
-	qglDepthMask                 = dllDepthMask = GPA( "glDepthMask" );
-	qglDepthRange                = dllDepthRange = GPA( "glDepthRange" );
-	qglDisable                   = dllDisable = GPA( "glDisable" );
-	qglDisableClientState        = dllDisableClientState = GPA( "glDisableClientState" );
-	qglDrawArrays                = dllDrawArrays = GPA( "glDrawArrays" );
-	qglDrawBuffer                = dllDrawBuffer = GPA( "glDrawBuffer" );
-	qglDrawElements              = dllDrawElements = GPA( "glDrawElements" );
-	qglDrawPixels                = dllDrawPixels = GPA( "glDrawPixels" );
-	qglEdgeFlag                  = dllEdgeFlag = GPA( "glEdgeFlag" );
-	qglEdgeFlagPointer           = dllEdgeFlagPointer = GPA( "glEdgeFlagPointer" );
-	qglEdgeFlagv                 = dllEdgeFlagv = GPA( "glEdgeFlagv" );
-	qglEnable                    = 	dllEnable                    = GPA( "glEnable" );
-	qglEnableClientState         = 	dllEnableClientState         = GPA( "glEnableClientState" );
-	qglEnd                       = 	dllEnd                       = GPA( "glEnd" );
-	qglEndList                   = 	dllEndList                   = GPA( "glEndList" );
-	qglEvalCoord1d				 = 	dllEvalCoord1d				 = GPA( "glEvalCoord1d" );
-	qglEvalCoord1dv              = 	dllEvalCoord1dv              = GPA( "glEvalCoord1dv" );
-	qglEvalCoord1f               = 	dllEvalCoord1f               = GPA( "glEvalCoord1f" );
-	qglEvalCoord1fv              = 	dllEvalCoord1fv              = GPA( "glEvalCoord1fv" );
-	qglEvalCoord2d               = 	dllEvalCoord2d               = GPA( "glEvalCoord2d" );
-	qglEvalCoord2dv              = 	dllEvalCoord2dv              = GPA( "glEvalCoord2dv" );
-	qglEvalCoord2f               = 	dllEvalCoord2f               = GPA( "glEvalCoord2f" );
-	qglEvalCoord2fv              = 	dllEvalCoord2fv              = GPA( "glEvalCoord2fv" );
-	qglEvalMesh1                 = 	dllEvalMesh1                 = GPA( "glEvalMesh1" );
-	qglEvalMesh2                 = 	dllEvalMesh2                 = GPA( "glEvalMesh2" );
-	qglEvalPoint1                = 	dllEvalPoint1                = GPA( "glEvalPoint1" );
-	qglEvalPoint2                = 	dllEvalPoint2                = GPA( "glEvalPoint2" );
-	qglFeedbackBuffer            = 	dllFeedbackBuffer            = GPA( "glFeedbackBuffer" );
-	qglFinish                    = 	dllFinish                    = GPA( "glFinish" );
-	qglFlush                     = 	dllFlush                     = GPA( "glFlush" );
-	qglFogf                      = 	dllFogf                      = GPA( "glFogf" );
-	qglFogfv                     = 	dllFogfv                     = GPA( "glFogfv" );
-	qglFogi                      = 	dllFogi                      = GPA( "glFogi" );
-	qglFogiv                     = 	dllFogiv                     = GPA( "glFogiv" );
-	qglFrontFace                 = 	dllFrontFace                 = GPA( "glFrontFace" );
-	qglFrustum                   = 	dllFrustum                   = GPA( "glFrustum" );
-	qglGenLists                  = 	dllGenLists                  = GPA( "glGenLists" );
-	qglGenTextures               = 	dllGenTextures               = GPA( "glGenTextures" );
-	qglGetBooleanv               = 	dllGetBooleanv               = GPA( "glGetBooleanv" );
-	qglGetClipPlane              = 	dllGetClipPlane              = GPA( "glGetClipPlane" );
-	qglGetDoublev                = 	dllGetDoublev                = GPA( "glGetDoublev" );
-	qglGetError                  = 	dllGetError                  = GPA( "glGetError" );
-	qglGetFloatv                 = 	dllGetFloatv                 = GPA( "glGetFloatv" );
-	qglGetIntegerv               = 	dllGetIntegerv               = GPA( "glGetIntegerv" );
-	qglGetLightfv                = 	dllGetLightfv                = GPA( "glGetLightfv" );
-	qglGetLightiv                = 	dllGetLightiv                = GPA( "glGetLightiv" );
-	qglGetMapdv                  = 	dllGetMapdv                  = GPA( "glGetMapdv" );
-	qglGetMapfv                  = 	dllGetMapfv                  = GPA( "glGetMapfv" );
-	qglGetMapiv                  = 	dllGetMapiv                  = GPA( "glGetMapiv" );
-	qglGetMaterialfv             = 	dllGetMaterialfv             = GPA( "glGetMaterialfv" );
-	qglGetMaterialiv             = 	dllGetMaterialiv             = GPA( "glGetMaterialiv" );
-	qglGetPixelMapfv             = 	dllGetPixelMapfv             = GPA( "glGetPixelMapfv" );
-	qglGetPixelMapuiv            = 	dllGetPixelMapuiv            = GPA( "glGetPixelMapuiv" );
-	qglGetPixelMapusv            = 	dllGetPixelMapusv            = GPA( "glGetPixelMapusv" );
-	qglGetPointerv               = 	dllGetPointerv               = GPA( "glGetPointerv" );
-	qglGetPolygonStipple         = 	dllGetPolygonStipple         = GPA( "glGetPolygonStipple" );
-	qglGetString                 = 	dllGetString                 = GPA( "glGetString" );
-	qglGetTexEnvfv               = 	dllGetTexEnvfv               = GPA( "glGetTexEnvfv" );
-	qglGetTexEnviv               = 	dllGetTexEnviv               = GPA( "glGetTexEnviv" );
-	qglGetTexGendv               = 	dllGetTexGendv               = GPA( "glGetTexGendv" );
-	qglGetTexGenfv               = 	dllGetTexGenfv               = GPA( "glGetTexGenfv" );
-	qglGetTexGeniv               = 	dllGetTexGeniv               = GPA( "glGetTexGeniv" );
-	qglGetTexImage               = 	dllGetTexImage               = GPA( "glGetTexImage" );
-	qglGetTexParameterfv         = 	dllGetTexParameterfv         = GPA( "glGetTexParameterfv" );
-	qglGetTexParameteriv         = 	dllGetTexParameteriv         = GPA( "glGetTexParameteriv" );
-	qglHint                      = 	dllHint                      = GPA( "glHint" );
-	qglIndexMask                 = 	dllIndexMask                 = GPA( "glIndexMask" );
-	qglIndexPointer              = 	dllIndexPointer              = GPA( "glIndexPointer" );
-	qglIndexd                    = 	dllIndexd                    = GPA( "glIndexd" );
-	qglIndexdv                   = 	dllIndexdv                   = GPA( "glIndexdv" );
-	qglIndexf                    = 	dllIndexf                    = GPA( "glIndexf" );
-	qglIndexfv                   = 	dllIndexfv                   = GPA( "glIndexfv" );
-	qglIndexi                    = 	dllIndexi                    = GPA( "glIndexi" );
-	qglIndexiv                   = 	dllIndexiv                   = GPA( "glIndexiv" );
-	qglIndexs                    = 	dllIndexs                    = GPA( "glIndexs" );
-	qglIndexsv                   = 	dllIndexsv                   = GPA( "glIndexsv" );
-	qglIndexub                   = 	dllIndexub                   = GPA( "glIndexub" );
-	qglIndexubv                  = 	dllIndexubv                  = GPA( "glIndexubv" );
-	qglInitNames                 = 	dllInitNames                 = GPA( "glInitNames" );
-	qglInterleavedArrays         = 	dllInterleavedArrays         = GPA( "glInterleavedArrays" );
-	qglIsEnabled                 = 	dllIsEnabled                 = GPA( "glIsEnabled" );
-	qglIsList                    = 	dllIsList                    = GPA( "glIsList" );
-	qglIsTexture                 = 	dllIsTexture                 = GPA( "glIsTexture" );
-	qglLightModelf               = 	dllLightModelf               = GPA( "glLightModelf" );
-	qglLightModelfv              = 	dllLightModelfv              = GPA( "glLightModelfv" );
-	qglLightModeli               = 	dllLightModeli               = GPA( "glLightModeli" );
-	qglLightModeliv              = 	dllLightModeliv              = GPA( "glLightModeliv" );
-	qglLightf                    = 	dllLightf                    = GPA( "glLightf" );
-	qglLightfv                   = 	dllLightfv                   = GPA( "glLightfv" );
-	qglLighti                    = 	dllLighti                    = GPA( "glLighti" );
-	qglLightiv                   = 	dllLightiv                   = GPA( "glLightiv" );
-	qglLineStipple               = 	dllLineStipple               = GPA( "glLineStipple" );
-	qglLineWidth                 = 	dllLineWidth                 = GPA( "glLineWidth" );
-	qglListBase                  = 	dllListBase                  = GPA( "glListBase" );
-	qglLoadIdentity              = 	dllLoadIdentity              = GPA( "glLoadIdentity" );
-	qglLoadMatrixd               = 	dllLoadMatrixd               = GPA( "glLoadMatrixd" );
-	qglLoadMatrixf               = 	dllLoadMatrixf               = GPA( "glLoadMatrixf" );
-	qglLoadName                  = 	dllLoadName                  = GPA( "glLoadName" );
-	qglLogicOp                   = 	dllLogicOp                   = GPA( "glLogicOp" );
-	qglMap1d                     = 	dllMap1d                     = GPA( "glMap1d" );
-	qglMap1f                     = 	dllMap1f                     = GPA( "glMap1f" );
-	qglMap2d                     = 	dllMap2d                     = GPA( "glMap2d" );
-	qglMap2f                     = 	dllMap2f                     = GPA( "glMap2f" );
-	qglMapGrid1d                 = 	dllMapGrid1d                 = GPA( "glMapGrid1d" );
-	qglMapGrid1f                 = 	dllMapGrid1f                 = GPA( "glMapGrid1f" );
-	qglMapGrid2d                 = 	dllMapGrid2d                 = GPA( "glMapGrid2d" );
-	qglMapGrid2f                 = 	dllMapGrid2f                 = GPA( "glMapGrid2f" );
-	qglMaterialf                 = 	dllMaterialf                 = GPA( "glMaterialf" );
-	qglMaterialfv                = 	dllMaterialfv                = GPA( "glMaterialfv" );
-	qglMateriali                 = 	dllMateriali                 = GPA( "glMateriali" );
-	qglMaterialiv                = 	dllMaterialiv                = GPA( "glMaterialiv" );
-	qglMatrixMode                = 	dllMatrixMode                = GPA( "glMatrixMode" );
-	qglMultMatrixd               = 	dllMultMatrixd               = GPA( "glMultMatrixd" );
-	qglMultMatrixf               = 	dllMultMatrixf               = GPA( "glMultMatrixf" );
-	qglNewList                   = 	dllNewList                   = GPA( "glNewList" );
-	qglNormal3b                  = 	dllNormal3b                  = GPA( "glNormal3b" );
-	qglNormal3bv                 = 	dllNormal3bv                 = GPA( "glNormal3bv" );
-	qglNormal3d                  = 	dllNormal3d                  = GPA( "glNormal3d" );
-	qglNormal3dv                 = 	dllNormal3dv                 = GPA( "glNormal3dv" );
-	qglNormal3f                  = 	dllNormal3f                  = GPA( "glNormal3f" );
-	qglNormal3fv                 = 	dllNormal3fv                 = GPA( "glNormal3fv" );
-	qglNormal3i                  = 	dllNormal3i                  = GPA( "glNormal3i" );
-	qglNormal3iv                 = 	dllNormal3iv                 = GPA( "glNormal3iv" );
-	qglNormal3s                  = 	dllNormal3s                  = GPA( "glNormal3s" );
-	qglNormal3sv                 = 	dllNormal3sv                 = GPA( "glNormal3sv" );
-	qglNormalPointer             = 	dllNormalPointer             = GPA( "glNormalPointer" );
-	qglOrtho                     = 	dllOrtho                     = GPA( "glOrtho" );
-	qglPassThrough               = 	dllPassThrough               = GPA( "glPassThrough" );
-	qglPixelMapfv                = 	dllPixelMapfv                = GPA( "glPixelMapfv" );
-	qglPixelMapuiv               = 	dllPixelMapuiv               = GPA( "glPixelMapuiv" );
-	qglPixelMapusv               = 	dllPixelMapusv               = GPA( "glPixelMapusv" );
-	qglPixelStoref               = 	dllPixelStoref               = GPA( "glPixelStoref" );
-	qglPixelStorei               = 	dllPixelStorei               = GPA( "glPixelStorei" );
-	qglPixelTransferf            = 	dllPixelTransferf            = GPA( "glPixelTransferf" );
-	qglPixelTransferi            = 	dllPixelTransferi            = GPA( "glPixelTransferi" );
-	qglPixelZoom                 = 	dllPixelZoom                 = GPA( "glPixelZoom" );
-	qglPointSize                 = 	dllPointSize                 = GPA( "glPointSize" );
-	qglPolygonMode               = 	dllPolygonMode               = GPA( "glPolygonMode" );
-	qglPolygonOffset             = 	dllPolygonOffset             = GPA( "glPolygonOffset" );
-	qglPolygonStipple            = 	dllPolygonStipple            = GPA( "glPolygonStipple" );
-	qglPopAttrib                 = 	dllPopAttrib                 = GPA( "glPopAttrib" );
-	qglPopClientAttrib           = 	dllPopClientAttrib           = GPA( "glPopClientAttrib" );
-	qglPopMatrix                 = 	dllPopMatrix                 = GPA( "glPopMatrix" );
-	qglPopName                   = 	dllPopName                   = GPA( "glPopName" );
-	qglPrioritizeTextures        = 	dllPrioritizeTextures        = GPA( "glPrioritizeTextures" );
-	qglPushAttrib                = 	dllPushAttrib                = GPA( "glPushAttrib" );
-	qglPushClientAttrib          = 	dllPushClientAttrib          = GPA( "glPushClientAttrib" );
-	qglPushMatrix                = 	dllPushMatrix                = GPA( "glPushMatrix" );
-	qglPushName                  = 	dllPushName                  = GPA( "glPushName" );
-	qglRasterPos2d               = 	dllRasterPos2d               = GPA( "glRasterPos2d" );
-	qglRasterPos2dv              = 	dllRasterPos2dv              = GPA( "glRasterPos2dv" );
-	qglRasterPos2f               = 	dllRasterPos2f               = GPA( "glRasterPos2f" );
-	qglRasterPos2fv              = 	dllRasterPos2fv              = GPA( "glRasterPos2fv" );
-	qglRasterPos2i               = 	dllRasterPos2i               = GPA( "glRasterPos2i" );
-	qglRasterPos2iv              = 	dllRasterPos2iv              = GPA( "glRasterPos2iv" );
-	qglRasterPos2s               = 	dllRasterPos2s               = GPA( "glRasterPos2s" );
-	qglRasterPos2sv              = 	dllRasterPos2sv              = GPA( "glRasterPos2sv" );
-	qglRasterPos3d               = 	dllRasterPos3d               = GPA( "glRasterPos3d" );
-	qglRasterPos3dv              = 	dllRasterPos3dv              = GPA( "glRasterPos3dv" );
-	qglRasterPos3f               = 	dllRasterPos3f               = GPA( "glRasterPos3f" );
-	qglRasterPos3fv              = 	dllRasterPos3fv              = GPA( "glRasterPos3fv" );
-	qglRasterPos3i               = 	dllRasterPos3i               = GPA( "glRasterPos3i" );
-	qglRasterPos3iv              = 	dllRasterPos3iv              = GPA( "glRasterPos3iv" );
-	qglRasterPos3s               = 	dllRasterPos3s               = GPA( "glRasterPos3s" );
-	qglRasterPos3sv              = 	dllRasterPos3sv              = GPA( "glRasterPos3sv" );
-	qglRasterPos4d               = 	dllRasterPos4d               = GPA( "glRasterPos4d" );
-	qglRasterPos4dv              = 	dllRasterPos4dv              = GPA( "glRasterPos4dv" );
-	qglRasterPos4f               = 	dllRasterPos4f               = GPA( "glRasterPos4f" );
-	qglRasterPos4fv              = 	dllRasterPos4fv              = GPA( "glRasterPos4fv" );
-	qglRasterPos4i               = 	dllRasterPos4i               = GPA( "glRasterPos4i" );
-	qglRasterPos4iv              = 	dllRasterPos4iv              = GPA( "glRasterPos4iv" );
-	qglRasterPos4s               = 	dllRasterPos4s               = GPA( "glRasterPos4s" );
-	qglRasterPos4sv              = 	dllRasterPos4sv              = GPA( "glRasterPos4sv" );
-	qglReadBuffer                = 	dllReadBuffer                = GPA( "glReadBuffer" );
-	qglReadPixels                = 	dllReadPixels                = GPA( "glReadPixels" );
-	qglRectd                     = 	dllRectd                     = GPA( "glRectd" );
-	qglRectdv                    = 	dllRectdv                    = GPA( "glRectdv" );
-	qglRectf                     = 	dllRectf                     = GPA( "glRectf" );
-	qglRectfv                    = 	dllRectfv                    = GPA( "glRectfv" );
-	qglRecti                     = 	dllRecti                     = GPA( "glRecti" );
-	qglRectiv                    = 	dllRectiv                    = GPA( "glRectiv" );
-	qglRects                     = 	dllRects                     = GPA( "glRects" );
-	qglRectsv                    = 	dllRectsv                    = GPA( "glRectsv" );
-	qglRenderMode                = 	dllRenderMode                = GPA( "glRenderMode" );
-	qglRotated                   = 	dllRotated                   = GPA( "glRotated" );
-	qglRotatef                   = 	dllRotatef                   = GPA( "glRotatef" );
-	qglScaled                    = 	dllScaled                    = GPA( "glScaled" );
-	qglScalef                    = 	dllScalef                    = GPA( "glScalef" );
-	qglScissor                   = 	dllScissor                   = GPA( "glScissor" );
-	qglSelectBuffer              = 	dllSelectBuffer              = GPA( "glSelectBuffer" );
-	qglShadeModel                = 	dllShadeModel                = GPA( "glShadeModel" );
-	qglStencilFunc               = 	dllStencilFunc               = GPA( "glStencilFunc" );
-	qglStencilMask               = 	dllStencilMask               = GPA( "glStencilMask" );
-	qglStencilOp                 = 	dllStencilOp                 = GPA( "glStencilOp" );
-	qglTexCoord1d                = 	dllTexCoord1d                = GPA( "glTexCoord1d" );
-	qglTexCoord1dv               = 	dllTexCoord1dv               = GPA( "glTexCoord1dv" );
-	qglTexCoord1f                = 	dllTexCoord1f                = GPA( "glTexCoord1f" );
-	qglTexCoord1fv               = 	dllTexCoord1fv               = GPA( "glTexCoord1fv" );
-	qglTexCoord1i                = 	dllTexCoord1i                = GPA( "glTexCoord1i" );
-	qglTexCoord1iv               = 	dllTexCoord1iv               = GPA( "glTexCoord1iv" );
-	qglTexCoord1s                = 	dllTexCoord1s                = GPA( "glTexCoord1s" );
-	qglTexCoord1sv               = 	dllTexCoord1sv               = GPA( "glTexCoord1sv" );
-	qglTexCoord2d                = 	dllTexCoord2d                = GPA( "glTexCoord2d" );
-	qglTexCoord2dv               = 	dllTexCoord2dv               = GPA( "glTexCoord2dv" );
-	qglTexCoord2f                = 	dllTexCoord2f                = GPA( "glTexCoord2f" );
-	qglTexCoord2fv               = 	dllTexCoord2fv               = GPA( "glTexCoord2fv" );
-	qglTexCoord2i                = 	dllTexCoord2i                = GPA( "glTexCoord2i" );
-	qglTexCoord2iv               = 	dllTexCoord2iv               = GPA( "glTexCoord2iv" );
-	qglTexCoord2s                = 	dllTexCoord2s                = GPA( "glTexCoord2s" );
-	qglTexCoord2sv               = 	dllTexCoord2sv               = GPA( "glTexCoord2sv" );
-	qglTexCoord3d                = 	dllTexCoord3d                = GPA( "glTexCoord3d" );
-	qglTexCoord3dv               = 	dllTexCoord3dv               = GPA( "glTexCoord3dv" );
-	qglTexCoord3f                = 	dllTexCoord3f                = GPA( "glTexCoord3f" );
-	qglTexCoord3fv               = 	dllTexCoord3fv               = GPA( "glTexCoord3fv" );
-	qglTexCoord3i                = 	dllTexCoord3i                = GPA( "glTexCoord3i" );
-	qglTexCoord3iv               = 	dllTexCoord3iv               = GPA( "glTexCoord3iv" );
-	qglTexCoord3s                = 	dllTexCoord3s                = GPA( "glTexCoord3s" );
-	qglTexCoord3sv               = 	dllTexCoord3sv               = GPA( "glTexCoord3sv" );
-	qglTexCoord4d                = 	dllTexCoord4d                = GPA( "glTexCoord4d" );
-	qglTexCoord4dv               = 	dllTexCoord4dv               = GPA( "glTexCoord4dv" );
-	qglTexCoord4f                = 	dllTexCoord4f                = GPA( "glTexCoord4f" );
-	qglTexCoord4fv               = 	dllTexCoord4fv               = GPA( "glTexCoord4fv" );
-	qglTexCoord4i                = 	dllTexCoord4i                = GPA( "glTexCoord4i" );
-	qglTexCoord4iv               = 	dllTexCoord4iv               = GPA( "glTexCoord4iv" );
-	qglTexCoord4s                = 	dllTexCoord4s                = GPA( "glTexCoord4s" );
-	qglTexCoord4sv               = 	dllTexCoord4sv               = GPA( "glTexCoord4sv" );
-	qglTexCoordPointer           = 	dllTexCoordPointer           = GPA( "glTexCoordPointer" );
-	qglTexEnvf                   = 	dllTexEnvf                   = GPA( "glTexEnvf" );
-	qglTexEnvfv                  = 	dllTexEnvfv                  = GPA( "glTexEnvfv" );
-	qglTexEnvi                   = 	dllTexEnvi                   = GPA( "glTexEnvi" );
-	qglTexEnviv                  = 	dllTexEnviv                  = GPA( "glTexEnviv" );
-	qglTexGend                   = 	dllTexGend                   = GPA( "glTexGend" );
-	qglTexGendv                  = 	dllTexGendv                  = GPA( "glTexGendv" );
-	qglTexGenf                   = 	dllTexGenf                   = GPA( "glTexGenf" );
-	qglTexGenfv                  = 	dllTexGenfv                  = GPA( "glTexGenfv" );
-	qglTexGeni                   = 	dllTexGeni                   = GPA( "glTexGeni" );
-	qglTexGeniv                  = 	dllTexGeniv                  = GPA( "glTexGeniv" );
-	qglTexImage1D                = 	dllTexImage1D                = GPA( "glTexImage1D" );
-	qglTexImage2D                = 	dllTexImage2D                = GPA( "glTexImage2D" );
-	qglTexParameterf             = 	dllTexParameterf             = GPA( "glTexParameterf" );
-	qglTexParameterfv            = 	dllTexParameterfv            = GPA( "glTexParameterfv" );
-	qglTexParameteri             = 	dllTexParameteri             = GPA( "glTexParameteri" );
-	qglTexParameteriv            = 	dllTexParameteriv            = GPA( "glTexParameteriv" );
-	qglTexSubImage1D             = 	dllTexSubImage1D             = GPA( "glTexSubImage1D" );
-	qglTexSubImage2D             = 	dllTexSubImage2D             = GPA( "glTexSubImage2D" );
-	qglTranslated                = 	dllTranslated                = GPA( "glTranslated" );
-	qglTranslatef                = 	dllTranslatef                = GPA( "glTranslatef" );
-	qglVertex2d                  = 	dllVertex2d                  = GPA( "glVertex2d" );
-	qglVertex2dv                 = 	dllVertex2dv                 = GPA( "glVertex2dv" );
-	qglVertex2f                  = 	dllVertex2f                  = GPA( "glVertex2f" );
-	qglVertex2fv                 = 	dllVertex2fv                 = GPA( "glVertex2fv" );
-	qglVertex2i                  = 	dllVertex2i                  = GPA( "glVertex2i" );
-	qglVertex2iv                 = 	dllVertex2iv                 = GPA( "glVertex2iv" );
-	qglVertex2s                  = 	dllVertex2s                  = GPA( "glVertex2s" );
-	qglVertex2sv                 = 	dllVertex2sv                 = GPA( "glVertex2sv" );
-	qglVertex3d                  = 	dllVertex3d                  = GPA( "glVertex3d" );
-	qglVertex3dv                 = 	dllVertex3dv                 = GPA( "glVertex3dv" );
-	qglVertex3f                  = 	dllVertex3f                  = GPA( "glVertex3f" );
-	qglVertex3fv                 = 	dllVertex3fv                 = GPA( "glVertex3fv" );
-	qglVertex3i                  = 	dllVertex3i                  = GPA( "glVertex3i" );
-	qglVertex3iv                 = 	dllVertex3iv                 = GPA( "glVertex3iv" );
-	qglVertex3s                  = 	dllVertex3s                  = GPA( "glVertex3s" );
-	qglVertex3sv                 = 	dllVertex3sv                 = GPA( "glVertex3sv" );
-	qglVertex4d                  = 	dllVertex4d                  = GPA( "glVertex4d" );
-	qglVertex4dv                 = 	dllVertex4dv                 = GPA( "glVertex4dv" );
-	qglVertex4f                  = 	dllVertex4f                  = GPA( "glVertex4f" );
-	qglVertex4fv                 = 	dllVertex4fv                 = GPA( "glVertex4fv" );
-	qglVertex4i                  = 	dllVertex4i                  = GPA( "glVertex4i" );
-	qglVertex4iv                 = 	dllVertex4iv                 = GPA( "glVertex4iv" );
-	qglVertex4s                  = 	dllVertex4s                  = GPA( "glVertex4s" );
-	qglVertex4sv                 = 	dllVertex4sv                 = GPA( "glVertex4sv" );
-	qglVertexPointer             = 	dllVertexPointer             = GPA( "glVertexPointer" );
-	qglViewport                  = 	dllViewport                  = GPA( "glViewport" );
+	qglAccum                     = dllAccum = (void (__stdcall *)(unsigned int,float))GPA( "glAccum" );
+	qglAlphaFunc                 = dllAlphaFunc = (void (__stdcall *)(unsigned int,float))GPA( "glAlphaFunc" );
+	qglAreTexturesResident       = dllAreTexturesResident = (unsigned char (__stdcall *)(int,const unsigned int *,unsigned char *))GPA( "glAreTexturesResident" );
+	qglArrayElement              = dllArrayElement = (void (__stdcall *)(int))GPA( "glArrayElement" );
+	qglBegin                     = dllBegin = (void (__stdcall *)(unsigned int))GPA( "glBegin" );
+	qglBindTexture               = dllBindTexture = (void (__stdcall *)(unsigned int,unsigned int))GPA( "glBindTexture" );
+	qglBitmap                    = dllBitmap = (void (__stdcall *)(int,int,float,float,float,float,const unsigned char *))GPA( "glBitmap" );
+	qglBlendFunc                 = dllBlendFunc = (void (__stdcall *)(unsigned int,unsigned int))GPA( "glBlendFunc" );
+	qglCallList                  = dllCallList = (void (__stdcall *)(unsigned int))GPA( "glCallList" );
+	qglCallLists                 = dllCallLists = (void (__stdcall *)(int,unsigned int,const void *))GPA( "glCallLists" );
+	qglClear                     = dllClear = (void (__stdcall *)(unsigned int))GPA( "glClear" );
+	qglClearAccum                = dllClearAccum = (void (__stdcall *)(float,float,float,float))GPA( "glClearAccum" );
+	qglClearColor                = dllClearColor = (void (__stdcall *)(float,float,float,float))GPA( "glClearColor" );
+	qglClearDepth                = dllClearDepth = (void (__stdcall *)(double))GPA( "glClearDepth" );
+	qglClearIndex                = dllClearIndex = (void (__stdcall *)(float))GPA( "glClearIndex" );
+	qglClearStencil              = dllClearStencil = (void (__stdcall *)(int))GPA( "glClearStencil" );
+	qglClipPlane                 = dllClipPlane = (void (__stdcall *)(unsigned int,const double *))GPA( "glClipPlane" );
+	qglColor3b                   = dllColor3b = (void (__stdcall *)(signed char,signed char,signed char))GPA( "glColor3b" );
+	qglColor3bv                  = dllColor3bv = (void (__stdcall *)(const signed char *))GPA( "glColor3bv" );
+	qglColor3d                   = dllColor3d = (void (__stdcall *)(double,double,double))GPA( "glColor3d" );
+	qglColor3dv                  = dllColor3dv = (void (__stdcall *)(const double *))GPA( "glColor3dv" );
+	qglColor3f                   = dllColor3f = (void (__stdcall *)(float,float,float))GPA( "glColor3f" );
+	qglColor3fv                  = dllColor3fv = (void (__stdcall *)(const float *))GPA( "glColor3fv" );
+	qglColor3i                   = dllColor3i = (void (__stdcall *)(int,int,int))GPA( "glColor3i" );
+	qglColor3iv                  = dllColor3iv = (void (__stdcall *)(const int *))GPA( "glColor3iv" );
+	qglColor3s                   = dllColor3s =(void (__stdcall *)(short,short,short))GPA( "glColor3s" );
+	qglColor3sv                  = dllColor3sv =(void (__stdcall *)(const short *))GPA( "glColor3sv" );
+	qglColor3ub                  = dllColor3ub =(void (__stdcall *)(unsigned char,unsigned char,unsigned char))GPA( "glColor3ub" );
+	qglColor3ubv                 = dllColor3ubv =(void (__stdcall *)(const unsigned char *))GPA( "glColor3ubv" );
+	qglColor3ui                  = dllColor3ui =(void (__stdcall *)(unsigned int,unsigned int,unsigned int))GPA( "glColor3ui" );
+	qglColor3uiv                 = dllColor3uiv =(void (__stdcall *)(const unsigned int *))GPA( "glColor3uiv" );
+	qglColor3us                  = dllColor3us =(void (__stdcall *)(unsigned short,unsigned short,unsigned short))GPA( "glColor3us" );
+	qglColor3usv                 = dllColor3usv =(void (__stdcall *)(const unsigned short *))GPA( "glColor3usv" );
+	qglColor4b                   = dllColor4b =(void (__stdcall *)(signed char,signed char,signed char,signed char))GPA( "glColor4b" );
+	qglColor4bv                  = dllColor4bv =(void (__stdcall *)(const signed char *))GPA( "glColor4bv" );
+	qglColor4d                   = dllColor4d =(void (__stdcall *)(double,double,double,double))GPA( "glColor4d" );
+	qglColor4dv                  = dllColor4dv =(void (__stdcall *)(const double *))GPA( "glColor4dv" );
+	qglColor4f                   = dllColor4f =(void (__stdcall *)(float,float,float,float))GPA( "glColor4f" );
+	qglColor4fv                  = dllColor4fv =(void (__stdcall *)(const float *))GPA( "glColor4fv" );
+	qglColor4i                   = dllColor4i =(void (__stdcall *)(int,int,int,int))GPA( "glColor4i" );
+	qglColor4iv                  = dllColor4iv =(void (__stdcall *)(const int *))GPA( "glColor4iv" );
+	qglColor4s                   = dllColor4s =(void (__stdcall *)(short,short,short,short))GPA( "glColor4s" );
+	qglColor4sv                  = dllColor4sv =(void (__stdcall *)(const short *))GPA( "glColor4sv" );
+	qglColor4ub                  = dllColor4ub =(void (__stdcall *)(unsigned char,unsigned char,unsigned char,unsigned char))GPA( "glColor4ub" );
+	qglColor4ubv                 = dllColor4ubv =(void (__stdcall *)(const unsigned char *))GPA( "glColor4ubv" );
+	qglColor4ui                  = dllColor4ui =(void (__stdcall *)(unsigned int,unsigned int,unsigned int,unsigned int))GPA( "glColor4ui" );
+	qglColor4uiv                 = dllColor4uiv =(void (__stdcall *)(const unsigned int *))GPA( "glColor4uiv" );
+	qglColor4us                  = dllColor4us =(void (__stdcall *)(unsigned short,unsigned short,unsigned short,unsigned short))GPA( "glColor4us" );
+	qglColor4usv                 = dllColor4usv =(void (__stdcall *)(const unsigned short *))GPA( "glColor4usv" );
+	qglColorMask                 = dllColorMask =(void (__stdcall *)(unsigned char,unsigned char,unsigned char,unsigned char))GPA( "glColorMask" );
+	qglColorMaterial             = dllColorMaterial =(void (__stdcall *)(unsigned int,unsigned int))GPA( "glColorMaterial" );
+	qglColorPointer              = dllColorPointer =(void (__stdcall *)(int,unsigned int,int,const void *))GPA( "glColorPointer" );
+	qglCopyPixels                = dllCopyPixels =(void (__stdcall *)(int,int,int,int,unsigned int))GPA( "glCopyPixels" );
+	qglCopyTexImage1D            = dllCopyTexImage1D =(void (__stdcall *)(unsigned int,int,unsigned int,int,int,int,int))GPA( "glCopyTexImage1D" );
+	qglCopyTexImage2D            = dllCopyTexImage2D =(void (__stdcall *)(unsigned int,int,unsigned int,int,int,int,int,int))GPA( "glCopyTexImage2D" );
+	qglCopyTexSubImage1D         = dllCopyTexSubImage1D =(void (__stdcall *)(unsigned int,int,int,int,int,int))GPA( "glCopyTexSubImage1D" );
+	qglCopyTexSubImage2D         = dllCopyTexSubImage2D =(void (__stdcall *)(unsigned int,int,int,int,int,int,int,int))GPA( "glCopyTexSubImage2D" );
+	qglCullFace                  = dllCullFace =(void (__stdcall *)(unsigned int))GPA( "glCullFace" );
+	qglDeleteLists               = dllDeleteLists =(void (__stdcall *)(unsigned int,int))GPA( "glDeleteLists" );
+	qglDeleteTextures            = dllDeleteTextures =(void (__stdcall *)(int,const unsigned int *))GPA( "glDeleteTextures" );
+	qglDepthFunc                 = dllDepthFunc =(void (__stdcall *)(unsigned int))GPA( "glDepthFunc" );
+	qglDepthMask                 = dllDepthMask =(void (__stdcall *)(unsigned char))GPA( "glDepthMask" );
+	qglDepthRange                = dllDepthRange =(void (__stdcall *)(double,double))GPA( "glDepthRange" );
+	qglDisable                   = dllDisable =(void (__stdcall *)(unsigned int))GPA( "glDisable" );
+	qglDisableClientState        = dllDisableClientState =(void (__stdcall *)(unsigned int))GPA( "glDisableClientState" );
+	qglDrawArrays                = dllDrawArrays =(void (__stdcall *)(unsigned int,int,int))GPA( "glDrawArrays" );
+	qglDrawBuffer                = dllDrawBuffer =(void (__stdcall *)(unsigned int))GPA( "glDrawBuffer" );
+	qglDrawElements              = dllDrawElements =(void (__stdcall *)(unsigned int,int,unsigned int,const void *))GPA( "glDrawElements" );
+	qglDrawPixels                = dllDrawPixels =(void (__stdcall *)(int,int,unsigned int,unsigned int,const void *))GPA( "glDrawPixels" );
+	qglEdgeFlag                  = dllEdgeFlag =(void (__stdcall *)(unsigned char))GPA( "glEdgeFlag" );
+	qglEdgeFlagPointer           = dllEdgeFlagPointer =(void (__stdcall *)(int,const void *))GPA( "glEdgeFlagPointer" );
+	qglEdgeFlagv                 = dllEdgeFlagv =(void (__stdcall *)(const unsigned char *))GPA( "glEdgeFlagv" );
+	qglEnable                    = 	dllEnable                    =(void (__stdcall *)(unsigned int))GPA( "glEnable" );
+	qglEnableClientState         = 	dllEnableClientState         =(void (__stdcall *)(unsigned int))GPA( "glEnableClientState" );
+	qglEnd                       = 	dllEnd                       =(void (__stdcall *)(void))GPA( "glEnd" );
+	qglEndList                   = 	dllEndList                   =(void (__stdcall *)(void))GPA( "glEndList" );
+	qglEvalCoord1d				 = 	dllEvalCoord1d				 =(void (__stdcall *)(double))GPA( "glEvalCoord1d" );
+	qglEvalCoord1dv              = 	dllEvalCoord1dv              =(void (__stdcall *)(const double *))GPA( "glEvalCoord1dv" );
+	qglEvalCoord1f               = 	dllEvalCoord1f               =(void (__stdcall *)(float))GPA( "glEvalCoord1f" );
+	qglEvalCoord1fv              = 	dllEvalCoord1fv              =(void (__stdcall *)(const float *))GPA( "glEvalCoord1fv" );
+	qglEvalCoord2d               = 	dllEvalCoord2d               =(void (__stdcall *)(double,double))GPA( "glEvalCoord2d" );
+	qglEvalCoord2dv              = 	dllEvalCoord2dv              =(void (__stdcall *)(const double *))GPA( "glEvalCoord2dv" );
+	qglEvalCoord2f               = 	dllEvalCoord2f               =(void (__stdcall *)(float,float))GPA( "glEvalCoord2f" );
+	qglEvalCoord2fv              = 	dllEvalCoord2fv              =(void (__stdcall *)(const float *))GPA( "glEvalCoord2fv" );
+	qglEvalMesh1                 = 	dllEvalMesh1                 =(void (__stdcall *)(unsigned int,int,int))GPA( "glEvalMesh1" );
+	qglEvalMesh2                 = 	dllEvalMesh2                 =(void (__stdcall *)(unsigned int,int,int,int,int))GPA( "glEvalMesh2" );
+	qglEvalPoint1                = 	dllEvalPoint1                =(void (__stdcall *)(int))GPA( "glEvalPoint1" );
+	qglEvalPoint2                = 	dllEvalPoint2                =(void (__stdcall *)(int,int))GPA( "glEvalPoint2" );
+	qglFeedbackBuffer            = 	dllFeedbackBuffer            =(void (__stdcall *)(int,unsigned int,float *))GPA( "glFeedbackBuffer" );
+	qglFinish                    = 	dllFinish                    =(void (__stdcall *)(void))GPA( "glFinish" );
+	qglFlush                     = 	dllFlush                     =(void (__stdcall *)(void))GPA( "glFlush" );
+	qglFogf                      = 	dllFogf                      =(void (__stdcall *)(unsigned int,float))GPA( "glFogf" );
+	qglFogfv                     = 	dllFogfv                     =(void (__stdcall *)(unsigned int,const float *))GPA( "glFogfv" );
+	qglFogi                      = 	dllFogi                      =(void (__stdcall *)(unsigned int,int))GPA( "glFogi" );
+	qglFogiv                     = 	dllFogiv                     =(void (__stdcall *)(unsigned int,const int *))GPA( "glFogiv" );
+	qglFrontFace                 = 	dllFrontFace                 =(void (__stdcall *)(unsigned int))GPA( "glFrontFace" );
+	qglFrustum                   = 	dllFrustum                   =(void (__stdcall *)(double,double,double,double,double,double))GPA( "glFrustum" );
+	qglGenLists                  = 	dllGenLists                  =(unsigned int (__stdcall *)(int))GPA( "glGenLists" );
+	qglGenTextures               = 	dllGenTextures               =(void (__stdcall *)(int,unsigned int *))GPA( "glGenTextures" );
+	qglGetBooleanv               = 	dllGetBooleanv               =(void (__stdcall *)(unsigned int,unsigned char *))GPA( "glGetBooleanv" );
+	qglGetClipPlane              = 	dllGetClipPlane              =(void (__stdcall *)(unsigned int,double *))GPA( "glGetClipPlane" );
+	qglGetDoublev                = 	dllGetDoublev                =(void (__stdcall *)(unsigned int,double *))GPA( "glGetDoublev" );
+	qglGetError                  = 	dllGetError                  =(unsigned int (__stdcall *)(void))GPA( "glGetError" );
+	qglGetFloatv                 = 	dllGetFloatv                 =(void (__stdcall *)(unsigned int,float *))GPA( "glGetFloatv" );
+	qglGetIntegerv               = 	dllGetIntegerv               =(void (__stdcall *)(unsigned int,int *))GPA( "glGetIntegerv" );
+	qglGetLightfv                = 	dllGetLightfv                =(void (__stdcall *)(unsigned int,unsigned int,float *))GPA( "glGetLightfv" );
+	qglGetLightiv                = 	dllGetLightiv                =(void (__stdcall *)(unsigned int,unsigned int,int *))GPA( "glGetLightiv" );
+	qglGetMapdv                  = 	dllGetMapdv                  =(void (__stdcall *)(unsigned int,unsigned int,double *))GPA( "glGetMapdv" );
+	qglGetMapfv                  = 	dllGetMapfv                  =(void (__stdcall *)(unsigned int,unsigned int,float *))GPA( "glGetMapfv" );
+	qglGetMapiv                  = 	dllGetMapiv                  =(void (__stdcall *)(unsigned int,unsigned int,int *))GPA( "glGetMapiv" );
+	qglGetMaterialfv             = 	dllGetMaterialfv             =(void (__stdcall *)(unsigned int,unsigned int,float *))GPA( "glGetMaterialfv" );
+	qglGetMaterialiv             = 	dllGetMaterialiv             =(void (__stdcall *)(unsigned int,unsigned int,int *))GPA( "glGetMaterialiv" );
+	qglGetPixelMapfv             = 	dllGetPixelMapfv             =(void (__stdcall *)(unsigned int,float *))GPA( "glGetPixelMapfv" );
+	qglGetPixelMapuiv            = 	dllGetPixelMapuiv            =(void (__stdcall *)(unsigned int,unsigned int *))GPA( "glGetPixelMapuiv" );
+	qglGetPixelMapusv            = 	dllGetPixelMapusv            =(void (__stdcall *)(unsigned int,unsigned short *))GPA( "glGetPixelMapusv" );
+	qglGetPointerv               = 	dllGetPointerv               =(void (__stdcall *)(unsigned int,void ** ))GPA( "glGetPointerv" );
+	qglGetPolygonStipple         = 	dllGetPolygonStipple         =(void (__stdcall *)(unsigned char *))GPA( "glGetPolygonStipple" );
+	qglGetString                 = 	dllGetString                 =(const unsigned char *(__stdcall *)(unsigned int))GPA( "glGetString" );
+	qglGetTexEnvfv               = 	dllGetTexEnvfv               =(void (__stdcall *)(unsigned int,unsigned int,float *))GPA( "glGetTexEnvfv" );
+	qglGetTexEnviv               = 	dllGetTexEnviv               =(void (__stdcall *)(unsigned int,unsigned int,int *))GPA( "glGetTexEnviv" );
+	qglGetTexGendv               = 	dllGetTexGendv               =(void (__stdcall *)(unsigned int,unsigned int,double *))GPA( "glGetTexGendv" );
+	qglGetTexGenfv               = 	dllGetTexGenfv               =(void (__stdcall *)(unsigned int,unsigned int,float *))GPA( "glGetTexGenfv" );
+	qglGetTexGeniv               = 	dllGetTexGeniv               =(void (__stdcall *)(unsigned int,unsigned int,int *))GPA( "glGetTexGeniv" );
+	qglGetTexImage               = 	dllGetTexImage               =(void (__stdcall *)(unsigned int,int,unsigned int,unsigned int,void *))GPA( "glGetTexImage" );
+//	qglGetTexLevelParameterfv    = 	dllGetTexLevelParameterfv    =(void (__stdcall *)(unsigned int,int,unsigned int,float *))GPA( "glGetTexLevelParameterfv" );
+//	qglGetTexLevelParameteriv    = 	dllGetTexLevelParameteriv    =(void (__stdcall *)(unsigned int,int,unsigned int,int *))GPA( "glGetTexLevelParameteriv" );
+	qglGetTexParameterfv         = 	dllGetTexParameterfv         =(void (__stdcall *)(unsigned int,unsigned int,float *))GPA( "glGetTexParameterfv" );
+	qglGetTexParameteriv         = 	dllGetTexParameteriv         =(void (__stdcall *)(unsigned int,unsigned int,int *))GPA( "glGetTexParameteriv" );
+	qglHint                      = 	dllHint                      =(void (__stdcall *)(unsigned int,unsigned int))GPA( "glHint" );
+	qglIndexMask                 = 	dllIndexMask                 =(void (__stdcall *)(unsigned int))GPA( "glIndexMask" );
+	qglIndexPointer              = 	dllIndexPointer              =(void (__stdcall *)(unsigned int,int,const void *))GPA( "glIndexPointer" );
+	qglIndexd                    = 	dllIndexd                    =(void (__stdcall *)(double))GPA( "glIndexd" );
+	qglIndexdv                   = 	dllIndexdv                   =(void (__stdcall *)(const double *))GPA( "glIndexdv" );
+	qglIndexf                    = 	dllIndexf                    =(void (__stdcall *)(float))GPA( "glIndexf" );
+	qglIndexfv                   = 	dllIndexfv                   =(void (__stdcall *)(const float *))GPA( "glIndexfv" );
+	qglIndexi                    = 	dllIndexi                    =(void (__stdcall *)(int))GPA( "glIndexi" );
+	qglIndexiv                   = 	dllIndexiv                   =(void (__stdcall *)(const int *))GPA( "glIndexiv" );
+	qglIndexs                    = 	dllIndexs                    =(void (__stdcall *)(short))GPA( "glIndexs" );
+	qglIndexsv                   = 	dllIndexsv                   =(void (__stdcall *)(const short *))GPA( "glIndexsv" );
+	qglIndexub                   = 	dllIndexub                   =(void (__stdcall *)(unsigned char))GPA( "glIndexub" );
+	qglIndexubv                  = 	dllIndexubv                  =(void (__stdcall *)(const unsigned char *))GPA( "glIndexubv" );
+	qglInitNames                 = 	dllInitNames                 =(void (__stdcall *)(void))GPA( "glInitNames" );
+	qglInterleavedArrays         = 	dllInterleavedArrays         =(void (__stdcall *)(unsigned int,int,const void *))GPA( "glInterleavedArrays" );
+	qglIsEnabled                 = 	dllIsEnabled                 =(unsigned char (__stdcall *)(unsigned int))GPA( "glIsEnabled" );
+	qglIsList                    = 	dllIsList                    =(unsigned char (__stdcall *)(unsigned int))GPA( "glIsList" );
+	qglIsTexture                 = 	dllIsTexture                 =(unsigned char (__stdcall *)(unsigned int))GPA( "glIsTexture" );
+	qglLightModelf               = 	dllLightModelf               =(void (__stdcall *)(unsigned int,float))GPA( "glLightModelf" );
+	qglLightModelfv              = 	dllLightModelfv              =(void (__stdcall *)(unsigned int,const float *))GPA( "glLightModelfv" );
+	qglLightModeli               = 	dllLightModeli               =(void (__stdcall *)(unsigned int,int))GPA( "glLightModeli" );
+	qglLightModeliv              = 	dllLightModeliv              =(void (__stdcall *)(unsigned int,const int *))GPA( "glLightModeliv" );
+	qglLightf                    = 	dllLightf                    =(void (__stdcall *)(unsigned int,unsigned int,float))GPA( "glLightf" );
+	qglLightfv                   = 	dllLightfv                   =(void (__stdcall *)(unsigned int,unsigned int,const float *))GPA( "glLightfv" );
+	qglLighti                    = 	dllLighti                    =(void (__stdcall *)(unsigned int,unsigned int,int))GPA( "glLighti" );
+	qglLightiv                   = 	dllLightiv                   =(void (__stdcall *)(unsigned int,unsigned int,const int *))GPA( "glLightiv" );
+	qglLineStipple               = 	dllLineStipple               =(void (__stdcall *)(int,unsigned short))GPA( "glLineStipple" );
+	qglLineWidth                 = 	dllLineWidth                 =(void (__stdcall *)(float))GPA( "glLineWidth" );
+	qglListBase                  = 	dllListBase                  =(void (__stdcall *)(unsigned int))GPA( "glListBase" );
+	qglLoadIdentity              = 	dllLoadIdentity              =(void (__stdcall *)(void))GPA( "glLoadIdentity" );
+	qglLoadMatrixd               = 	dllLoadMatrixd               =(void (__stdcall *)(const double *))GPA( "glLoadMatrixd" );
+	qglLoadMatrixf               = 	dllLoadMatrixf               =(void (__stdcall *)(const float *))GPA( "glLoadMatrixf" );
+	qglLoadName                  = 	dllLoadName                  =(void (__stdcall *)(unsigned int))GPA( "glLoadName" );
+	qglLogicOp                   = 	dllLogicOp                   =(void (__stdcall *)(unsigned int))GPA( "glLogicOp" );
+	qglMap1d                     = 	dllMap1d                     =(void (__stdcall *)(unsigned int,double,double,int,int,const double *))GPA( "glMap1d" );
+	qglMap1f                     = 	dllMap1f                     =(void (__stdcall *)(unsigned int,float,float,int,int,const float *))GPA( "glMap1f" );
+	qglMap2d                     = 	dllMap2d                     =(void (__stdcall *)(unsigned int,double,double,int,int,double,double,int,int,const double *))GPA( "glMap2d" );
+	qglMap2f                     = 	dllMap2f                     =(void (__stdcall *)(unsigned int,float,float,int,int,float,float,int,int,const float *))GPA( "glMap2f" );
+	qglMapGrid1d                 = 	dllMapGrid1d                 =(void (__stdcall *)(int,double,double))GPA( "glMapGrid1d" );
+	qglMapGrid1f                 = 	dllMapGrid1f                 =(void (__stdcall *)(int,float,float))GPA( "glMapGrid1f" );
+	qglMapGrid2d                 = 	dllMapGrid2d                 =(void (__stdcall *)(int,double,double,int,double,double))GPA( "glMapGrid2d" );
+	qglMapGrid2f                 = 	dllMapGrid2f                 =(void (__stdcall *)(int,float,float,int,float,float))GPA( "glMapGrid2f" );
+	qglMaterialf                 = 	dllMaterialf                 =(void (__stdcall *)(unsigned int,unsigned int,float))GPA( "glMaterialf" );
+	qglMaterialfv                = 	dllMaterialfv                =(void (__stdcall *)(unsigned int,unsigned int,const float *))GPA( "glMaterialfv" );
+	qglMateriali                 = 	dllMateriali                 =(void (__stdcall *)(unsigned int,unsigned int,int))GPA( "glMateriali" );
+	qglMaterialiv                = 	dllMaterialiv                =(void (__stdcall *)(unsigned int,unsigned int,const int *))GPA( "glMaterialiv" );
+	qglMatrixMode                = 	dllMatrixMode                =(void (__stdcall *)(unsigned int))GPA( "glMatrixMode" );
+	qglMultMatrixd               = 	dllMultMatrixd               =(void (__stdcall *)(const double *))GPA( "glMultMatrixd" );
+	qglMultMatrixf               = 	dllMultMatrixf               =(void (__stdcall *)(const float *))GPA( "glMultMatrixf" );
+	qglNewList                   = 	dllNewList                   =(void (__stdcall *)(unsigned int,unsigned int))GPA( "glNewList" );
+	qglNormal3b                  = 	dllNormal3b                  =(void (__stdcall *)(signed char,signed char,signed char))GPA( "glNormal3b" );
+	qglNormal3bv                 = 	dllNormal3bv                 =(void (__stdcall *)(const signed char *))GPA( "glNormal3bv" );
+	qglNormal3d                  = 	dllNormal3d                  =(void (__stdcall *)(double,double,double))GPA( "glNormal3d" );
+	qglNormal3dv                 = 	dllNormal3dv                 =(void (__stdcall *)(const double *))GPA( "glNormal3dv" );
+	qglNormal3f                  = 	dllNormal3f                  =(void (__stdcall *)(float,float,float))GPA( "glNormal3f" );
+	qglNormal3fv                 = 	dllNormal3fv                 =(void (__stdcall *)(const float *))GPA( "glNormal3fv" );
+	qglNormal3i                  = 	dllNormal3i                  =(void (__stdcall *)(int,int,int))GPA( "glNormal3i" );
+	qglNormal3iv                 = 	dllNormal3iv                 =(void (__stdcall *)(const int *))GPA( "glNormal3iv" );
+	qglNormal3s                  = 	dllNormal3s                  =(void (__stdcall *)(short,short,short))GPA( "glNormal3s" );
+	qglNormal3sv                 = 	dllNormal3sv                 =(void (__stdcall *)(const short *))GPA( "glNormal3sv" );
+	qglNormalPointer             = 	dllNormalPointer             =(void (__stdcall *)(unsigned int,int,const void *))GPA( "glNormalPointer" );
+	qglOrtho                     = 	dllOrtho                     =(void (__stdcall *)(double,double,double,double,double,double))GPA( "glOrtho" );
+	qglPassThrough               = 	dllPassThrough               =(void (__stdcall *)(float))GPA( "glPassThrough" );
+	qglPixelMapfv                = 	dllPixelMapfv                =(void (__stdcall *)(unsigned int,int,const float *))GPA( "glPixelMapfv" );
+	qglPixelMapuiv               = 	dllPixelMapuiv               =(void (__stdcall *)(unsigned int,int,const unsigned int *))GPA( "glPixelMapuiv" );
+	qglPixelMapusv               = 	dllPixelMapusv               =(void (__stdcall *)(unsigned int,int,const unsigned short *))GPA( "glPixelMapusv" );
+	qglPixelStoref               = 	dllPixelStoref               =(void (__stdcall *)(unsigned int,float))GPA( "glPixelStoref" );
+	qglPixelStorei               = 	dllPixelStorei               =(void (__stdcall *)(unsigned int,int))GPA( "glPixelStorei" );
+	qglPixelTransferf            = 	dllPixelTransferf            =(void (__stdcall *)(unsigned int,float))GPA( "glPixelTransferf" );
+	qglPixelTransferi            = 	dllPixelTransferi            =(void (__stdcall *)(unsigned int,int))GPA( "glPixelTransferi" );
+	qglPixelZoom                 = 	dllPixelZoom                 =(void (__stdcall *)(float,float))GPA( "glPixelZoom" );
+	qglPointSize                 = 	dllPointSize                 =(void (__stdcall *)(float))GPA( "glPointSize" );
+	qglPolygonMode               = 	dllPolygonMode               =(void (__stdcall *)(unsigned int,unsigned int))GPA( "glPolygonMode" );
+	qglPolygonOffset             = 	dllPolygonOffset             =(void (__stdcall *)(float,float))GPA( "glPolygonOffset" );
+	qglPolygonStipple            = 	dllPolygonStipple            =(void (__stdcall *)(const unsigned char *))GPA( "glPolygonStipple" );
+	qglPopAttrib                 = 	dllPopAttrib                 =(void (__stdcall *)(void))GPA( "glPopAttrib" );
+	qglPopClientAttrib           = 	dllPopClientAttrib           =(void (__stdcall *)(void))GPA( "glPopClientAttrib" );
+	qglPopMatrix                 = 	dllPopMatrix                 =(void (__stdcall *)(void))GPA( "glPopMatrix" );
+	qglPopName                   = 	dllPopName                   =(void (__stdcall *)(void))GPA( "glPopName" );
+	qglPrioritizeTextures        = 	dllPrioritizeTextures        =(void (__stdcall *)(int,const unsigned int *,const float *))GPA( "glPrioritizeTextures" );
+	qglPushAttrib                = 	dllPushAttrib                =(void (__stdcall *)(unsigned int))GPA( "glPushAttrib" );
+	qglPushClientAttrib          = 	dllPushClientAttrib          =(void (__stdcall *)(unsigned int))GPA( "glPushClientAttrib" );
+	qglPushMatrix                = 	dllPushMatrix                =(void (__stdcall *)(void))GPA( "glPushMatrix" );
+	qglPushName                  = 	dllPushName                  =(void (__stdcall *)(unsigned int))GPA( "glPushName" );
+	qglRasterPos2d               = 	dllRasterPos2d               =(void (__stdcall *)(double,double))GPA( "glRasterPos2d" );
+	qglRasterPos2dv              = 	dllRasterPos2dv              =(void (__stdcall *)(const double *))GPA( "glRasterPos2dv" );
+	qglRasterPos2f               = 	dllRasterPos2f               =(void (__stdcall *)(float,float))GPA( "glRasterPos2f" );
+	qglRasterPos2fv              = 	dllRasterPos2fv              =(void (__stdcall *)(const float *))GPA( "glRasterPos2fv" );
+	qglRasterPos2i               = 	dllRasterPos2i               =(void (__stdcall *)(int,int))GPA( "glRasterPos2i" );
+	qglRasterPos2iv              = 	dllRasterPos2iv              =(void (__stdcall *)(const int *))GPA( "glRasterPos2iv" );
+	qglRasterPos2s               = 	dllRasterPos2s               =(void (__stdcall *)(short,short))GPA( "glRasterPos2s" );
+	qglRasterPos2sv              = 	dllRasterPos2sv              =(void (__stdcall *)(const short *))GPA( "glRasterPos2sv" );
+	qglRasterPos3d               = 	dllRasterPos3d               =(void (__stdcall *)(double,double,double))GPA( "glRasterPos3d" );
+	qglRasterPos3dv              = 	dllRasterPos3dv              =(void (__stdcall *)(const double *))GPA( "glRasterPos3dv" );
+	qglRasterPos3f               = 	dllRasterPos3f               =(void (__stdcall *)(float,float,float))GPA( "glRasterPos3f" );
+	qglRasterPos3fv              = 	dllRasterPos3fv              =(void (__stdcall *)(const float *))GPA( "glRasterPos3fv" );
+	qglRasterPos3i               = 	dllRasterPos3i               =(void (__stdcall *)(int,int,int))GPA( "glRasterPos3i" );
+	qglRasterPos3iv              = 	dllRasterPos3iv              =(void (__stdcall *)(const int *))GPA( "glRasterPos3iv" );
+	qglRasterPos3s               = 	dllRasterPos3s               =(void (__stdcall *)(short,short,short))GPA( "glRasterPos3s" );
+	qglRasterPos3sv              = 	dllRasterPos3sv              =(void (__stdcall *)(const short *))GPA( "glRasterPos3sv" );
+	qglRasterPos4d               = 	dllRasterPos4d               =(void (__stdcall *)(double,double,double,double))GPA( "glRasterPos4d" );
+	qglRasterPos4dv              = 	dllRasterPos4dv              =(void (__stdcall *)(const double *))GPA( "glRasterPos4dv" );
+	qglRasterPos4f               = 	dllRasterPos4f               =(void (__stdcall *)(float,float,float,float))GPA( "glRasterPos4f" );
+	qglRasterPos4fv              = 	dllRasterPos4fv              =(void (__stdcall *)(const float *))GPA( "glRasterPos4fv" );
+	qglRasterPos4i               = 	dllRasterPos4i               =(void (__stdcall *)(int,int,int,int))GPA( "glRasterPos4i" );
+	qglRasterPos4iv              = 	dllRasterPos4iv              =(void (__stdcall *)(const int *))GPA( "glRasterPos4iv" );
+	qglRasterPos4s               = 	dllRasterPos4s               =(void (__stdcall *)(short,short,short,short))GPA( "glRasterPos4s" );
+	qglRasterPos4sv              = 	dllRasterPos4sv              =(void (__stdcall *)(const short *))GPA( "glRasterPos4sv" );
+	qglReadBuffer                = 	dllReadBuffer                =(void (__stdcall *)(unsigned int))GPA( "glReadBuffer" );
+	qglReadPixels                = 	dllReadPixels                =(void (__stdcall *)(int,int,int,int,unsigned int,unsigned int,void *))GPA( "glReadPixels" );
+	qglRectd                     = 	dllRectd                     =(void (__stdcall *)(double,double,double,double))GPA( "glRectd" );
+	qglRectdv                    = 	dllRectdv                    =(void (__stdcall *)(const double *,const double *))GPA( "glRectdv" );
+	qglRectf                     = 	dllRectf                     =(void (__stdcall *)(float,float,float,float))GPA( "glRectf" );
+	qglRectfv                    = 	dllRectfv                    =(void (__stdcall *)(const float *,const float *))GPA( "glRectfv" );
+	qglRecti                     = 	dllRecti                     =(void (__stdcall *)(int,int,int,int))GPA( "glRecti" );
+	qglRectiv                    = 	dllRectiv                    =(void (__stdcall *)(const int *,const int *))GPA( "glRectiv" );
+	qglRects                     = 	dllRects                     =(void (__stdcall *)(short,short,short,short))GPA( "glRects" );
+	qglRectsv                    = 	dllRectsv                    =(void (__stdcall *)(const short *,const short *))GPA( "glRectsv" );
+	qglRenderMode                = 	dllRenderMode                =(int (__stdcall *)(unsigned int))GPA( "glRenderMode" );
+	qglRotated                   = 	dllRotated                   =(void (__stdcall *)(double,double,double,double))GPA( "glRotated" );
+	qglRotatef                   = 	dllRotatef                   =(void (__stdcall *)(float,float,float,float))GPA( "glRotatef" );
+	qglScaled                    = 	dllScaled                    =(void (__stdcall *)(double,double,double))GPA( "glScaled" );
+	qglScalef                    = 	dllScalef                    =(void (__stdcall *)(float,float,float))GPA( "glScalef" );
+	qglScissor                   = 	dllScissor                   =(void (__stdcall *)(int,int,int,int))GPA( "glScissor" );
+	qglSelectBuffer              = 	dllSelectBuffer              =(void (__stdcall *)(int,unsigned int *))GPA( "glSelectBuffer" );
+	qglShadeModel                = 	dllShadeModel                =(void (__stdcall *)(unsigned int))GPA( "glShadeModel" );
+	qglStencilFunc               = 	dllStencilFunc               =(void (__stdcall *)(unsigned int,int,unsigned int))GPA( "glStencilFunc" );
+	qglStencilMask               = 	dllStencilMask               =(void (__stdcall *)(unsigned int))GPA( "glStencilMask" );
+	qglStencilOp                 = 	dllStencilOp                 =(void (__stdcall *)(unsigned int,unsigned int,unsigned int))GPA( "glStencilOp" );
+	qglTexCoord1d                = 	dllTexCoord1d                =(void (__stdcall *)(double))GPA( "glTexCoord1d" );
+	qglTexCoord1dv               = 	dllTexCoord1dv               =(void (__stdcall *)(const double *))GPA( "glTexCoord1dv" );
+	qglTexCoord1f                = 	dllTexCoord1f                =(void (__stdcall *)(float))GPA( "glTexCoord1f" );
+	qglTexCoord1fv               = 	dllTexCoord1fv               =(void (__stdcall *)(const float *))GPA( "glTexCoord1fv" );
+	qglTexCoord1i                = 	dllTexCoord1i                =(void (__stdcall *)(int))GPA( "glTexCoord1i" );
+	qglTexCoord1iv               = 	dllTexCoord1iv               =(void (__stdcall *)(const int *))GPA( "glTexCoord1iv" );
+	qglTexCoord1s                = 	dllTexCoord1s                =(void (__stdcall *)(short))GPA( "glTexCoord1s" );
+	qglTexCoord1sv               = 	dllTexCoord1sv               =(void (__stdcall *)(const short *))GPA( "glTexCoord1sv" );
+	qglTexCoord2d                = 	dllTexCoord2d                =(void (__stdcall *)(double,double))GPA( "glTexCoord2d" );
+	qglTexCoord2dv               = 	dllTexCoord2dv               =(void (__stdcall *)(const double *))GPA( "glTexCoord2dv" );
+	qglTexCoord2f                = 	dllTexCoord2f                =(void (__stdcall *)(float,float))GPA( "glTexCoord2f" );
+	qglTexCoord2fv               = 	dllTexCoord2fv               =(void (__stdcall *)(const float *))GPA( "glTexCoord2fv" );
+	qglTexCoord2i                = 	dllTexCoord2i                =(void (__stdcall *)(int,int))GPA( "glTexCoord2i" );
+	qglTexCoord2iv               = 	dllTexCoord2iv               =(void (__stdcall *)(const int *))GPA( "glTexCoord2iv" );
+	qglTexCoord2s                = 	dllTexCoord2s                =(void (__stdcall *)(short,short))GPA( "glTexCoord2s" );
+	qglTexCoord2sv               = 	dllTexCoord2sv               =(void (__stdcall *)(const short *))GPA( "glTexCoord2sv" );
+	qglTexCoord3d                = 	dllTexCoord3d                =(void (__stdcall *)(double,double,double))GPA( "glTexCoord3d" );
+	qglTexCoord3dv               = 	dllTexCoord3dv               =(void (__stdcall *)(const double *))GPA( "glTexCoord3dv" );
+	qglTexCoord3f                = 	dllTexCoord3f                =(void (__stdcall *)(float,float,float))GPA( "glTexCoord3f" );
+	qglTexCoord3fv               = 	dllTexCoord3fv               =(void (__stdcall *)(const float *))GPA( "glTexCoord3fv" );
+	qglTexCoord3i                = 	dllTexCoord3i                =(void (__stdcall *)(int,int,int))GPA( "glTexCoord3i" );
+	qglTexCoord3iv               = 	dllTexCoord3iv               =(void (__stdcall *)(const int *))GPA( "glTexCoord3iv" );
+	qglTexCoord3s                = 	dllTexCoord3s                =(void (__stdcall *)(short,short,short))GPA( "glTexCoord3s" );
+	qglTexCoord3sv               = 	dllTexCoord3sv               =(void (__stdcall *)(const short *))GPA( "glTexCoord3sv" );
+	qglTexCoord4d                = 	dllTexCoord4d                =(void (__stdcall *)(double,double,double,double))GPA( "glTexCoord4d" );
+	qglTexCoord4dv               = 	dllTexCoord4dv               =(void (__stdcall *)(const double *))GPA( "glTexCoord4dv" );
+	qglTexCoord4f                = 	dllTexCoord4f                =(void (__stdcall *)(float,float,float,float))GPA( "glTexCoord4f" );
+	qglTexCoord4fv               = 	dllTexCoord4fv               =(void (__stdcall *)(const float *))GPA( "glTexCoord4fv" );
+	qglTexCoord4i                = 	dllTexCoord4i                =(void (__stdcall *)(int,int,int,int))GPA( "glTexCoord4i" );
+	qglTexCoord4iv               = 	dllTexCoord4iv               =(void (__stdcall *)(const int *))GPA( "glTexCoord4iv" );
+	qglTexCoord4s                = 	dllTexCoord4s                =(void (__stdcall *)(short,short,short,short))GPA( "glTexCoord4s" );
+	qglTexCoord4sv               = 	dllTexCoord4sv               =(void (__stdcall *)(const short *))GPA( "glTexCoord4sv" );
+	qglTexCoordPointer           = 	dllTexCoordPointer           =(void (__stdcall *)(int,unsigned int,int,const void *))GPA( "glTexCoordPointer" );
+	qglTexEnvf                   = 	dllTexEnvf                   =(void (__stdcall *)(unsigned int,unsigned int,float))GPA( "glTexEnvf" );
+	qglTexEnvfv                  = 	dllTexEnvfv                  =(void (__stdcall *)(unsigned int,unsigned int,const float *))GPA( "glTexEnvfv" );
+	qglTexEnvi                   = 	dllTexEnvi                   =(void (__stdcall *)(unsigned int,unsigned int,int))GPA( "glTexEnvi" );
+	qglTexEnviv                  = 	dllTexEnviv                  =(void (__stdcall *)(unsigned int,unsigned int,const int *))GPA( "glTexEnviv" );
+	qglTexGend                   = 	dllTexGend                   =(void (__stdcall *)(unsigned int,unsigned int,double))GPA( "glTexGend" );
+	qglTexGendv                  = 	dllTexGendv                  =(void (__stdcall *)(unsigned int,unsigned int,const double *))GPA( "glTexGendv" );
+	qglTexGenf                   = 	dllTexGenf                   =(void (__stdcall *)(unsigned int,unsigned int,float))GPA( "glTexGenf" );
+	qglTexGenfv                  = 	dllTexGenfv                  =(void (__stdcall *)(unsigned int,unsigned int,const float *))GPA( "glTexGenfv" );
+	qglTexGeni                   = 	dllTexGeni                   =(void (__stdcall *)(unsigned int,unsigned int,int))GPA( "glTexGeni" );
+	qglTexGeniv                  = 	dllTexGeniv                  =(void (__stdcall *)(unsigned int,unsigned int,const int *))GPA( "glTexGeniv" );
+	qglTexImage1D                = 	dllTexImage1D                =(void (__stdcall *)(unsigned int,int,int,int,int,unsigned int,unsigned int,const void *))GPA( "glTexImage1D" );
+	qglTexImage2D                = 	dllTexImage2D                =(void (__stdcall *)(unsigned int,int,int,int,int,int,unsigned int,unsigned int,const void *))GPA( "glTexImage2D" );
+	qglTexParameterf             = 	dllTexParameterf             =(void (__stdcall *)(unsigned int,unsigned int,float))GPA( "glTexParameterf" );
+	qglTexParameterfv            = 	dllTexParameterfv            =(void (__stdcall *)(unsigned int,unsigned int,const float *))GPA( "glTexParameterfv" );
+	qglTexParameteri             = 	dllTexParameteri             =(void (__stdcall *)(unsigned int,unsigned int,int))GPA( "glTexParameteri" );
+	qglTexParameteriv            = 	dllTexParameteriv            =(void (__stdcall *)(unsigned int,unsigned int,const int *))GPA( "glTexParameteriv" );
+	qglTexSubImage1D             = 	dllTexSubImage1D             =(void (__stdcall *)(unsigned int,int,int,int,unsigned int,unsigned int,const void *))GPA( "glTexSubImage1D" );
+	qglTexSubImage2D             = 	dllTexSubImage2D             =(void (__stdcall *)(unsigned int,int,int,int,int,int,unsigned int,unsigned int,const void *))GPA( "glTexSubImage2D" );
+	qglTranslated                = 	dllTranslated                =(void (__stdcall *)(double,double,double))GPA( "glTranslated" );
+	qglTranslatef                = 	dllTranslatef                =(void (__stdcall *)(float,float,float))GPA( "glTranslatef" );
+	qglVertex2d                  = 	dllVertex2d                  =(void (__stdcall *)(double,double))GPA( "glVertex2d" );
+	qglVertex2dv                 = 	dllVertex2dv                 =(void (__stdcall *)(const double *))GPA( "glVertex2dv" );
+	qglVertex2f                  = 	dllVertex2f                  =(void (__stdcall *)(float,float))GPA( "glVertex2f" );
+	qglVertex2fv                 = 	dllVertex2fv                 =(void (__stdcall *)(const float *))GPA( "glVertex2fv" );
+	qglVertex2i                  = 	dllVertex2i                  =(void (__stdcall *)(int,int))GPA( "glVertex2i" );
+	qglVertex2iv                 = 	dllVertex2iv                 =(void (__stdcall *)(const int *))GPA( "glVertex2iv" );
+	qglVertex2s                  = 	dllVertex2s                  =(void (__stdcall *)(short,short))GPA( "glVertex2s" );
+	qglVertex2sv                 = 	dllVertex2sv                 =(void (__stdcall *)(const short *))GPA( "glVertex2sv" );
+	qglVertex3d                  = 	dllVertex3d                  =(void (__stdcall *)(double,double,double))GPA( "glVertex3d" );
+	qglVertex3dv                 = 	dllVertex3dv                 =(void (__stdcall *)(const double *))GPA( "glVertex3dv" );
+	qglVertex3f                  = 	dllVertex3f                  =(void (__stdcall *)(float,float,float))GPA( "glVertex3f" );
+	qglVertex3fv                 = 	dllVertex3fv                 =(void (__stdcall *)(const float *))GPA( "glVertex3fv" );
+	qglVertex3i                  = 	dllVertex3i                  =(void (__stdcall *)(int,int,int))GPA( "glVertex3i" );
+	qglVertex3iv                 = 	dllVertex3iv                 =(void (__stdcall *)(const int *))GPA( "glVertex3iv" );
+	qglVertex3s                  = 	dllVertex3s                  =(void (__stdcall *)(short,short,short))GPA( "glVertex3s" );
+	qglVertex3sv                 = 	dllVertex3sv                 =(void (__stdcall *)(const short *))GPA( "glVertex3sv" );
+	qglVertex4d                  = 	dllVertex4d                  =(void (__stdcall *)(double,double,double,double))GPA( "glVertex4d" );
+	qglVertex4dv                 = 	dllVertex4dv                 =(void (__stdcall *)(const double *))GPA( "glVertex4dv" );
+	qglVertex4f                  = 	dllVertex4f                  =(void (__stdcall *)(float,float,float,float))GPA( "glVertex4f" );
+	qglVertex4fv                 = 	dllVertex4fv                 =(void (__stdcall *)(const float *))GPA( "glVertex4fv" );
+	qglVertex4i                  = 	dllVertex4i                  =(void (__stdcall *)(int,int,int,int))GPA( "glVertex4i" );
+	qglVertex4iv                 = 	dllVertex4iv                 =(void (__stdcall *)(const int *))GPA( "glVertex4iv" );
+	qglVertex4s                  = 	dllVertex4s                  =(void (__stdcall *)(short,short,short,short))GPA( "glVertex4s" );
+	qglVertex4sv                 = 	dllVertex4sv                 =(void (__stdcall *)(const short *))GPA( "glVertex4sv" );
+	qglVertexPointer             = 	dllVertexPointer             =(void (__stdcall *)(int,unsigned int,int,const void *))GPA( "glVertexPointer" );
+	qglViewport                  = 	dllViewport                  =(void (__stdcall *)(int,int,int,int))GPA( "glViewport" );
 
-// bk001129 - from cvs1.17 (mkv)
-#if defined(__FX__)
-	qfxMesaCreateContext         =  GPA("fxMesaCreateContext");
-	qfxMesaCreateBestContext     =  GPA("fxMesaCreateBestContext");
-	qfxMesaDestroyContext        =  GPA("fxMesaDestroyContext");
-	qfxMesaMakeCurrent           =  GPA("fxMesaMakeCurrent");
-	qfxMesaGetCurrentContext     =  GPA("fxMesaGetCurrentContext");
-	qfxMesaSwapBuffers           =  GPA("fxMesaSwapBuffers");
-#endif
 
-	qglXChooseVisual             =  GPA("glXChooseVisual");
-	qglXCreateContext            =  GPA("glXCreateContext");
-	qglXDestroyContext           =  GPA("glXDestroyContext");
-	qglXMakeCurrent              =  GPA("glXMakeCurrent");
-	qglXCopyContext              =  GPA("glXCopyContext");
-	qglXSwapBuffers              =  GPA("glXSwapBuffers");
+	qglXChooseVisual             =  (XVisualInfo *(__stdcall *)(Display *,int, int *))GPA("glXChooseVisual");
+	qglXCreateContext            =  (__GLXcontextRec *(__stdcall *)(Display *, XVisualInfo *,GLXContext, Bool))GPA("glXCreateContext");
+	qglXDestroyContext           =  (void (__stdcall *)(Display *, GLXContext))GPA("glXDestroyContext");
+	qglXMakeCurrent              =  (int (__stdcall *)(Display *, GLXDrawable, GLXContext))GPA("glXMakeCurrent");
+	qglXCopyContext              =  (void (__stdcall *)(Display *, GLXContext, GLXContext,GLuint))GPA("glXCopyContext");
+	qglXSwapBuffers              =  (void (__stdcall *)(Display *, GLXDrawable))GPA("glXSwapBuffers");
 
 	qglLockArraysEXT = 0;
 	qglUnlockArraysEXT = 0;
@@ -3402,52 +3379,32 @@ qboolean QGL_Init( const char *dllname )
 	return qtrue;
 }
 
-void QGL_EnableLogging( qboolean enable ) {
-  // bk001205 - fixed for new countdown
-  static qboolean isEnabled = qfalse; // init
-  
-  // return if we're already active
-  if ( isEnabled && enable ) {
-    // decrement log counter and stop if it has reached 0
-    ri.Cvar_Set( "r_logFile", va("%d", r_logFile->integer - 1 ) );
-    if ( r_logFile->integer ) {
-      return;
-    }
-    enable = qfalse;
-  }
+void QGL_EnableLogging( qboolean enable )
+{
+	if ( enable )
+	{
+		if ( !glw_state.log_fp )
+		{
+			struct tm *newtime;
+			time_t aclock;
+			char buffer[1024];
+			cvar_t	*basedir;
 
-  // return if we're already disabled
-  if ( !enable && !isEnabled )
-    return;
+			time( &aclock );
+			newtime = localtime( &aclock );
 
-  isEnabled = enable;
+			asctime( newtime );
 
-  // bk001205 - old code starts here
-  if ( enable ) {
-    if ( !glw_state.log_fp ) {
-      struct tm *newtime;
-      time_t aclock;
-      char buffer[1024];
-      cvar_t	*basedir;
-      
-      time( &aclock );
-      newtime = localtime( &aclock );
-      
-      asctime( newtime );
-      
-      basedir = ri.Cvar_Get( "fs_basepath", "", 0 ); // FIXME: userdir?
-      assert(basedir);
-      Com_sprintf( buffer, sizeof(buffer), "%s/gl.log", basedir->string ); 
-      glw_state.log_fp = fopen( buffer, "wt" );
-      assert(glw_state.log_fp);
-      ri.Printf(PRINT_ALL, "QGL_EnableLogging(%d): writing %s\n", r_logFile->integer, buffer );
+			basedir = Cvar_Get( "basedir", "", 0 );
+			Com_sprintf( buffer, sizeof(buffer), "%s/gl.log", basedir->string ); 
+			glw_state.log_fp = fopen( buffer, "wt" );
 
-      fprintf( glw_state.log_fp, "%s\n", asctime( newtime ) );
-    }
+			fprintf( glw_state.log_fp, "%s\n", asctime( newtime ) );
+		}
 
-                qglAccum                     = logAccum;
-                qglAlphaFunc                 = logAlphaFunc;
-                qglAreTexturesResident       = logAreTexturesResident;
+		qglAccum                     = logAccum;
+		qglAlphaFunc                 = logAlphaFunc;
+		qglAreTexturesResident       = logAreTexturesResident;
 		qglArrayElement              = logArrayElement;
 		qglBegin                     = logBegin;
 		qglBindTexture               = logBindTexture;

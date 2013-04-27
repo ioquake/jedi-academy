@@ -231,10 +231,8 @@ void QDECL Com_OPrintf( const char *fmt, ...)
 	va_start (argptr,fmt);
 	vsprintf (msg,fmt,argptr);
 	va_end (argptr);
-#ifndef __linux__	
+#ifdef _DEBUG
 	OutputDebugString(msg);
-#else
-	printf(msg);
 #endif
 }
 
@@ -1809,8 +1807,7 @@ void Com_Shutdown (void)
 */
 }
 
-#if !( defined __linux__ || defined __FreeBSD__ )  // r010123 - include FreeBSD 
-#if ((!id386) && (!defined __i386__)) // rcg010212 - for PPC
+#if !(defined(_MSVC_VER) && defined(id386))
 
 void Com_Memcpy (void* dest, const void* src, const size_t count)
 {
@@ -2121,7 +2118,6 @@ skipClamp:
 	}
 }
 
-#endif 
 #endif // bk001208 - memset/memcpy assembly, Q_acos needed (RC4)
 //------------------------------------------------------------------------
 
