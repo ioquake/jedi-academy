@@ -7,6 +7,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#define IBI_HEADER_ID	"IBI"
+
 typedef float vec3_t[3];
 
 
