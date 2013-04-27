@@ -18,9 +18,6 @@ copy jasp and jagame*.so to your game data directory
 
 When running windowed the mouse does not work in the menus.
 
-Loading levels on amd64 seems to skip the cutscenes and
-not properly set everything up.
-
 Save games do not yet work on amd64.
 
 The demo has various issues and does not work properly.

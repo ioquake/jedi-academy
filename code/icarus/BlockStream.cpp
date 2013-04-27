@@ -425,7 +425,7 @@ int CBlockStream::Create( char *filename )
 		return false;
 	}
 
-	fwrite( s_IBI_HEADER_ID, 1, sizeof(s_IBI_HEADER_ID), m_fileHandle );
+	fwrite( s_IBI_HEADER_ID, 1, sizeof(IBI_HEADER_ID), m_fileHandle );
 	fwrite( &s_IBI_VERSION, 1, sizeof(s_IBI_VERSION), m_fileHandle );
 
 	return true;
@@ -551,7 +551,7 @@ Open
 
 int CBlockStream::Open( char *buffer, long size )
 {
-	char	id_header[sizeof(s_IBI_HEADER_ID)];
+	char	id_header[sizeof(IBI_HEADER_ID)];
 	float	version;
 	
 	Init();
