@@ -305,6 +305,8 @@ extern	cvar_t	*cl_activeAction;
 
 extern	cvar_t	*cl_thumbStickMode;
 
+extern	cvar_t	*cl_consoleKeys;	
+
 //=================================================
 
 //
@@ -352,6 +354,7 @@ void CL_WritePacket( void );
 void IN_CenterView (void);
 
 float CL_KeyState (kbutton_t *key);
+int Key_StringToKeynum( char *str );
 const char *Key_KeynumToString( int keynum/*, qboolean bTranslate*/ ); //note: translate is only called for menu display not configs
 
 //
@@ -458,6 +461,7 @@ void CL_FirstSnapshot( void );
 //
 void CL_InitUI( void );
 void CL_ShutdownUI( void );
+int Key_GetCatcher( void );
 void CL_GenericMenu_f(void);
 void CL_DataPad_f(void);
 void CL_EndScreenDissolve_f(void);

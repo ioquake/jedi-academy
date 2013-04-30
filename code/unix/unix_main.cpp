@@ -144,7 +144,7 @@ void Sys_Init(void)
 	Cvar_Set( "arch", "unknown" );
 #endif
 
-	IN_Init();
+//	IN_Init();
 
 }
 
