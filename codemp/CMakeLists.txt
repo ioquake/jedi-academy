@@ -47,11 +47,14 @@ add_definitions( -DFINAL_BUILD )
 add_definitions( -D_JK2 )
 add_definitions( -D_JK2MP )
 
-include_directories(/usr/X11R6/include/)
-link_directories(/usr/X11R6/lib)
+find_package (SDL REQUIRED)
+include_directories(${SDL_INCLUDE_DIR})
 
-include_directories(/usr/local/include/)
-link_directories(/usr/local/lib)
+find_package(OpenGL REQUIRED)
+include_directories(${OPENGL_INCLUDE_DIR})
+
+find_package(OpenAL REQUIRED)
+include_directories(${OPENAL_INCLUDE_DIR})
 
 set(src_main_rmg
 	RMG/RM_Area.cpp
@@ -304,9 +307,14 @@ set(src_unix_common
 
 set(src_main_unix
 	${src_unix_common}
-	unix/linux_glimp.cpp
-	unix/linux_qgl.cpp
+	unix/unix_glimp_common.cpp
 	null/null_snddma.cpp
+)
+
+set(src_sdl
+	sdl/sdl_gamma.cpp
+	sdl/sdl_glimp.cpp
+	sdl/sdl_input.cpp
 )
 
 set(src_botlib
@@ -354,6 +362,7 @@ set(src_jk2mp
 	${src_main_zlib}
 	${src_botlib}
 	${src_main_unix}
+	${src_sdl}
 )
 
 add_executable(jamp
@@ -364,8 +373,9 @@ set_target_properties(jamp PROPERTIES COMPILE_DEFINITIONS "_JK2EXE;_FF_DISABLE;B
 
 target_link_libraries(jamp
 	m pthread
-	X11 Xxf86vm Xxf86dga
-	openal
+	${SDL_LIBRARY}
+	${OPENGL_gl_LIBRARY}
+	${OPENAL_LIBRARY}
 )
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")

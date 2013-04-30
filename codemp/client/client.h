@@ -432,6 +432,8 @@ extern	cvar_t	*cl_allowAltEnter;
 extern	cvar_t	*cl_conXOffset;
 extern	cvar_t	*cl_inGameVideo;
 
+extern	cvar_t	*cl_consoleKeys;	
+
 //=================================================
 
 //
@@ -499,6 +501,7 @@ void IN_CenterView (void);
 void CL_VerifyCode( void );
 
 float CL_KeyState (kbutton_t *key);
+int Key_StringToKeynum( char *str );
 const char *Key_KeynumToString( int keynum/*, qboolean bTranslate */ ); //note: translate is only called for menu display not configs
 
 //

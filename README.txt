@@ -25,8 +25,6 @@ copy *.so to your base directory
 
 	Known issues:
 
-When running windowed the mouse does not work in the menus.
-
 Save games do not yet work on amd64.
 
 The demo has various issues and does not work properly.

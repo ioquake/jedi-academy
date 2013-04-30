@@ -5,7 +5,17 @@
 #ifndef __QGL_H__
 #define __QGL_H__
 
-#if defined( __LINT__ )
+#ifndef DYNAMIC_LINK_GL
+
+#ifdef USE_LOCAL_HEADERS
+#	include "SDL_opengl.h"
+#else
+#	include <SDL_opengl.h>
+#endif
+
+#include "qgl_linked.h"
+
+#elif defined( __LINT__ )
 
 #include <GL/gl.h>
 
@@ -33,7 +43,7 @@
 #include <GL/fxmesa.h>
 #endif
 
-#endif
+#endif // !DYNAMIC_LINK_GL
 
 #ifndef APIENTRY
 #define APIENTRY
@@ -338,6 +348,7 @@ extern	void ( APIENTRY * qglTexImage3DEXT) (GLenum, GLint, GLenum, GLsizei, GLsi
 extern	void ( APIENTRY * qglTexSubImage3DEXT) (GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const GLvoid *);
 
 //===========================================================================
+#ifdef DYNAMIC_LINK_GL
 
 #if defined(MACOS_X)
 // This includes #ifdefs for optional logging and GL error checking after every GL call as well as #defines to prevent incorrect usage of the non-'qgl' versions of the GL API.
@@ -734,6 +745,7 @@ extern void (*qglXSwapBuffers)( Display *dpy, GLXDrawable drawable );
 
 #endif // __linux__ || __FreeBSD__ // rb010123
 
-#endif	// _WIN32 && __linux__
+#endif	// _MACOS_X
 
-#endif
+#endif // DYNAMIC_LINK_GL
+#endif // __QGL_H__
