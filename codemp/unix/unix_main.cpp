@@ -212,7 +212,7 @@ void Sys_Init(void)
 
 	Cvar_Set( "username", Sys_GetCurrentUser() );
 
-	IN_Init();
+//	IN_Init();
 
 }
 
