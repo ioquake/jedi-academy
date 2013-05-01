@@ -1739,7 +1739,7 @@ static qboolean CG_CheckLookTarget( centity_t *cent, vec3_t	lookAngles, float *l
 	//Now calc head angle to lookTarget, if any
 	if ( cent->gent->client->renderInfo.lookTarget >= 0 && cent->gent->client->renderInfo.lookTarget < ENTITYNUM_WORLD )
 	{
-		vec3_t	lookDir, lookOrg, eyeOrg;
+		vec3_t	lookDir, lookOrg = {0, 0, 0}, eyeOrg;
 		if ( cent->gent->client->renderInfo.lookMode == LM_ENT )
 		{
 			centity_t	*lookCent = &cg_entities[cent->gent->client->renderInfo.lookTarget];

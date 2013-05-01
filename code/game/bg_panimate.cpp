@@ -373,7 +373,7 @@ saberMoveName_t transitionMove[Q_NUM_QUADS][Q_NUM_QUADS] =
 
 void PM_VelocityForSaberMove( playerState_t *ps, vec3_t throwDir )
 {
-	vec3_t	vForward, vRight, vUp, startQ, endQ;
+	vec3_t	vForward, vRight, vUp, startQ = {0, 0, 0}, endQ = {0, 0, 0};
 
 	AngleVectors( ps->viewangles, vForward, vRight, vUp );
 

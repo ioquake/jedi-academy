@@ -1273,6 +1273,8 @@ try
 	int		msec, minMsec;
 	static int	lastTime;
 
+	timeBeforeFirstEvents = timeBeforeServer = timeBeforeEvents = timeBeforeClient = 0;
+
 	// write config file if anything changed
 #ifndef _XBOX
 	Com_WriteConfiguration(); 

@@ -1948,7 +1948,7 @@ void CPoly::Rotate()
 //----------------------------
 bool CPoly::Update()
 {
-	vec3_t mOldOrigin;
+	vec3_t mOldOrigin = {0, 0, 0};
 	
 	//FIXME: Handle Relative and Bolted Effects
 	/*
