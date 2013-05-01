@@ -236,7 +236,7 @@ public:
 		SSkinGoreData		*initgore):
 #else
 		float				fRadius):
-#endif		):
+#endif
 	
 		surfaceNum(initsurfaceNum),
 		rootSList(initrootSList),   
