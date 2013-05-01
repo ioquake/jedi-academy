@@ -251,10 +251,10 @@ static const char *GetCustomSound_VariantCapped(const char *ppsTable[], int iEnt
 
 	if (iVariantCap || bForceVariant1)
 	{
-		char *p = strchr(ppsTable[iEntryNum],'.');
-		if (p && p-2 > ppsTable[iEntryNum] && isdigit(p[-1]) && !isdigit(p[-2]))
+		const char *pt = strchr(ppsTable[iEntryNum],'.');
+		if (pt && pt-2 > ppsTable[iEntryNum] && isdigit(pt[-1]) && !isdigit(pt[-2]))
 		{
-			int iThisVariant = p[-1]-'0';
+			int iThisVariant = pt[-1]-'0';
 
 			if (iThisVariant > iVariantCap || bForceVariant1)
 			{
@@ -265,7 +265,7 @@ static const char *GetCustomSound_VariantCapped(const char *ppsTable[], int iEnt
 					char sName[MAX_QPATH];
 
 					Q_strncpyz(sName, ppsTable[iEntryNum], sizeof(sName));
-					p = strchr(sName,'.');
+					char *p = strchr(sName,'.');
 					if (p)
 					{
 						*p = '\0';

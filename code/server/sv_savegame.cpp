@@ -148,13 +148,16 @@ static const char *GetString_FailedToOpenSaveGame(const char *psFilename, qboole
 static LPCSTR SG_AddSavePath( LPCSTR psPathlessBaseName )
 {
 	static char sSaveName[8][MAX_OSPATH]; 
+	char tpath[MAX_OSPATH];
 	static int  i=0;
 
 	i=++i&7;
 
+	Q_strncpyz(tpath, psPathlessBaseName, sizeof(tpath));
+
 	if(psPathlessBaseName)
 	{
-		char *p = strchr(psPathlessBaseName,'/');
+		char *p = strchr(tpath,'/');
 		if (p)
 		{
 			while (p)
@@ -164,7 +167,7 @@ static LPCSTR SG_AddSavePath( LPCSTR psPathlessBaseName )
 			}
 		}
 	}
-	Com_sprintf( sSaveName[i], MAX_OSPATH, "saves/%s.sav", psPathlessBaseName );
+	Com_sprintf( sSaveName[i], MAX_OSPATH, "saves/%s.sav", tpath );
 	return sSaveName[i];
 }
 
