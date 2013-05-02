@@ -95,7 +95,7 @@ typedef enum {
 
 #define SP_PODIUM_MODEL		"models/mapobjects/podium/podium4.md3"
 
-typedef enum 
+enum 
 {
 	HL_NONE = 0,
 	HL_FOOT_RT,
@@ -363,7 +363,7 @@ struct gentity_s {
 #define DAMAGEREDIRECT_RLEG		2
 #define DAMAGEREDIRECT_LLEG		3
 
-typedef enum {
+enum {
 	CON_DISCONNECTED,
 	CON_CONNECTING,
 	CON_CONNECTED

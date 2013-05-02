@@ -403,7 +403,7 @@ extern int	numVehicles;
 #define	VEH_MOUNT_THROW_RIGHT		-6
 
 
-typedef enum
+enum
 {
 	VEH_EJECT_LEFT, 
 	VEH_EJECT_RIGHT, 

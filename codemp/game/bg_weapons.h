@@ -5,7 +5,7 @@
 #ifndef __WEAPONS_H__
 #define __WEAPONS_H__
 
-typedef enum {
+enum {
 	WP_NONE,
 
 	WP_STUN_BATON,
