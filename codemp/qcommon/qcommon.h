@@ -1129,6 +1129,6 @@ struct Lump
 		}
 	}
 };
-#endif _XBOX
+#endif // _XBOX
 
 #endif // _QCOMMON_H_
