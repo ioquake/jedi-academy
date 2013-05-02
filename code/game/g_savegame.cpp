@@ -573,7 +573,7 @@ static void EvaluateField(const save_field_t *pField, byte *pbBase, byte *pbOrig
 
 			for (int i=0; i<MAX_ALERT_EVENTS; i++)
 			{
-				p[i].owner = GetGEntityPtr((int)(p[i].owner));
+				p[i].owner = GetGEntityPtr((intptr_t)(p[i].owner));
 			}
 		}
 		break;
@@ -584,8 +584,8 @@ static void EvaluateField(const save_field_t *pField, byte *pbBase, byte *pbOrig
 
 			for (int i=0; i<MAX_FRAME_GROUPS; i++)
 			{
-				p[i].enemy		= GetGEntityPtr((int)(p[i].enemy));
-				p[i].commander	= GetGEntityPtr((int)(p[i].commander));
+				p[i].enemy		= GetGEntityPtr((intptr_t)(p[i].enemy));
+				p[i].commander	= GetGEntityPtr((intptr_t)(p[i].commander));
 			}
 		}
 		break;
@@ -599,9 +599,9 @@ static void EvaluateField(const save_field_t *pField, byte *pbBase, byte *pbOrig
 				for ( int j=0; j<MAX_ANIM_EVENTS; j++ )
 				{
 					pO = pbOriginalRefData ? level.knownAnimFileSets[i].torsoAnimEvents[j].stringData : NULL;
-					p[i].torsoAnimEvents[j].stringData = GetStringPtr((int)p[i].torsoAnimEvents[j].stringData, pO);
+					p[i].torsoAnimEvents[j].stringData = GetStringPtr((intptr_t)p[i].torsoAnimEvents[j].stringData, pO);
 					pO = pbOriginalRefData ? level.knownAnimFileSets[i].legsAnimEvents[j].stringData : NULL;
-					p[i].legsAnimEvents[j].stringData = GetStringPtr((int)p[i].legsAnimEvents[j].stringData, pO);
+					p[i].legsAnimEvents[j].stringData = GetStringPtr((intptr_t)p[i].legsAnimEvents[j].stringData, pO);
 				}
 			}
 		}
