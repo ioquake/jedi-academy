@@ -3259,7 +3259,7 @@ qboolean WP_LobFire( gentity_t *self, vec3_t start, vec3_t target, vec3_t mins, 
 //---------------------------------------------------------
 {
 	float	targetDist, shotSpeed, speedInc = 100, travelTime, impactDist, bestImpactDist = Q3_INFINITE;//fireSpeed, 
-	vec3_t	targetDir, shotVel, failCase; 
+	vec3_t	targetDir, shotVel, failCase = {0, 0, 0}; 
 	trace_t	trace;
 	trajectory_t	tr;
 	qboolean	blocked;

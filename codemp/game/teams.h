@@ -1,7 +1,7 @@
 #ifndef TEAMS_H
 #define TEAMS_H
 
-typedef enum //# team_e
+enum //# team_e
 {
 	NPCTEAM_FREE,			// also TEAM_FREE - caution, some code checks a team_t via "if (!team_t_varname)" so I guess this should stay as entry 0, great or what? -slc
 	NPCTEAM_ENEMY,			// also TEAM_RED

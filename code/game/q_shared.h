@@ -1283,7 +1283,7 @@ inline char *Q_strupr( char *s1 )
 	return s1;
 }
 #endif
-inline char	*Q_strrchr( const char* str, int c ) { return strrchr(str, c); }
+inline char *Q_strrchr( char* str, int c ) { return strrchr(str, c); }
 
 // buffer size safe library replacements
 void	Q_strncpyz( char *dest, const char *src, int destsize, qboolean bBarfIfTooLong=qfalse );

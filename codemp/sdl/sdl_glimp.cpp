@@ -1190,7 +1190,7 @@ void GLimp_EndFrame( void )
 			needToToggle = (!!r_fullscreen->integer != fullscreen) ? qtrue : qfalse;
 
 			if( needToToggle )
-				sdlToggled = SDL_WM_ToggleFullScreen( s );
+				sdlToggled = SDL_WM_ToggleFullScreen( s ) ? qtrue : qfalse;
 		}
 
 		if( needToToggle )

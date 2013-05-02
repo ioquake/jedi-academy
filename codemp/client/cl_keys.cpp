@@ -724,7 +724,7 @@ static void keyConcatArgs( void ) {
 }
 
 static void ConcatRemaining( const char *src, const char *start ) {
-	char *str;
+	const char *str;
 
 	str = strstr(src, start);
 	if (!str) {
@@ -1023,7 +1023,7 @@ the K_* names are matched up.
 to be configured even if they don't have defined names.
 ===================
 */
-int Key_StringToKeynum( char *str ) {
+int Key_StringToKeynum( const char *str ) {
 	int			i;
 	
 	if ( !str || !str[0] ) 

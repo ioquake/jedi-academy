@@ -27,7 +27,7 @@ extern int cg_vehicleAmmoWarning;
 extern int cg_vehicleAmmoWarningTime;
 
 //I know, not siege, but...
-typedef enum
+enum
 {
 	TAUNT_TAUNT = 0,
 	TAUNT_BOW,

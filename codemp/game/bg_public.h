@@ -180,7 +180,7 @@ typedef enum
 //for supplier class items
 #define TOSS_DEBOUNCE_TIME				5000
 
-typedef enum {
+enum {
 	GT_FFA,				// free for all
 	GT_HOLOCRON,		// holocron ffa
 	GT_JEDIMASTER,		// jedi master
@@ -206,7 +206,7 @@ extern vec3_t WP_MuzzlePoint[WP_NUM_WEAPONS];
 extern int forcePowerSorted[NUM_FORCE_POWERS];
 #include "../namespace_end.h"
 
-typedef enum
+enum
 {
 	SABERLOCK_TOP,
 	SABERLOCK_SIDE,
@@ -217,7 +217,7 @@ typedef enum
 	SABERLOCK_LOSE
 };
 
-typedef enum
+enum
 {
 	DIR_RIGHT,
 	DIR_LEFT,
@@ -380,7 +380,7 @@ typedef enum {
 } weaponstate_t;
 
 
-typedef enum {
+enum {
 	FORCE_MASTERY_UNINITIATED,
 	FORCE_MASTERY_INITIATE,
 	FORCE_MASTERY_PADAWAN,
@@ -649,7 +649,7 @@ typedef enum {
 } effectTypes_t;
 
 // NOTE: may not have more than 16
-typedef enum {
+enum {
 	PW_NONE,
 
 	PW_QUAD,
@@ -683,7 +683,7 @@ typedef enum {
 };
 typedef int powerup_t;
 
-typedef enum {
+enum {
 	HI_NONE,
 
 	HI_SEEKER,
@@ -1006,7 +1006,7 @@ typedef enum {
 
 
 
-typedef enum {
+enum {
 	TEAM_FREE,
 	TEAM_RED,
 	TEAM_BLUE,
@@ -1102,7 +1102,7 @@ typedef enum {
 //---------------------------------------------------------
 
 // gitem_t->type
-typedef enum {
+enum {
 	IT_BAD,
 	IT_WEAPON,				// EFX: rotate + upscale + minlight
 	IT_AMMO,				// EFX: rotate
@@ -1286,7 +1286,7 @@ typedef struct
 #undef LS_NONE
 #endif
 
-typedef enum {
+enum {
 	//totally invalid
 	LS_INVALID	= -1,
 	// Invalid, or saber not armed
