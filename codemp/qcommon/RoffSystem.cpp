@@ -832,6 +832,11 @@ qboolean CROFFSystem::ApplyROFF( SROFFEntity *roff_ent, CROFFSystem::CROFF *roff
 		origin = originTemp;
 		VM_Call( cgvm, CG_GET_ANGLES, roff_ent->mEntID, angleTemp );
 		angle = angleTemp;
+#else
+		originTrajectory = NULL;
+		angleTrajectory = NULL;
+		origin = NULL;
+		angle = NULL;
 #endif
 	}
 	else
@@ -978,6 +983,11 @@ qboolean CROFFSystem::ClearLerp( SROFFEntity *roff_ent )
 		origin = originTemp;
 		VM_Call( cgvm, CG_GET_ANGLES, roff_ent->mEntID, angleTemp );
 		angle = angleTemp;
+#else
+		originTrajectory = NULL;
+		angleTrajectory = NULL;
+		origin = NULL;
+		angle = NULL;
 #endif
 	}
 	else
