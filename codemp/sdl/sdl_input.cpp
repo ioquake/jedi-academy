@@ -77,7 +77,7 @@ static int vidRestartTime = 0;
 IN_PrintKey
 ===============
 */
-static void IN_PrintKey( const SDL_keysym *keysym, fakeAscii_t key, qboolean down )
+static void IN_PrintKey( const SDL_keysym *keysym, int key, qboolean down )
 {
 	if( down )
 		Com_Printf( "+ " );
@@ -120,7 +120,7 @@ static void IN_PrintKey( const SDL_keysym *keysym, fakeAscii_t key, qboolean dow
 IN_IsConsoleKey
 ===============
 */
-static qboolean IN_IsConsoleKey( fakeAscii_t key, const unsigned char character )
+static qboolean IN_IsConsoleKey( int key, const unsigned char character )
 {
 	typedef struct consoleKey_s
 	{
@@ -132,7 +132,7 @@ static qboolean IN_IsConsoleKey( fakeAscii_t key, const unsigned char character 
 
 		union
 		{
-			fakeAscii_t key;
+			int key;
 			unsigned char character;
 		} u;
 	} consoleKey_t;
@@ -212,7 +212,7 @@ IN_TranslateSDLToQ3Key
 ===============
 */
 static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
-	fakeAscii_t *key, qboolean down )
+	int *key, qboolean down )
 {
 	static unsigned char buf[ 2 ] = { '\0', '\0' };
 
@@ -878,7 +878,7 @@ static void IN_ProcessEvents( void )
 {
 	SDL_Event e;
 	const char *character = NULL;
-	fakeAscii_t key = 0;
+	int key = 0;
 
 	if( !SDL_WasInit( SDL_INIT_VIDEO ) )
 			return;
