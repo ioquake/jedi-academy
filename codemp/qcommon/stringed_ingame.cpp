@@ -751,24 +751,28 @@ void CStringEdPackage::AddEntry( LPCSTR psLocalReference )
 
 LPCSTR Leetify( LPCSTR psString )
 {
-	static string str;
-	str = psString;
 	if (sp_leet->integer == 42)	// very specific test, so you won't hit it accidentally
 	{
 		static const
 		char cReplace[]={	'o','0','l','1','e','3','a','4','s','5','t','7','i','!','h','#',
 							'O','0','L','1','E','3','A','4','S','5','T','7','I','!','H','#'	// laziness because of strchr()
 						};
-
+		static char *str;
 		char *p;
+
+		free(str);
+		str = strdup(psString);
+
 		for (int i=0; i<sizeof(cReplace); i+=2)
 		{
-			while ((p=strchr(str.c_str(),cReplace[i]))!=NULL)
+			while ((p=strchr(str,cReplace[i]))!=NULL)
 				*p = cReplace[i+1];
 		}
-	}
 
-	return str.c_str();
+		return str;
+	} else {
+		return psString;
+	}
 }
 
 
