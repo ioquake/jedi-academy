@@ -395,7 +395,7 @@ are inserted in the apropriate place, The argv array
 will point into this temporary buffer.
 ============
 */
-void Cmd_TokenizeString( const char *text_in ) {
+void Cmd_TokenizeString2( const char *text_in, qboolean ignoreQuotes ) {
 	const char	*text;
 	char	*textOut;
 
@@ -443,7 +443,8 @@ void Cmd_TokenizeString( const char *text_in ) {
 		}
 
 		// handle quoted strings
-		if ( *text == '"' ) {
+    // NOTE TTimo this doesn't handle \" escaping
+		if ( !ignoreQuotes && *text == '"' ) {
 			cmd_argv[cmd_argc] = textOut;
 			cmd_argc++;
 			text++;
@@ -465,7 +466,7 @@ void Cmd_TokenizeString( const char *text_in ) {
 		// skip until whitespace, quote, or command
 		while ( *(const unsigned char* /*eurofix*/)text > ' ' ) 
 		{
-			if ( text[0] == '"' ) {
+			if ( !ignoreQuotes && text[0] == '"' ) {
 				break;
 			}
 
@@ -490,7 +491,23 @@ void Cmd_TokenizeString( const char *text_in ) {
 	
 }
 
+/*
+============
+Cmd_TokenizeString
+============
+*/
+void Cmd_TokenizeString( const char *text_in ) {
+	Cmd_TokenizeString2( text_in, qfalse );
+}
 
+/*
+============
+Cmd_TokenizeStringIgnoreQuotes
+============
+*/
+void Cmd_TokenizeStringIgnoreQuotes( const char *text_in ) {
+	Cmd_TokenizeString2( text_in, qtrue );
+}
 
 /*
 ============

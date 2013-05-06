@@ -387,6 +387,7 @@ void	Cmd_ArgsBuffer( char *buffer, int bufferLength );
 // if arg > argc, so string operations are allways safe.
 
 void	Cmd_TokenizeString( const char *text );
+void	Cmd_TokenizeStringIgnoreQuotes( const char *text );
 // Takes a null terminated string.  Does not need to be /n terminated.
 // breaks the string up into arg tokens.
 
