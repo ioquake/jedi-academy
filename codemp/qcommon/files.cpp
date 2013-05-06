@@ -965,11 +965,11 @@ qboolean FS_FilenameCompare( const char *s1, const char *s2 ) {
 		}
 		
 		if (c1 != c2) {
-			return (qboolean)-1;		// strings not equal
+			return qtrue;		// strings not equal
 		}
 	} while (c1);
 	
-	return (qboolean)0;		// strings are equal
+	return qfalse;		// strings are equal
 }
 
 static bool Sys_GetFileTime(LPCSTR psFileName, FILETIME &ft)
