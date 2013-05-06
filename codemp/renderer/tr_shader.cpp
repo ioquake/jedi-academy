@@ -174,12 +174,12 @@ R_CreateExtendedName
 ===============
 */
 //rwwRMG - added
-void R_CreateExtendedName(char *extendedName, const char *name, const int *lightmapIndex, const byte *styles)
+void R_CreateExtendedName(char *extendedName, const char *name, int namelen, const int *lightmapIndex, const byte *styles)
 {
 	int		i;
 
 	// Set the basename
-	COM_StripExtension( name, extendedName );
+	COM_StripExtension( name, extendedName, namelen );
 
 	// Add in lightmaps
 	if(lightmapIndex && styles)
@@ -299,7 +299,7 @@ void R_RemapShader(const char *shaderName, const char *newShaderName, const char
 
 	// remap all the shaders with the given name
 	// even tho they might have different lightmaps
-	COM_StripExtension( shaderName, strippedName );
+	COM_StripExtension( shaderName, strippedName, sizeof(strippedName) );
 	hash = generateHashValue(strippedName, FILE_HASH_SIZE);
 	for (sh = hashTable[hash]; sh; sh = sh->next) {
 		if (Q_stricmp(sh->name, strippedName) == 0) {
@@ -3348,7 +3348,7 @@ shader_t *R_FindShaderByName( const char *name ) {
 		return tr.defaultShader;
 	}
 
-	COM_StripExtension( name, strippedName );
+	COM_StripExtension( name, strippedName, sizeof(strippedName) );
 
 	hash = generateHashValue(strippedName, FILE_HASH_SIZE);
 
@@ -3445,7 +3445,7 @@ shader_t *R_FindShader( const char *name, const int *lightmapIndex, const byte *
 		lightmapIndex = lightmapsVertex;
 	}
 
-	COM_StripExtension( name, strippedName );
+	COM_StripExtension( name, strippedName, sizeof(strippedName) );
 
 	hash = generateHashValue(strippedName, FILE_HASH_SIZE);
 
@@ -3487,7 +3487,7 @@ shader_t *R_FindShader( const char *name, const int *lightmapIndex, const byte *
 	// if not defined in the in-memory shader descriptions,
 	// look for a single TGA, BMP, or PCX
 	//
-	COM_StripExtension(name,fileName);
+	COM_StripExtension(name,fileName,sizeof(fileName));
 #ifdef DEDICATED
 	shader.defaultShader = qtrue;
 	return FinishShader();
@@ -3567,7 +3567,7 @@ shader_t *R_FindServerShader( const char *name, const int *lightmapIndex, const 
 		return tr.defaultShader;
 	}
 
-	COM_StripExtension( name, strippedName );
+	COM_StripExtension( name, strippedName, sizeof(strippedName) );
 
 	hash = generateHashValue(strippedName, FILE_HASH_SIZE);
 
@@ -4114,7 +4114,7 @@ qhandle_t R_CreateBlendedShader(qhandle_t a, qhandle_t b, qhandle_t c, bool surf
 	}
 
 	// Find if this shader has already been created
-	R_CreateExtendedName(extendedName, blendedName, lightmapsVertex, stylesDefault);
+	R_CreateExtendedName(extendedName, blendedName, sizeof(blendedName), lightmapsVertex, stylesDefault);
 	work = hashTable[generateHashValue(extendedName, FILE_HASH_SIZE)];
 	for ( ; work; work = work->next) 
 	{

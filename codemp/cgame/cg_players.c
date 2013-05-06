@@ -184,7 +184,7 @@ sfxHandle_t	CG_CustomSound( int clientNum, const char *soundName ) {
 		return trap_S_RegisterSound( soundName );
 	}
 
-	COM_StripExtension(soundName, lSoundName);
+	COM_StripExtension(soundName, lSoundName, sizeof(lSoundName));
 
 	if ( clientNum < 0 )
 	{
@@ -807,7 +807,7 @@ void CG_LoadCISounds(clientInfo_t *ci, qboolean modelloaded)
 	int			fLen = 0;
 	const char	*dir;
 	char		soundpath[MAX_QPATH];
-	char		soundName[1024];
+	char		soundName[MAX_QPATH];
 	const char	*s;
 
 	dir = ci->modelName;
@@ -879,7 +879,7 @@ void CG_LoadCISounds(clientInfo_t *ci, qboolean modelloaded)
 		}
 
 		Com_sprintf(soundName, sizeof(soundName), "%s", s+1);
-		COM_StripExtension(soundName, soundName);
+		COM_StripExtension(soundName, soundName, sizeof(soundName));
 		//strip the extension because we might want .mp3's
 
 		ci->sounds[i] = 0;
@@ -920,7 +920,7 @@ void CG_LoadCISounds(clientInfo_t *ci, qboolean modelloaded)
 			}
 
 			Com_sprintf(soundName, sizeof(soundName), "%s", s+1);
-			COM_StripExtension(soundName, soundName);
+			COM_StripExtension(soundName, soundName, sizeof(soundName));
 			//strip the extension because we might want .mp3's
 
 			ci->siegeSounds[i] = 0;
@@ -964,7 +964,7 @@ void CG_LoadCISounds(clientInfo_t *ci, qboolean modelloaded)
 			}
 
 			Com_sprintf(soundName, sizeof(soundName), "%s", s+1);
-			COM_StripExtension(soundName, soundName);
+			COM_StripExtension(soundName, soundName, sizeof(soundName));
 			//strip the extension because we might want .mp3's
 
 			ci->duelSounds[i] = 0;

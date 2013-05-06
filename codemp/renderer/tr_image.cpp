@@ -2222,21 +2222,21 @@ void R_LoadImage( const char *shortname, byte **pic, int *width, int *height, GL
 	*width = 0;
 	*height = 0;
 	*format = GL_RGBA;
-	COM_StripExtension(shortname,name);
+	COM_StripExtension(shortname,name,sizeof(name));
 	COM_DefaultExtension(name, sizeof(name), ".jpg");
 	LoadJPG( name, pic, width, height );
 	if (*pic) {
 		return;
 	}
 
-	COM_StripExtension(shortname,name);
+	COM_StripExtension(shortname,name,sizeof(name));
 	COM_DefaultExtension(name, sizeof(name), ".png");	
 	LoadPNG32( name, pic, width, height, &bytedepth ); 			// try png first
 	if (*pic){
 		return;
 	}
 
-	COM_StripExtension(shortname,name);
+	COM_StripExtension(shortname,name,sizeof(name));
 	COM_DefaultExtension(name, sizeof(name), ".tga");
 	LoadTGA( name, pic, width, height );            // try tga first
 	if (*pic){

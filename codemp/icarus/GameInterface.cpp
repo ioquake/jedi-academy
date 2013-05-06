@@ -466,7 +466,7 @@ void ICARUS_InterrogateScript( const char *filename )
 		return;
 
 	const char	*sVal1, *sVal2;
-	char		temp[1024];
+	char		temp[MAX_QPATH];
 	int			setID;
 
 	//Now iterate through all blocks of the script, searching for keywords
@@ -511,7 +511,7 @@ void ICARUS_InterrogateScript( const char *filename )
 			
 			sVal1 = (const char *) block.GetMemberData( 0 );
 			
-			COM_StripExtension( sVal1, (char *) temp );
+			COM_StripExtension( sVal1, (char *) temp, sizeof(temp) );
 			ICARUS_InterrogateScript( (const char *) &temp );
 			
 			break;

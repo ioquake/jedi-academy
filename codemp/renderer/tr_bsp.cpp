@@ -196,7 +196,7 @@ static	void R_LoadLightmaps( lump_t *l, const char *psMapName, world_t &worldDat
 	}
 
 	char sMapName[MAX_QPATH];
-	COM_StripExtension(psMapName,sMapName);	// will already by MAX_QPATH legal, so no length check
+	COM_StripExtension(psMapName,sMapName, sizeof(sMapName));	// will already by MAX_QPATH legal, so no length check
 
 	for ( i = 0 ; i < tr.numLightmaps ; i++ ) {
 		// expand the 24 bit on-disk to 32 bit
@@ -2050,7 +2050,7 @@ void RE_LoadWorldMap_Actual( const char *name, world_t &worldData, int index )
 	Q_strncpyz( worldData.name, name, sizeof( worldData.name ) );
 
 	Q_strncpyz( worldData.baseName, COM_SkipPath( worldData.name ), sizeof( worldData.name ) );
-	COM_StripExtension( worldData.baseName, worldData.baseName );
+	COM_StripExtension( worldData.baseName, worldData.baseName, sizeof(worldData.baseName) );
 
 	startMarker = (unsigned char *)Hunk_Alloc(0, h_low);
 	c_gridVerts = 0;

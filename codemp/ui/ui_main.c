@@ -6008,7 +6008,7 @@ static void UI_UpdateSaberHilt( qboolean secondSaber )
 	{//successfully found a model
 		ItemParse_asset_model_go( item, modelPath, &animRunLength );//set the model
 		//get the customSkin, if any
-		//COM_StripExtension( modelPath, skinPath );
+		//COM_StripExtension( modelPath, skinPath, sizeof(skinPath) );
 		//COM_DefaultExtension( skinPath, sizeof( skinPath ), ".skin" );
 		if ( UI_SaberSkinForSaber( model, skinPath ) )
 		{
@@ -10236,7 +10236,7 @@ void UI_LoadForceConfig_List( void )
 {
 	int			numfiles = 0;
 	char		filelist[2048];
-	char		configname[128];
+	char		configname[MAX_QPATH];
 	char		*fileptr = NULL;
 	int			j = 0;
 	int			filelen = 0;
@@ -10264,7 +10264,7 @@ nextSearch:
 	for (j=0; j<numfiles && uiInfo.forceConfigCount < MAX_FORCE_CONFIGS;j++,fileptr+=filelen+1)
 	{
 		filelen = strlen(fileptr);
-		COM_StripExtension(fileptr, configname);
+		COM_StripExtension(fileptr, configname, sizeof(configname));
 
 		if (lightSearch)
 		{
@@ -10337,7 +10337,7 @@ static void UI_BuildQ3Model_List( void )
 	int		numfiles;
 	char	dirlist[2048];
 	char	filelist[2048];
-	char	skinname[64];
+	char	skinname[MAX_QPATH];
 	char*	dirptr;
 	char*	fileptr;
 	char*	check;
@@ -10369,7 +10369,7 @@ static void UI_BuildQ3Model_List( void )
 
 			filelen = strlen(fileptr);
 
-			COM_StripExtension(fileptr,skinname);
+			COM_StripExtension(fileptr,skinname,sizeof(skinname));
 
 			skinLen = strlen(skinname);
 			k = 0;
@@ -10562,7 +10562,7 @@ static void UI_BuildPlayerModel_List( qboolean inGameLoad )
 		if (f)
 		{ 
 			char buffer[2048];
-			char	skinname[64];
+			char	skinname[MAX_QPATH];
 			int		numfiles;
 			int		iSkinParts=0;
 
@@ -10589,7 +10589,7 @@ static void UI_BuildPlayerModel_List( qboolean inGameLoad )
 				}
 
 				filelen = strlen(fileptr);
-				COM_StripExtension(fileptr,skinname);
+				COM_StripExtension(fileptr,skinname,sizeof(skinname));
 
 				if (bIsImageFile(dirptr, skinname))
 				{ //if it exists
