@@ -185,6 +185,8 @@ static ID_INLINE float BigFloat(const float *l) { FloatSwap(l); }
 
 #define	PATH_SEP '\\'
 
+#define DLL_EXT ".dll"
+
 #endif
 
 //======================= MAC OS X DEFINES =====================
@@ -237,6 +239,8 @@ static inline short LittleShort(short l) { return ShortSwap(l); }
 static inline int LittleLong (int l) { return LongSwap(l); }
 #define BigFloat
 static inline float LittleFloat (const float l) { return FloatSwap(&l); }
+
+#define DLL_EXT ".dylib"
 
 #endif
 
@@ -306,6 +310,8 @@ inline static int LittleLong (int l) { return LongSwap(l); }
 inline static float LittleFloat (const float *l) { return FloatSwap(l); }
 #endif
 
+#define DLL_EXT ".so"
+
 #endif
 
 //======================= OPENBSD DEFINES =================================
@@ -353,6 +359,8 @@ inline static int LittleLong (int l) { return LongSwap(l); }
 inline static float LittleFloat (const float *l) { return FloatSwap(l); }
 #endif
 
+#define DLL_EXT ".so"
+
 #endif
 
 //======================= FreeBSD DEFINES =====================
@@ -388,6 +396,8 @@ static int LittleLong (int l) { return LongSwap(l); }
 #define BigFloat
 static float LittleFloat (const float *l) { return FloatSwap(l); }
 #endif
+
+#define DLL_EXT ".so"
 
 #endif
 
