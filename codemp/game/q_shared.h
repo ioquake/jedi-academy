@@ -88,6 +88,14 @@ extern int g_G2AllocServer;
 #include <ctype.h>
 #include <limits.h>
 
+#ifdef _MSC_VER
+  // vsnprintf is ISO/IEC 9899:1999
+  // abstracting this to make it portable
+  int Q_vsnprintf(char *str, size_t size, const char *format, va_list ap);
+#else
+  #define Q_vsnprintf vsnprintf
+#endif
+
 // Special min treatment for Xbox C++ version
 
 #ifdef _XBOX
