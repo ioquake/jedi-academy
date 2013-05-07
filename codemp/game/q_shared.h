@@ -1860,6 +1860,8 @@ default values.
 #define CVAR_NORESTART		0x00000400		// do not clear when a cvar_restart is issued
 #define CVAR_INTERNAL		0x00000800		// cvar won't be displayed, ever (for passwords and such)
 #define	CVAR_PARENTAL		0x00001000		// lets cvar system know that parental stuff needs to be updated
+#define CVAR_SERVER_CREATED	0x00002000		// cvar was created by a server the client connected to.
+#define CVAR_NONEXISTENT	0xFFFFFFFF		// Cvar doesn't exist.
 
 // nothing outside the Cvar_*() functions should modify these fields!
 typedef struct cvar_s {

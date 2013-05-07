@@ -2314,6 +2314,23 @@ qboolean FS_idPak( char *pak, char *base ) {
 
 /*
 ================
+FS_CheckDirTraversal
+
+Check whether the string contains stuff like "../" to prevent directory traversal bugs
+and return qtrue if it does.
+================
+*/
+
+qboolean FS_CheckDirTraversal(const char *checkdir)
+{
+	if(strstr(checkdir, "../") || strstr(checkdir, "..\\"))
+		return qtrue;
+	
+	return qfalse;
+}
+
+/*
+================
 FS_ComparePaks
 
 if dlstring == qtrue
