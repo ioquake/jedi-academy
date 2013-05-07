@@ -1261,6 +1261,10 @@ void MSG_ReadDeltaEntity( msg_t *msg, entityState_t *from, entityState_t *to,
 	numFields = sizeof(entityStateFields)/sizeof(entityStateFields[0]);
 	lc = MSG_ReadByte(msg);
 
+	if ( lc > numFields || lc < 0 ) {
+		Com_Error( ERR_DROP, "invalid entityState field count" );
+	}
+
 	// shownet 2/3 will interleave with other printed info, -1 will
 	// just print the delta records`
 	if ( cl_shownet->integer >= 2 || cl_shownet->integer == -1 ) {
@@ -2514,6 +2518,10 @@ void MSG_ReadDeltaPlayerstate (msg_t *msg, playerState_t *from, playerState_t *t
 #endif//_OPTIMIZED_VEHICLE_NETWORKING
 
 	lc = MSG_ReadByte(msg);
+
+	if ( lc > numFields || lc < 0 ) {
+		Com_Error( ERR_DROP, "invalid playerState field count" );
+	}
 
 #ifdef _DONETPROFILE_
 	int startBytes,endBytes;
