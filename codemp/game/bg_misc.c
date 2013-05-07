@@ -454,13 +454,16 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	if (powerLen >= 128)
 	{ //This should not happen. If it does, this is obviously a bogus string.
 		//They can have this string. Because I said so.
-		strcpy(powerBuf, "7-1-032330000000001333");
+		Q_strncpyz(powerBuf, "7-1-032330000000001333", sizeof(powerBuf));
 		maintainsValidity = qfalse;
 	}
 	else
 	{
-		strcpy(powerBuf, powerOut); //copy it as the original
+		Q_strncpyz(powerBuf, powerOut, sizeof(powerBuf)); //copy it as the original
 	}
+
+	if (maxRank < 1 || maxRank > MAX_FORCE_RANK)
+		maxRank = 1;	// set to rank 1 on invalid rank
 
 	//first of all, print the max rank into the string as the rank
 	strcpy(powerOut, va("%i-", maxRank));
@@ -503,9 +506,15 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	c = 0;
 	while (i < 128 && powerBuf[i] && powerBuf[i] != '\n' && c < NUM_FORCE_POWERS)
 	{
+		int forcePowerLevel;
 		readBuf[0] = powerBuf[i];
 		readBuf[1] = 0;
-		final_Powers[c] = atoi(readBuf);
+		forcePowerLevel = atoi(readBuf);
+		if (forcePowerLevel < FORCE_LEVEL_0 || forcePowerLevel >= NUM_FORCE_POWER_LEVELS)
+		{
+			forcePowerLevel = FORCE_LEVEL_0;	// set invalid levels to 0
+		}
+		final_Powers[c] = forcePowerLevel;
 		c++;
 		i++;
 	}
