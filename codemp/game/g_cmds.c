@@ -1972,6 +1972,7 @@ Cmd_CallVote_f
 extern void SiegeClearSwitchData(void); //g_saga.c
 const char *G_GetArenaInfoByMap( const char *map );
 void Cmd_CallVote_f( gentity_t *ent ) {
+	char*	c;
 	int		i;
 	char	arg1[MAX_STRING_TOKENS];
 	char	arg2[MAX_STRING_TOKENS];
@@ -2010,6 +2011,18 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	if( strchr( arg1, ';' ) || strchr( arg2, ';' ) ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
 		return;
+	}
+
+	// check for command separators in arg2
+	for( c = arg2; *c; ++c) {
+		switch(*c) {
+			case '\n':
+			case '\r':
+			case ';':
+				trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
+				return;
+			break;
+		}
 	}
 
 	if ( !Q_stricmp( arg1, "map_restart" ) ) {
