@@ -93,6 +93,21 @@ char *COM_SkipPath (char *pathname)
 
 /*
 ============
+COM_GetExtension
+============
+*/
+const char *COM_GetExtension( const char *name )
+{
+	const char *dot = strrchr(name, '.'), *slash;
+	if (dot && (!(slash = strrchr(name, '/')) || slash < dot))
+		return dot + 1;
+	else
+		return "";
+}
+
+
+/*
+============
 COM_StripExtension
 ============
 */
@@ -103,6 +118,31 @@ void COM_StripExtension( const char *in, char *out, int destsize ) {
 		Q_strncpyz(out, in, (destsize < dot-in+1 ? destsize : dot-in+1));
 	else
 		Q_strncpyz(out, in, destsize);
+}
+
+/*
+============
+COM_CompareExtension
+
+string compare the end of the strings and return qtrue if strings match
+============
+*/
+qboolean COM_CompareExtension(const char *in, const char *ext)
+{
+	int inlen, extlen;
+	
+	inlen = strlen(in);
+	extlen = strlen(ext);
+	
+	if(extlen <= inlen)
+	{
+		in += inlen - extlen;
+		
+		if(!Q_stricmp(in, ext))
+			return qtrue;
+	}
+	
+	return qfalse;
 }
 
 /*
