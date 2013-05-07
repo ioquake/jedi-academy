@@ -121,7 +121,7 @@ void Sys_Printf (char *fmt, ...)
 	unsigned char		*p;
 
 	va_start (argptr,fmt);
-	vsnprintf (text,sizeof(text),fmt,argptr);
+	Q_vsnprintf (text,sizeof(text),fmt,argptr);
 	va_end (argptr);
 
 	if (strlen(text) > sizeof(text))
@@ -227,7 +227,7 @@ void	Sys_Error( const char *error, ...)
     CL_Shutdown ();
     
     va_start (argptr,error);
-    vsprintf (string,error,argptr);
+    Q_vsnprintf (string,sizeof(string),error,argptr);
     va_end (argptr);
     fprintf(stderr, "Sys_Error: %s\n", string);
     
@@ -240,7 +240,7 @@ void Sys_Warn (char *warning, ...)
     char        string[1024];
     
     va_start (argptr,warning);
-    vsprintf (string,warning,argptr);
+    Q_vsnprintf (string,sizeof(string),warning,argptr);
     va_end (argptr);
 	fprintf(stderr, "Warning: %s", string);
 } 

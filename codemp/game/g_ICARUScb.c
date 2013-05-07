@@ -281,7 +281,7 @@ void G_DebugPrint( int level, const char *format, ... )
 		return;
 
 	va_start (argptr, format);
-	vsprintf (text, format, argptr);
+	Q_vsnprintf (text, sizeof(text), format, argptr);
 	va_end (argptr);
 
 	//Add the color formatting

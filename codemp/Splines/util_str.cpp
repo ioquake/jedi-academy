@@ -464,7 +464,7 @@ void idStr::snprintf
 	va_list		argptr;
 
 	va_start (argptr,fmt);
-	len = vsprintf (buffer,fmt,argptr);
+	len = Q_vsnprintf (buffer,sizeof(buffer),fmt,argptr);
 	va_end (argptr);
 	
    assert ( len < size );

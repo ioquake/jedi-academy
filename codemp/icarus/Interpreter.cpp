@@ -162,7 +162,7 @@ int CInterpreter::Error( char *format, ... )
 	}
 
 	va_start (argptr, format);
-	vsprintf (error_msg, format, argptr);
+	Q_vsnprintf (error_msg, sizeof(error_msg), format, argptr);
 	va_end (argptr);
 
 	strcpy((char *) work_dir, getcwd( (char *) &work_dir, 1024 ) );

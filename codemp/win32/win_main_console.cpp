@@ -103,7 +103,7 @@ void Sys_Error( const char *error, ... ) {
         char                text[256];
 
         va_start (argptr, error);
-        vsprintf (text, error, argptr);
+        Q_vsnprintf (text, sizeof(text), error, argptr);
         va_end (argptr);
 
 #ifdef _GAMECUBE
