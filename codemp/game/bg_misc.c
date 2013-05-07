@@ -451,6 +451,10 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	int final_Side;
 	int final_Powers[NUM_FORCE_POWERS];
 
+	memset(powerBuf, 0, sizeof(powerBuf));
+	memset(readBuf, 0, sizeof(readBuf));
+	memset(final_Powers, 0, sizeof(final_Powers));
+
 	if (powerLen >= 128)
 	{ //This should not happen. If it does, this is obviously a bogus string.
 		//They can have this string. Because I said so.
