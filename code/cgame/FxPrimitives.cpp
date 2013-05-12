@@ -2082,7 +2082,7 @@ bool CBezier::Update( void )
 }
 
 //----------------------------
-inline void CBezier::DrawSegment( vec3_t start, vec3_t end, float texcoord1, float texcoord2 )
+void CBezier::DrawSegment( vec3_t start, vec3_t end, float texcoord1, float texcoord2 )
 {
 	vec3_t			lineDir, cross, viewDir;
 	static vec3_t	lastEnd[2];
